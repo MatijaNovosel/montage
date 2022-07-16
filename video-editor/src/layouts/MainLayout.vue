@@ -40,7 +40,8 @@ export default defineComponent({
             text: "New project",
             actions: [
               {
-                text: "Sublabel"
+                text: "Sublabel",
+                actions: [{ text: "Sublabel #1" }, { text: "Sublabel #2" }]
               }
             ]
           },
