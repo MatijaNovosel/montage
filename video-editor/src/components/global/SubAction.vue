@@ -1,7 +1,12 @@
 <template>
   <q-menu anchor="top end" self="top start" v-if="actions && actions.length !== 0">
     <q-list dense>
-      <q-item v-for="(action, i) in actions" :key="`subAction_${i}`" clickable>
+      <q-item
+        v-for="(action, i) in actions"
+        :key="`subAction_${i}`"
+        clickable
+        @click="action.onClick && action.onClick()"
+      >
         <q-item-section>
           {{ action.text }}
         </q-item-section>

@@ -38,20 +38,34 @@ export default defineComponent({
         subActions: [
           {
             text: "New project",
-            actions: [
-              {
-                text: "Sublabel",
-                actions: [{ text: "Sublabel #1" }, { text: "Sublabel #2" }]
-              }
-            ]
+            onClick: () => {
+              //
+            }
           },
           {
             text: "Close project"
+          },
+          {
+            text: "Export"
+          },
+          {
+            text: "Close"
           }
         ]
       },
       {
-        text: "Edit"
+        text: "Edit",
+        subActions: [
+          {
+            text: "Sublabel 1",
+            actions: [
+              {
+                text: "Sublabel 2",
+                actions: [{ text: "Sublabel #1" }, { text: "Sublabel #2" }]
+              }
+            ]
+          }
+        ]
       },
       {
         text: "View"
