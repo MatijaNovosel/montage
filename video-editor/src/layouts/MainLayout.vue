@@ -2,20 +2,21 @@
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
       <q-toolbar class="bg-dark">
-        <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
-        <q-toolbar-title> 🎥 Video editor </q-toolbar-title>
+        <div class="q-ml-sm row">
+          <div
+            class="cursor-pointer q-mr-md"
+            v-for="(action, i) in actions"
+            :key="i"
+            @click="action.onClick && action.onClick()"
+          >
+            {{ action.text }}
+            <SubAction :actions="action.subActions || []" />
+          </div>
+        </div>
+        <q-space />
+        <span class="q-mx-sm text-bold"> Untitled project </span>
       </q-toolbar>
     </q-header>
-    <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
-      <q-list>
-        <q-item-label header> Essential Links </q-item-label>
-        <q-item v-for="n in 10" :key="n">
-          <q-item-section>
-            {{ n }}
-          </q-item-section>
-        </q-item>
-      </q-list>
-    </q-drawer>
     <q-page-container>
       <router-view />
     </q-page-container>
@@ -23,18 +24,46 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { Action } from "src/models/global";
+import { defineComponent } from "vue";
+import SubAction from "src/components/global/SubAction.vue";
 
 export default defineComponent({
   name: "MainLayout",
+  components: { SubAction },
   setup() {
-    const leftDrawerOpen = ref(false);
-
-    return {
-      leftDrawerOpen,
-      toggleLeftDrawer() {
-        leftDrawerOpen.value = !leftDrawerOpen.value;
+    const actions: Action[] = [
+      {
+        text: "File",
+        subActions: [
+          {
+            text: "New project",
+            actions: [
+              {
+                text: "Sublabel"
+              }
+            ]
+          },
+          {
+            text: "Close project"
+          }
+        ]
+      },
+      {
+        text: "Edit"
+      },
+      {
+        text: "View"
+      },
+      {
+        text: "Window"
+      },
+      {
+        text: "Help"
       }
+    ];
+    return {
+      actions
     };
   }
 });
