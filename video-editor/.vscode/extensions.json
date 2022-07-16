@@ -1,9 +1,7 @@
 {
   "recommendations": [
     "dbaeumer.vscode-eslint",
-    
     "editorconfig.editorconfig",
-    "johnsoncodehk.volar",
     "wayou.vscode-todo-highlight"
   ],
   "unwantedRecommendations": [

@@ -1,6 +1,7 @@
-import { configure } from "quasar/wrappers";
+/* eslint-disable */
+const { configure } = require("quasar/wrappers");
 
-export default configure(function (ctx) {
+module.exports = configure(function (ctx) {
   return {
     supportTS: {
       tsCheckerConfig: {

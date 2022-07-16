@@ -2,10 +2,10 @@ export interface ExampleStateInterface {
   prop: boolean;
 }
 
-function state (): ExampleStateInterface {
+function state(): ExampleStateInterface {
   return {
     prop: false
-  }
+  };
 }
 
-export default state
+export default state;
