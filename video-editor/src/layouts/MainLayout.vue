@@ -31,6 +31,7 @@ import { defineComponent, computed } from "vue";
 import SubAction from "src/components/global/SubAction.vue";
 import { useStore, Getters } from "src/store";
 import { NotificationService } from "src/services/notification/notification";
+import { useMagicKeys, whenever } from "@vueuse/core";
 
 export default defineComponent({
   name: "MainLayout",
@@ -87,6 +88,12 @@ export default defineComponent({
         text: "Help"
       }
     ];
+
+    const { ctrl_s } = useMagicKeys();
+
+    whenever(ctrl_s, () => {
+      notificationService.notify("Project saved!");
+    });
 
     return {
       actions,

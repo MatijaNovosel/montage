@@ -35,6 +35,7 @@ module.exports = {
   rules: {
     "generator-star-spacing": "off",
     "arrow-parens": "off",
+    camelcase: "off",
     "one-var": "off",
     "no-void": "off",
     "multiline-ternary": "off",
