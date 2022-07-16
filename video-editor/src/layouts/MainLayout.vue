@@ -14,7 +14,9 @@
           </div>
         </div>
         <q-space />
-        <span class="q-mx-sm text-bold"> Untitled project </span>
+        <span class="q-mx-sm text-bold">
+          {{ currentProjectTitle }}
+        </span>
       </q-toolbar>
     </q-header>
     <q-page-container>
@@ -25,60 +27,70 @@
 
 <script lang="ts">
 import { Action } from "src/models/global";
-import { defineComponent } from "vue";
+import { defineComponent, computed } from "vue";
 import SubAction from "src/components/global/SubAction.vue";
+import { useStore, Getters } from "src/store";
+
+const actions: Action[] = [
+  {
+    text: "File",
+    subActions: [
+      {
+        text: "New project",
+        onClick: () => {
+          //
+        }
+      },
+      {
+        text: "Close project"
+      },
+      {
+        text: "Export"
+      },
+      {
+        text: "Save"
+      },
+      {
+        text: "Close"
+      }
+    ]
+  },
+  {
+    text: "Edit",
+    subActions: [
+      {
+        text: "Sublabel 1",
+        actions: [
+          {
+            text: "Sublabel 2",
+            actions: [{ text: "Sublabel #1" }, { text: "Sublabel #2" }]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    text: "View"
+  },
+  {
+    text: "Window"
+  },
+  {
+    text: "Help"
+  }
+];
 
 export default defineComponent({
   name: "MainLayout",
   components: { SubAction },
   setup() {
-    const actions: Action[] = [
-      {
-        text: "File",
-        subActions: [
-          {
-            text: "New project",
-            onClick: () => {
-              //
-            }
-          },
-          {
-            text: "Close project"
-          },
-          {
-            text: "Export"
-          },
-          {
-            text: "Close"
-          }
-        ]
-      },
-      {
-        text: "Edit",
-        subActions: [
-          {
-            text: "Sublabel 1",
-            actions: [
-              {
-                text: "Sublabel 2",
-                actions: [{ text: "Sublabel #1" }, { text: "Sublabel #2" }]
-              }
-            ]
-          }
-        ]
-      },
-      {
-        text: "View"
-      },
-      {
-        text: "Window"
-      },
-      {
-        text: "Help"
-      }
-    ];
+    const store = useStore();
+
     return {
-      actions
+      actions,
+      currentProjectTitle: computed(() => {
+        return (store.getters as Getters)["app/currentProjectTitle"];
+      })
     };
   }
 });
