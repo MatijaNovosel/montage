@@ -26,7 +26,9 @@ module.exports = configure(function (ctx) {
       open: true
     },
     framework: {
-      config: {},
+      config: {
+        dark: true
+      },
       plugins: []
     },
     animations: [],
@@ -42,8 +44,8 @@ module.exports = configure(function (ctx) {
       workboxOptions: {},
       chainWebpackCustomSW() {},
       manifest: {
-        name: "video-editor",
-        short_name: "video-editor",
+        name: "Video editor",
+        short_name: "Video editor",
         description: "A video editor made in javascript.",
         display: "standalone",
         orientation: "portrait",
@@ -86,7 +88,7 @@ module.exports = configure(function (ctx) {
       bundler: "packager",
       packager: {},
       builder: {
-        appId: "video-editor"
+        appId: "Video editor"
       },
       chainWebpack() {},
       chainWebpackPreload() {}

@@ -18,7 +18,9 @@ function createWindow() {
     icon: path.resolve(__dirname, "icons/icon.png"),
     width: 1000,
     height: 600,
+    title: "Video editor",
     useContentSize: true,
+    autoHideMenuBar: true,
     webPreferences: {
       contextIsolation: true,
       preload: path.resolve(__dirname, process.env.QUASAR_ELECTRON_PRELOAD)
