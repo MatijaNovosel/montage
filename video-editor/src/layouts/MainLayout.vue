@@ -30,61 +30,63 @@ import { Action } from "src/models/global";
 import { defineComponent, computed } from "vue";
 import SubAction from "src/components/global/SubAction.vue";
 import { useStore, Getters } from "src/store";
-
-const actions: Action[] = [
-  {
-    text: "File",
-    subActions: [
-      {
-        text: "New project",
-        onClick: () => {
-          //
-        }
-      },
-      {
-        text: "Close project"
-      },
-      {
-        text: "Export"
-      },
-      {
-        text: "Save"
-      },
-      {
-        text: "Close"
-      }
-    ]
-  },
-  {
-    text: "Edit",
-    subActions: [
-      {
-        text: "Sublabel 1",
-        actions: [
-          {
-            text: "Sublabel 2",
-            actions: [{ text: "Sublabel #1" }, { text: "Sublabel #2" }]
-          }
-        ]
-      }
-    ]
-  },
-  {
-    text: "View"
-  },
-  {
-    text: "Window"
-  },
-  {
-    text: "Help"
-  }
-];
+import { NotificationService } from "src/services/notification/notification";
 
 export default defineComponent({
   name: "MainLayout",
   components: { SubAction },
   setup() {
     const store = useStore();
+    const notificationService = new NotificationService();
+
+    const actions: Action[] = [
+      {
+        text: "File",
+        subActions: [
+          {
+            text: "New project",
+            onClick: () => {
+              notificationService.notify("New project has been created!");
+            }
+          },
+          {
+            text: "Close project"
+          },
+          {
+            text: "Export"
+          },
+          {
+            text: "Save"
+          },
+          {
+            text: "Close"
+          }
+        ]
+      },
+      {
+        text: "Edit",
+        subActions: [
+          {
+            text: "Sublabel 1",
+            actions: [
+              {
+                text: "Sublabel 2",
+                actions: [{ text: "Sublabel #1" }, { text: "Sublabel #2" }]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        text: "View"
+      },
+      {
+        text: "Window"
+      },
+      {
+        text: "Help"
+      }
+    ];
 
     return {
       actions,

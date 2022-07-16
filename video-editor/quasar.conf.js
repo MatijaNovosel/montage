@@ -27,9 +27,10 @@ module.exports = configure(function (ctx) {
     },
     framework: {
       config: {
-        dark: true
+        dark: true,
+        notify: {}
       },
-      plugins: []
+      plugins: ["Notify"]
     },
     animations: [],
     ssr: {
