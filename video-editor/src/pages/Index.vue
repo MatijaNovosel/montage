@@ -1,27 +1,42 @@
 <template>
-  <q-page class="row">
-    <div class="col-6 bg-green text-center">
-      <h1>1</h1>
-    </div>
-    <div class="col-6 bg-red text-center items-center">
-      <q-video :ratio="16 / 9" src="https://www.youtube.com/embed/k3_tw44QsZQ?rel=0" />
-    </div>
-    <div class="col-6 bg-yellow text-center">
-      <h1>3</h1>
-    </div>
-    <div class="col-6 bg-blue text-center">
-      <h1>4</h1>
-    </div>
+  <q-page style="background-color: white" ref="page">
+    <Splitpanes :style="splitPanesStyle">
+      <Pane style="background-color: #7e57c2" min-size="20"> 1 </Pane>
+      <Pane>
+        <Splitpanes horizontal>
+          <Pane style="background-color: #e53935">2</Pane>
+          <Pane style="background-color: #64b5f6">3</Pane>
+          <Pane style="background-color: #d4e157">4</Pane>
+        </Splitpanes>
+      </Pane>
+      <Pane style="background-color: #ffd54f">5</Pane>
+    </Splitpanes>
   </q-page>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { computed, defineComponent, ref } from "vue";
+import { Splitpanes, Pane } from "splitpanes";
+import "splitpanes/dist/splitpanes.css";
+import { useElementSize } from "@vueuse/core";
 
 export default defineComponent({
   name: "PageIndex",
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  components: { Splitpanes, Pane },
   setup() {
-    return {};
+    const page = ref(null);
+
+    const { height: pageHeight } = useElementSize(page);
+
+    return {
+      page,
+      splitPanesStyle: computed(() => {
+        return {
+          height: `${pageHeight.value}px`
+        };
+      })
+    };
   }
 });
 </script>
