@@ -11,7 +11,6 @@
               active-color="primary"
               indicator-color="primary"
               align="justify"
-              narrow-indicator
             >
               <q-tab name="effects" label="Effects" />
               <q-tab name="transitions" label="Transitions" />
@@ -28,13 +27,30 @@
               </q-tab-panel>
             </q-tab-panels>
           </Pane>
-          <Pane min-size="20" style="background-color: #64b5f6" class="q-pa-md"> Video preview here </Pane>
+          <Pane min-size="20" class="q-pa-md bg-blue"> Video preview here </Pane>
         </Splitpanes>
       </Pane>
       <Pane min-size="40">
         <Splitpanes>
-          <Pane min-size="20" style="background-color: #e53935" class="q-pa-md"> 3 </Pane>
-          <Pane min-size="20" style="background-color: #64b5f6" class="q-pa-md"> 4 </Pane>
+          <Pane min-size="20" class="bg-red">
+            <div ref="dropZoneRef" class="bg-red-9 full-height full-width q-pa-md">
+              <div>Hovering: {{ isOverDropZone }}</div>
+              <div class="row">
+                <div
+                  v-for="(file, i) in filesData"
+                  :key="i"
+                  class="bg-grey"
+                  style="height: 20px; width: 20px"
+                >
+                  <p>Name: {{ file.name }}</p>
+                  <p>Size: {{ file.size }}</p>
+                  <p>Type: {{ file.type }}</p>
+                  <p>Last modified: {{ file.lastModified }}</p>
+                </div>
+              </div>
+            </div>
+          </Pane>
+          <Pane min-size="20" class="q-pa-md bg-amber"> 4 </Pane>
         </Splitpanes>
       </Pane>
     </Splitpanes>
@@ -44,7 +60,7 @@
 <script lang="ts">
 import { computed, defineComponent, ref } from "vue";
 import { Splitpanes, Pane } from "splitpanes";
-import { useElementSize } from "@vueuse/core";
+import { useDropZone, useElementSize } from "@vueuse/core";
 import "splitpanes/dist/splitpanes.css";
 
 export default defineComponent({
@@ -53,12 +69,30 @@ export default defineComponent({
   components: { Splitpanes, Pane },
   setup() {
     const page = ref(null);
-
+    const dropZoneRef = ref<HTMLElement | null>(null);
+    const filesData = ref<{ name: string; size: number; type: string; lastModified: number }[]>([]);
     const { height: pageHeight } = useElementSize(page);
+
+    const onDrop = (files: File[] | null) => {
+      filesData.value = [];
+      if (files) {
+        filesData.value = files.map((file) => ({
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          lastModified: file.lastModified
+        }));
+      }
+    };
+
+    const { isOverDropZone } = useDropZone(dropZoneRef, onDrop);
 
     return {
       page,
       tab: ref("effects"),
+      isOverDropZone,
+      filesData,
+      dropZoneRef,
       splitPanesStyle: computed(() => {
         return {
           height: `${pageHeight.value}px`
