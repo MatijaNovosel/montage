@@ -1,10 +1,10 @@
 <template>
   <q-layout view="hHh lpR fFf">
     <q-header elevated>
-      <q-toolbar class="bg-dark">
+      <q-bar class="bg-dark">
         <div class="q-ml-sm row">
           <div
-            class="cursor-pointer q-mr-md"
+            class="cursor-pointer q-mr-md bar-text"
             v-for="(action, i) in actions"
             :key="i"
             @click="action.onClick && action.onClick()"
@@ -14,10 +14,10 @@
           </div>
         </div>
         <q-space />
-        <span class="q-mx-sm text-bold">
+        <span class="q-mx-sm text-bold current-project-title">
           {{ currentProjectTitle }}
         </span>
-      </q-toolbar>
+      </q-bar>
     </q-header>
     <q-page-container>
       <router-view />
@@ -104,3 +104,13 @@ export default defineComponent({
   }
 });
 </script>
+
+<style>
+.bar-text {
+  font-size: 12px;
+}
+
+.current-project-title {
+  font-size: 12px;
+}
+</style>

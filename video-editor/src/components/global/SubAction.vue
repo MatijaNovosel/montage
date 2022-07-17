@@ -7,7 +7,7 @@
         clickable
         @click="action.onClick && action.onClick()"
       >
-        <q-item-section>
+        <q-item-section class="text">
           {{ action.text }}
         </q-item-section>
         <q-item-section side v-if="action.actions && action.actions.length !== 0">
@@ -36,3 +36,9 @@ export default defineComponent({
   }
 });
 </script>
+
+<style>
+.text {
+  font-size: 12px;
+}
+</style>
