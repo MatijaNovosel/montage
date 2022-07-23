@@ -10,3 +10,9 @@
 - [Electron](https://www.electronjs.org/)
 - [Vue 3](https://vuejs.org/)
 - [Quasar](https://quasar.dev/)
+
+## 🚀 Features
+
+- Lightweight video editing
+- Video effects such as chroma keying, transitions, panning
+- Exporting videos and converting into popular formats
