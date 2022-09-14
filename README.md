@@ -4,6 +4,7 @@
 
 <h1 align=center>Video editor</h1>
 <p align=center>A video editor made with javascript.</p>
+<p align=center>⚠ Currently a work in progress ⚠</p>
 
 ## 🔨 Built With
 
