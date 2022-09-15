@@ -11,6 +11,7 @@
 - [Tauri](https://www.tauri.app/)
 - [Vue 3](https://vuejs.org/)
 - [Vite](https://vitejs.dev/)
+- [Tailwind](https://tailwindcss.com/)
 
 ## 🚀 Features
 
