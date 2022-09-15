@@ -13,6 +13,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import("../pages/Editor.vue")
   },
   {
+    path: "/auth",
+    name: ROUTE_NAMES.AUTH,
+    component: () => import("../pages/Auth.vue")
+  },
+  {
     path: "/:catchAll(.*)*",
     component: () => import("../pages/Error404.vue")
   }
