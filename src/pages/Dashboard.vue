@@ -19,7 +19,10 @@
       </div>
     </div>
     <div class="col-span-8 pl-5">
-      <div class="bg-slate-800 p-5 rounded-lg">Hello</div>
+      <div class="bg-slate-800 p-5 rounded-lg text-white">Hello</div>
+      <upload-overlay @change="filesUploaded">
+        <div class="bg-slate-700 p-5">Drop files here</div>
+      </upload-overlay>
     </div>
   </div>
 </template>
@@ -28,4 +31,9 @@
 import Greet from "../components/Greet.vue";
 import CustomButton from "../components/CustomButton.vue";
 import ROUTE_NAMES from "../router/routeNames";
+import UploadOverlay from "../components/UploadOverlay.vue";
+
+const filesUploaded = (files: FileList) => {
+  console.log(files);
+};
 </script>

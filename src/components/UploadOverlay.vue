@@ -1,11 +1,7 @@
 <template>
   <div class="overlay-container" @dragover="dragover" @drop="drop">
-    <div
-      class="full-width overlay-indicator"
-      v-show="state.draggingOver"
-      @dragleave="dragleave"
-    >
-      <h2 class="pointer-events-none text-grey text-h6">
+    <div class="overlay-indicator" v-show="draggingOver" @dragleave="dragleave">
+      <h2 class="pointer-events-none text-white text-xl">
         {{ $t("dragFileHere") }}
       </h2>
     </div>
@@ -15,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, computed, watch, inject, Ref } from "vue";
+import { ref, computed, watch, inject, Ref } from "vue";
 import { MIME_TYPES } from "../utils/constants";
 import { getFileExtension } from "../utils/helpers";
 import { useI18n } from "vue-i18n";
@@ -29,41 +25,39 @@ const toast = useToast();
 // Plugins
 const filePickerTrigger = inject<Ref<boolean>>("filePickerTrigger");
 
-const state = reactive({
-  filelist: [],
-  draggingOver: false,
-  allowedExtensions: computed(() => {
-    const extensions = [];
-    for (const extension in MIME_TYPES) {
-      extensions.push(extension);
-    }
-    return extensions;
-  })
+const allowedExtensions = computed(() => {
+  const extensions = [];
+  for (const extension in MIME_TYPES) {
+    extensions.push(extension);
+  }
+  return extensions;
 });
+
+const draggingOver = ref(false);
 
 const onChange = () => {
   emit("change", filePicker.value?.files);
 };
 
 const dragover = (e: DragEvent) => {
-  state.draggingOver = true;
+  draggingOver.value = true;
   e.preventDefault();
 };
 
 const dragleave = (e: DragEvent) => {
-  state.draggingOver = false;
+  draggingOver.value = false;
   e.preventDefault();
 };
 
 const drop = (e: DragEvent) => {
   e.preventDefault();
-  state.draggingOver = false;
+  draggingOver.value = false;
 
   if (e.dataTransfer && filePicker.value) {
     if (
       ![...e.dataTransfer.files]
         .map((f) => getFileExtension(f.name).toLowerCase())
-        .every((ext) => state.allowedExtensions.includes(ext))
+        .every((ext) => allowedExtensions.value.includes(ext))
     ) {
       toast(t("thatFileExtensionIsNotAllowed"), {
         position: POSITION.BOTTOM_CENTER,
@@ -103,9 +97,11 @@ watch(
 
 <style lang="scss" scoped>
 @import "../utils/variables";
+
 .overlay-container {
   display: contents;
 }
+
 .overlay-indicator {
   position: absolute;
   display: flex;
@@ -113,9 +109,9 @@ watch(
   align-items: center;
   z-index: 999;
   background-color: $bg-dark-1;
-  height: calc(100% - 56px);
   top: 56px;
 }
+
 .pointer-events-none {
   pointer-events: none;
 }
