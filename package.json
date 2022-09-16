@@ -19,7 +19,9 @@
     "prettier": "^2.7.1",
     "tailwindcss": "^3.1.8",
     "vue": "^3.2.37",
-    "vue-router": "4"
+    "vue-i18n": "9",
+    "vue-router": "4",
+    "vue-toastification": "^2.0.0-rc.5"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1.0.5",

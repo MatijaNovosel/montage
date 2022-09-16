@@ -1,21 +1,26 @@
 <template>
   <h1 class="text-center text-3xl text-white mb-4">Dashboard</h1>
-  <div
-    class="bg-slate-800 rounded-lg p-5 ring-1 ring-slate-900/5 shadow-xl mb-5"
-  >
-    <h3 class="text-white text-base font-medium tracking-tight">
-      Writes Upside-Down
-    </h3>
-    <p class="text-slate-400 mt-2 text-sm">
-      The Zero Gravity Pen can be used to write in any orientation, including
-      upside-down. It even works in outer space.
-    </p>
-    <RouterLink :to="{ name: ROUTE_NAMES.AUTH }">
-      <custom-button class="mt-5" text="Go to auth" />
-    </RouterLink>
-  </div>
-  <div class="p-5 bg-slate-800 rounded-lg">
-    <Greet />
+  <div class="grid grid-cols-12">
+    <div class="col-span-4">
+      <div class="bg-slate-800 rounded-lg p-5 ring-1 ring-slate-900/5 mb-5">
+        <h3 class="text-white text-base font-medium tracking-tight">
+          Writes Upside-Down
+        </h3>
+        <p class="text-slate-400 mt-2 text-sm">
+          The Zero Gravity Pen can be used to write in any orientation,
+          including upside-down. It even works in outer space.
+        </p>
+        <RouterLink :to="{ name: ROUTE_NAMES.AUTH }">
+          <custom-button class="mt-5" text="Go to auth" />
+        </RouterLink>
+      </div>
+      <div class="p-5 bg-slate-800 rounded-lg">
+        <Greet />
+      </div>
+    </div>
+    <div class="col-span-8 pl-5">
+      <div class="bg-slate-800 p-5 rounded-lg">Hello</div>
+    </div>
   </div>
 </template>
 
