@@ -18,10 +18,11 @@
         <Greet />
       </div>
     </div>
-    <div class="col-span-8 pl-5">
-      <div class="bg-slate-800 p-5 rounded-lg text-white">Hello</div>
+    <div class="col-span-8 pl-5 h-full">
       <upload-overlay @change="filesUploaded">
-        <div class="bg-slate-700 p-5">Drop files here</div>
+        <div class="bg-slate-800 p-5 rounded-lg text-white">
+          {{ $t("dropFileHere") }}
+        </div>
       </upload-overlay>
     </div>
   </div>
@@ -32,6 +33,10 @@ import Greet from "../components/Greet.vue";
 import CustomButton from "../components/CustomButton.vue";
 import ROUTE_NAMES from "../router/routeNames";
 import UploadOverlay from "../components/UploadOverlay.vue";
+import { provide, ref } from "vue";
+
+const filePickerTrigger = ref(false);
+provide("filePickerTrigger", filePickerTrigger);
 
 const filesUploaded = (files: FileList) => {
   console.log(files);

@@ -1,28 +1,30 @@
 <template>
   <div class="overlay-container" @dragover="dragover" @drop="drop">
-    <div class="overlay-indicator" v-show="draggingOver" @dragleave="dragleave">
+    <div
+      class="w-full h-full bg-slate-700 absolute flex justify-center items-center z-50 overlay-indicator"
+      v-show="draggingOver"
+      @dragleave="dragleave"
+    >
       <h2 class="pointer-events-none text-white text-xl">
         {{ $t("dragFileHere") }}
       </h2>
     </div>
-    <input type="file" multiple hidden @change="onChange" ref="filePicker" />
+    <input type="file" @change="onChange" multiple hidden ref="filePicker" />
     <slot />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, inject, Ref } from "vue";
+import { computed, inject, Ref, ref, watch } from "vue";
+import { POSITION, TYPE, useToast } from "vue-toastification";
 import { MIME_TYPES } from "../utils/constants";
 import { getFileExtension } from "../utils/helpers";
-import { useI18n } from "vue-i18n";
-import { POSITION, TYPE, useToast } from "vue-toastification";
 
-const emit = defineEmits(["change"]);
+const draggingOver = ref(false);
 const filePicker = ref<HTMLInputElement | null>(null);
-const { t } = useI18n();
 const toast = useToast();
+const emit = defineEmits(["change"]);
 
-// Plugins
 const filePickerTrigger = inject<Ref<boolean>>("filePickerTrigger");
 
 const allowedExtensions = computed(() => {
@@ -32,8 +34,6 @@ const allowedExtensions = computed(() => {
   }
   return extensions;
 });
-
-const draggingOver = ref(false);
 
 const onChange = () => {
   emit("change", filePicker.value?.files);
@@ -59,7 +59,7 @@ const drop = (e: DragEvent) => {
         .map((f) => getFileExtension(f.name).toLowerCase())
         .every((ext) => allowedExtensions.value.includes(ext))
     ) {
-      toast(t("thatFileExtensionIsNotAllowed"), {
+      toast("File extension not allowed", {
         position: POSITION.BOTTOM_CENTER,
         type: TYPE.ERROR
       });
@@ -67,7 +67,7 @@ const drop = (e: DragEvent) => {
     }
 
     if ([...e.dataTransfer.files].length > 5) {
-      toast(t("max5Files"), {
+      toast("Max 5 files", {
         position: POSITION.BOTTOM_CENTER,
         type: TYPE.ERROR
       });
@@ -76,7 +76,7 @@ const drop = (e: DragEvent) => {
 
     // Under 2MB
     if ([...e.dataTransfer.files].some((f) => f.size >= 3145728)) {
-      toast(t("maxUploadSize"), {
+      toast("Upload size reached", {
         position: POSITION.BOTTOM_CENTER,
         type: TYPE.ERROR
       });
@@ -98,15 +98,7 @@ watch(
 <style scoped>
 .overlay-container {
   display: contents;
-}
-
-.overlay-indicator {
-  position: absolute;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
-  background-color: blue;
+  position: relative;
 }
 
 .pointer-events-none {
