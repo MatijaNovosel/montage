@@ -27,14 +27,6 @@ const emit = defineEmits(["change"]);
 
 const filePickerTrigger = inject<Ref<boolean>>("filePickerTrigger");
 
-const allowedExtensions = computed(() => {
-  const extensions = [];
-  for (const extension in MIME_TYPES) {
-    extensions.push(extension);
-  }
-  return extensions;
-});
-
 const onChange = () => {
   emit("change", filePicker.value?.files);
 };
@@ -57,7 +49,7 @@ const drop = (e: DragEvent) => {
     if (
       ![...e.dataTransfer.files]
         .map((f) => getFileExtension(f.name).toLowerCase())
-        .every((ext) => allowedExtensions.value.includes(ext))
+        .every((ext) => Object.keys(MIME_TYPES).includes(ext))
     ) {
       toast("File extension not allowed", {
         position: POSITION.BOTTOM_CENTER,
