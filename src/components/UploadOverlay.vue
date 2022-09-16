@@ -95,9 +95,7 @@ watch(
 );
 </script>
 
-<style lang="scss" scoped>
-@import "../utils/variables";
-
+<style scoped>
 .overlay-container {
   display: contents;
 }
@@ -108,8 +106,7 @@ watch(
   justify-content: center;
   align-items: center;
   z-index: 999;
-  background-color: $bg-dark-1;
-  top: 56px;
+  background-color: blue;
 }
 
 .pointer-events-none {
