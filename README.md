@@ -1,5 +1,5 @@
 <p align=center>
-  <img src="https://user-images.githubusercontent.com/36193643/179372888-e42bccb2-a811-4545-b326-cadf277617db.png" width="200" height="200" />
+  <img src="https://user-images.githubusercontent.com/36193643/190852604-7ddaf2d9-ddf3-4e33-afec-3ddd9bc38b0c.png" width="200" height="200" />
 </p>
 
 <h1 align=center>Video editor</h1>
