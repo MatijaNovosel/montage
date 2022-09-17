@@ -1,71 +1,56 @@
 <template>
-  <div class="overlay-container" @dragover="dragover" @drop="drop">
+  <div class="overlay-container" @dragover="dragOver" @drop="drop">
     <div
-      class="full-width overlay-indicator"
-      v-show="state.draggingOver"
-      @dragleave="dragleave"
+      class="w-full h-full bg-slate-700 absolute flex justify-center items-center z-50 overlay-indicator"
+      v-show="draggingOver"
+      @dragleave="dragLeave"
     >
-      <h2 class="pointer-events-none text-grey text-h6">
+      <h2 class="pointer-events-none text-white text-xl">
         {{ $t("dragFileHere") }}
       </h2>
     </div>
-    <input type="file" multiple hidden @change="onChange" ref="filePicker" />
+    <input type="file" @change="onChange" multiple hidden ref="filePicker" />
     <slot />
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, computed, watch, inject, Ref } from "vue";
+import { inject, Ref, ref, watch } from "vue";
+import { POSITION, TYPE, useToast } from "vue-toastification";
 import { MIME_TYPES } from "../utils/constants";
 import { getFileExtension } from "../utils/helpers";
-import { useI18n } from "vue-i18n";
-import { POSITION, TYPE, useToast } from "vue-toastification";
 
-const emit = defineEmits(["change"]);
+const draggingOver = ref(false);
 const filePicker = ref<HTMLInputElement | null>(null);
-const { t } = useI18n();
 const toast = useToast();
-
-// Plugins
+const emit = defineEmits(["change"]);
 const filePickerTrigger = inject<Ref<boolean>>("filePickerTrigger");
-
-const state = reactive({
-  filelist: [],
-  draggingOver: false,
-  allowedExtensions: computed(() => {
-    const extensions = [];
-    for (const extension in MIME_TYPES) {
-      extensions.push(extension);
-    }
-    return extensions;
-  })
-});
 
 const onChange = () => {
   emit("change", filePicker.value?.files);
 };
 
-const dragover = (e: DragEvent) => {
-  state.draggingOver = true;
+const dragOver = (e: DragEvent) => {
+  draggingOver.value = true;
   e.preventDefault();
 };
 
-const dragleave = (e: DragEvent) => {
-  state.draggingOver = false;
+const dragLeave = (e: DragEvent) => {
+  draggingOver.value = false;
   e.preventDefault();
 };
 
 const drop = (e: DragEvent) => {
   e.preventDefault();
-  state.draggingOver = false;
+  draggingOver.value = false;
 
   if (e.dataTransfer && filePicker.value) {
     if (
       ![...e.dataTransfer.files]
         .map((f) => getFileExtension(f.name).toLowerCase())
-        .every((ext) => state.allowedExtensions.includes(ext))
+        .every((ext) => Object.keys(MIME_TYPES).includes(ext))
     ) {
-      toast(t("thatFileExtensionIsNotAllowed"), {
+      toast("File extension not allowed", {
         position: POSITION.BOTTOM_CENTER,
         type: TYPE.ERROR
       });
@@ -73,7 +58,7 @@ const drop = (e: DragEvent) => {
     }
 
     if ([...e.dataTransfer.files].length > 5) {
-      toast(t("max5Files"), {
+      toast("Max 5 files", {
         position: POSITION.BOTTOM_CENTER,
         type: TYPE.ERROR
       });
@@ -82,7 +67,7 @@ const drop = (e: DragEvent) => {
 
     // Under 2MB
     if ([...e.dataTransfer.files].some((f) => f.size >= 3145728)) {
-      toast(t("maxUploadSize"), {
+      toast("Upload size reached", {
         position: POSITION.BOTTOM_CENTER,
         type: TYPE.ERROR
       });
@@ -101,21 +86,12 @@ watch(
 );
 </script>
 
-<style lang="scss" scoped>
-@import "../utils/variables";
+<style scoped>
 .overlay-container {
   display: contents;
+  position: relative;
 }
-.overlay-indicator {
-  position: absolute;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
-  background-color: $bg-dark-1;
-  height: calc(100% - 56px);
-  top: 56px;
-}
+
 .pointer-events-none {
   pointer-events: none;
 }

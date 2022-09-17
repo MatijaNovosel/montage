@@ -1,3 +1,5 @@
 export default {
-  hello: "Pozdrav"
+  hello: "Pozdrav",
+  dragFileHere: "Dovuci datoteku ovdje",
+  dropFileHere: "Pusti datoteku ovdje"
 };
