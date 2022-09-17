@@ -1,9 +1,9 @@
 <template>
-  <div class="overlay-container" @dragover="dragover" @drop="drop">
+  <div class="overlay-container" @dragover="dragOver" @drop="drop">
     <div
       class="w-full h-full bg-slate-700 absolute flex justify-center items-center z-50 overlay-indicator"
       v-show="draggingOver"
-      @dragleave="dragleave"
+      @dragleave="dragLeave"
     >
       <h2 class="pointer-events-none text-white text-xl">
         {{ $t("dragFileHere") }}
@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, Ref, ref, watch } from "vue";
+import { inject, Ref, ref, watch } from "vue";
 import { POSITION, TYPE, useToast } from "vue-toastification";
 import { MIME_TYPES } from "../utils/constants";
 import { getFileExtension } from "../utils/helpers";
@@ -24,19 +24,18 @@ const draggingOver = ref(false);
 const filePicker = ref<HTMLInputElement | null>(null);
 const toast = useToast();
 const emit = defineEmits(["change"]);
-
 const filePickerTrigger = inject<Ref<boolean>>("filePickerTrigger");
 
 const onChange = () => {
   emit("change", filePicker.value?.files);
 };
 
-const dragover = (e: DragEvent) => {
+const dragOver = (e: DragEvent) => {
   draggingOver.value = true;
   e.preventDefault();
 };
 
-const dragleave = (e: DragEvent) => {
+const dragLeave = (e: DragEvent) => {
   draggingOver.value = false;
   e.preventDefault();
 };
