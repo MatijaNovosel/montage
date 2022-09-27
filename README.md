@@ -2,7 +2,7 @@
   <img src="https://user-images.githubusercontent.com/36193643/190853606-9c6badcb-6fbf-465b-80da-b38e01340191.png" width="200" height="200" />
 </p>
 
-<h1 align=center>Video editor</h1>
+<h1 align=center>Montage</h1>
 <p align=center>A video editor made with Tauri.</p>
 <p align=center>⚠ Currently a work in progress ⚠</p>
 
