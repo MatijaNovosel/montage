@@ -1,3 +1,75 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --panel-back: #141629;
+  --panel-stroke: #222544;
+  --main-back: #070a1b;
+  --main-text-color: #fff;
+  --secondary-text-color: #a0a5d0;
+  --input-color: #22233e;
+  --accent-color: #166ef1;
+  --button-hover: #262746;
+}
+
+* {
+  font-family: "Roboto", sans-serif;
+}
+
+/* Scrollbar */
+
+::-webkit-scrollbar {
+  width: 15px;
+  height: 15px;
+  background: transparent;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(160, 165, 208, 0.2);
+  border: 4.5px solid transparent;
+  border-radius: 10px;
+  background-clip: padding-box;
+  opacity: 0.3;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(160, 165, 208, 0.4);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+img {
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+}
+
+@keyframes bounce {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.list-enter-active,
+.list-leave-active {
+  animation: bounce 0.5s;
+}
+
+.list-enter-from,
+.list-leave-to {
+  animation: bounce 0.5s reverse;
+}

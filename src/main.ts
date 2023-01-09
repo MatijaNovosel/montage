@@ -1,13 +1,12 @@
+import { createPinia } from "pinia";
 import { createApp } from "vue";
 import App from "./App.vue";
-import Toast from "vue-toastification";
-import router from "./router";
-import hr from "./i18n/hr";
 import en from "./i18n/en";
+import hr from "./i18n/hr";
+import router from "./router";
 
-import "./index.css";
-import "vue-toastification/dist/index.css";
 import { createI18n } from "vue-i18n";
+import "./index.css";
 
 const i18n = createI18n({
   locale: "en",
@@ -18,10 +17,12 @@ const i18n = createI18n({
   }
 });
 
+const pinia = createPinia();
+
 const app = createApp(App);
 
 app.use(router);
-app.use(Toast, {});
 app.use(i18n);
+app.use(pinia);
 
 app.mount("#app");

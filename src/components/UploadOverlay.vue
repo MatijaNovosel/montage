@@ -16,13 +16,13 @@
 
 <script setup lang="ts">
 import { inject, Ref, ref, watch } from "vue";
-import { POSITION, TYPE, useToast } from "vue-toastification";
+import { useToastStore } from "../store/toast";
 import { MIME_TYPES } from "../utils/constants";
 import { getFileExtension } from "../utils/helpers";
 
 const draggingOver = ref(false);
 const filePicker = ref<HTMLInputElement | null>(null);
-const toast = useToast();
+const { createToast } = useToastStore();
 const emit = defineEmits(["change"]);
 const filePickerTrigger = inject<Ref<boolean>>("filePickerTrigger");
 
@@ -50,27 +50,18 @@ const drop = (e: DragEvent) => {
         .map((f) => getFileExtension(f.name).toLowerCase())
         .every((ext) => Object.keys(MIME_TYPES).includes(ext))
     ) {
-      toast("File extension not allowed", {
-        position: POSITION.BOTTOM_CENTER,
-        type: TYPE.ERROR
-      });
+      createToast("File extension not allowed");
       return;
     }
 
     if ([...e.dataTransfer.files].length > 5) {
-      toast("Max 5 files", {
-        position: POSITION.BOTTOM_CENTER,
-        type: TYPE.ERROR
-      });
+      createToast("Max 5 files");
       return;
     }
 
     // Under 2MB
     if ([...e.dataTransfer.files].some((f) => f.size >= 3145728)) {
-      toast("Upload size reached", {
-        position: POSITION.BOTTOM_CENTER,
-        type: TYPE.ERROR
-      });
+      createToast("Upload size reached");
       return;
     }
 

@@ -11,8 +11,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
 import { invoke } from "@tauri-apps/api/tauri";
+import { ref } from "vue";
 import CustomButton from "./CustomButton.vue";
 
 const greetMsg = ref("");

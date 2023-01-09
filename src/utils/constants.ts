@@ -1,6 +1,6 @@
-import { IDictionary } from "./types";
+import { TabItem } from "../models/common";
 
-export const MIME_TYPES: IDictionary = {
+export const MIME_TYPES: Record<string, string> = {
   css: "text/css",
   csv: "text/csv",
   doc: "application/msword",
@@ -35,7 +35,7 @@ export const MIME_TYPES: IDictionary = {
   mp4: "video/mp4"
 };
 
-export const MIME_TYPE_ICONS: IDictionary = {
+export const MIME_TYPE_ICONS: Record<string, string> = {
   "text/css": "mdi-language-css3",
   "text/csv": "mdi-file-delimited",
   "application/msword": "mdi-file-word",
@@ -74,3 +74,96 @@ export const LANGUAGES = {
   ENGLISH: "en",
   CROATIAN: "hr"
 };
+
+export const TABS = {
+  UPLOADS: 1,
+  OBJECTS: 2,
+  IMAGES: 3,
+  TEXT: 4,
+  VIDEOS: 5,
+  AUDIO: 6
+};
+
+export const TAB_ITEMS: Record<number, TabItem> = {
+  [TABS.UPLOADS]: {
+    value: TABS.UPLOADS,
+    name: "Uploads",
+    image: "uploads"
+  },
+  [TABS.OBJECTS]: {
+    value: TABS.OBJECTS,
+    name: "Objects",
+    image: "shape"
+  },
+  [TABS.IMAGES]: {
+    value: TABS.IMAGES,
+    name: "Images",
+    image: "image"
+  },
+  [TABS.TEXT]: {
+    value: TABS.TEXT,
+    name: "Text",
+    image: "text"
+  },
+  [TABS.VIDEOS]: {
+    value: TABS.VIDEOS,
+    name: "Videos",
+    image: "video"
+  },
+  [TABS.AUDIO]: {
+    value: TABS.AUDIO,
+    name: "Audio",
+    image: "audio"
+  }
+};
+
+export const EMOJIS = [
+  "bomb-emoji",
+  "cat-face-emoji",
+  "clap-emoji",
+  "clock-emoji",
+  "construction-emoji",
+  "crying-emoji",
+  "dog-face-emoji",
+  "eyes-emoji",
+  "fire-emoji",
+  "gem-emoji",
+  "ghost-emoji",
+  "gift-emoji",
+  "graph-emoji",
+  "heart-eyes-emoji",
+  "heart-kiss-emoji",
+  "hundred-100-points-emoji",
+  "laughing-emoji",
+  "mindblown-emoji",
+  "money-emoji",
+  "moon-emoji",
+  "nail-polish-emoji",
+  "party-popper-emoji",
+  "pencil-emoji",
+  "pizza-emoji",
+  "plane-emoji",
+  "pleading-face-emoji",
+  "point-emoji",
+  "praying-hands-emoji",
+  "raising-hands-emoji",
+  "rocket-emoji",
+  "rose-emoji",
+  "skull-emoji",
+  "smiling-emoji",
+  "sparkles-emoji",
+  "star-emoji",
+  "sun-emoji",
+  "sunglasses-cool-emoji",
+  "surprised-emoji",
+  "target-emoji",
+  "thinking-face-emoji",
+  "thought-balloon-emoji",
+  "thumbs-up-emoji",
+  "tongue-emoji",
+  "trophy-emoji",
+  "tulip-emoji",
+  "wave-emoji",
+  "winking-face-emoji",
+  "wip-emoji"
+];

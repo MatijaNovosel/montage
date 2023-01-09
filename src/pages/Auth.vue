@@ -1,9 +1,7 @@
 <template>
   <div class="flex items-center h-full">
     <div class="flex flex-col items-center justify-center mx-auto">
-      <h1 class="font-bold text-center text-2xl mb-3 text-white">
-        Video editor
-      </h1>
+      <h1 class="font-bold text-center text-2xl mb-3 text-white">Montage</h1>
       <div
         class="bg-slate-800 rounded-lg p-5 flex flex-col items-center justify-center w-full"
       >
@@ -31,6 +29,6 @@
 </template>
 
 <script setup lang="ts">
-import ROUTE_NAMES from "../router/routeNames";
 import CustomButton from "../components/CustomButton.vue";
+import ROUTE_NAMES from "../router/routeNames";
 </script>

@@ -15,13 +15,14 @@
     "eslint": "^8.23.1",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-vue": "^9.4.0",
+    "matija-utils": "^1.0.29",
+    "pinia": "^2.0.28",
     "postcss": "^8.4.16",
     "prettier": "^2.7.1",
     "tailwindcss": "^3.1.8",
     "vue": "^3.2.37",
     "vue-i18n": "9",
-    "vue-router": "4",
-    "vue-toastification": "^2.0.0-rc.5"
+    "vue-router": "4"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1.0.5",

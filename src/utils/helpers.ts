@@ -1,38 +1,5 @@
 import { MIME_TYPES, MIME_TYPE_ICONS } from "./constants";
 
-export const range = (
-  start: number,
-  stop: number | undefined,
-  step: number | undefined
-) => {
-  if (typeof stop === "undefined") {
-    stop = start;
-    start = 0;
-  }
-
-  if (typeof step === "undefined") {
-    step = 1;
-  }
-
-  if ((step > 0 && start >= stop) || (step < 0 && start <= stop)) {
-    return [];
-  }
-
-  const result = [];
-
-  for (let i = start; step > 0 ? i < stop : i > stop; i += step) {
-    result.push(i);
-  }
-
-  return result;
-};
-
-export const randInt = (min: number, max: number) => {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1) + min);
-};
-
 export const secondsToElapsedTime = (secs: number) => {
   secs = Math.round(secs);
   const hours = Math.floor(secs / (60 * 60));
