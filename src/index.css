@@ -11,6 +11,7 @@
   --input-color: #22233e;
   --accent-color: #166ef1;
   --button-hover: #262746;
+  --timeline-height: 60px;
 }
 
 * {
@@ -72,4 +73,9 @@ img {
 .list-enter-from,
 .list-leave-to {
   animation: bounce 0.5s reverse;
+}
+
+.tab {
+  height: 60px;
+  width: 60px;
 }

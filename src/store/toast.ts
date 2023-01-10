@@ -9,6 +9,8 @@ export interface Toast {
   permanent: boolean;
 }
 
+const TOAST_LIMIT = 5;
+
 export const useToastStore = defineStore("toast", () => {
   const toasts = ref<Toast[]>([]);
 
@@ -18,6 +20,10 @@ export const useToastStore = defineStore("toast", () => {
     timeout = 4000,
     permanent = false
   ) => {
+    if (toasts.value.length + 1 > TOAST_LIMIT) {
+      return;
+    }
+
     const id = randInt(1, 9999);
 
     toasts.value.push({

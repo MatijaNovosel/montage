@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center justify-center">
+  <div class="flex items-center justify-center text-black">
     <input
       v-model="name"
       placeholder="Enter a name..."
@@ -19,6 +19,8 @@ const greetMsg = ref("");
 const name = ref("");
 
 const greet = async () => {
-  greetMsg.value = await invoke("greet", { name: name.value });
+  if (name.value !== "") {
+    greetMsg.value = await invoke("greet", { name: name.value });
+  }
 };
 </script>

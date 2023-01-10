@@ -167,3 +167,24 @@ export const EMOJIS = [
   "winking-face-emoji",
   "wip-emoji"
 ];
+
+export const SHAPES = [
+  "arrow",
+  "circle",
+  "heart",
+  "hexagon",
+  "polygon",
+  "rectangle",
+  "star",
+  "triangle"
+];
+
+export const AUDIO = [
+  "epic-cinematic-trailer",
+  "everything-feels-new",
+  "inspirational-background",
+  "lofi",
+  "stomping-rock",
+  "the-podcast-intro",
+  "tropical-summer-music"
+];
