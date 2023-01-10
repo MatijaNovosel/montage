@@ -5,7 +5,7 @@
   >
     <sidebar class="w-3/12" />
     <div
-      class="main w-7/12 p-5 h-full flex flex-col justify-center items-center relative"
+      class="main w-7/12 h-full flex flex-col justify-center items-center relative"
     >
       <button
         @click="undo"
@@ -19,8 +19,8 @@
         <img style="transform: scaleX(-1)" class="mr-2" src="/undo.svg" />
         Redo
       </button>
-      <main>
-        <Greet />
+      <main ref="main" class="h-full w-full">
+        <canvas class="block" ref="canvas" />
       </main>
     </div>
     <layout class="w-2/12" />
@@ -46,17 +46,51 @@
 </template>
 
 <script setup lang="ts">
+import { useElementSize } from "@vueuse/core";
+import { fabric } from "fabric";
+import { nextTick, onMounted, ref, watch } from "vue";
 import Layout from "../components/dashboard/layout/layout.vue";
 import Sidebar from "../components/dashboard/sidebar/sidebar.vue";
-import Greet from "../components/Greet.vue";
 import { useToastStore } from "../store/toast";
 
 const { createToast } = useToastStore();
 createToast("✅ App successfully started!", "#4BB543");
 
+const canvas = ref<HTMLCanvasElement | null>(null);
+const main = ref<HTMLElement | null>(null);
+let fabricCanvas: fabric.Canvas | null = null;
+
+const { width, height } = useElementSize(main);
+
 const undo = () => {
   createToast("🚨 Undo", "#f80000");
 };
+
+watch([width, height], async (val) => {
+  const [width, height] = val;
+  console.log({ width, height });
+  await nextTick(() => {
+    if (fabricCanvas) {
+      fabricCanvas.setHeight(height);
+      fabricCanvas.setWidth(width);
+      fabricCanvas.renderAll();
+    }
+  });
+});
+
+onMounted(() => {
+  fabricCanvas = new fabric.Canvas(canvas.value, {
+    width: width.value,
+    height: height.value
+  });
+  fabricCanvas.add(
+    new fabric.Rect({
+      fill: "red",
+      width: 20,
+      height: 20
+    })
+  );
+});
 </script>
 
 <style scoped>
