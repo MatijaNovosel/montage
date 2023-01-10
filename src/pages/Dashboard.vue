@@ -16,7 +16,7 @@
       <button
         class="px-3 bg-slate-600 hover:bg-slate-500 rounded-md py-1 flex justify-center items-center redo-btn z-10"
       >
-        <img style="transform: scaleX(-1)" class="mr-2" src="/undo.svg" />
+        <img class="mr-2 scale-x-n1" src="/undo.svg" />
         Redo
       </button>
       <main ref="main" class="h-full w-full">
@@ -31,11 +31,7 @@
   >
     <div>Range</div>
     <div class="flex">
-      <img
-        class="cursor-pointer"
-        src="/timeline/ff.svg"
-        style="transform: scaleX(-1)"
-      />
+      <img class="cursor-pointer scale-x-n1" src="/timeline/ff.svg" />
       <img class="mx-5 cursor-pointer" src="/timeline/play.svg" />
       <img class="cursor-pointer" src="/timeline/ff.svg" />
     </div>
@@ -46,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import { useElementSize } from "@vueuse/core";
+import { onKeyDown, useElementSize } from "@vueuse/core";
 import { fabric } from "fabric";
 import { storeToRefs } from "pinia";
 import { nextTick, onMounted, ref, watch } from "vue";
@@ -87,6 +83,13 @@ watch(newObj, (val) => {
     });
     fabricCanvas?.add(img);
   });
+});
+
+onKeyDown("Delete", () => {
+  fabricCanvas?.getActiveObjects().forEach((obj) => {
+    fabricCanvas?.remove(obj);
+  });
+  fabricCanvas?.discardActiveObject().renderAll();
 });
 
 onMounted(() => {

@@ -97,3 +97,7 @@ input[type="color"]::-webkit-color-swatch-wrapper {
 input[type="color"]::-webkit-color-swatch {
   border: none;
 }
+
+.scale-x-n1 {
+  transform: scaleX(-1);
+}

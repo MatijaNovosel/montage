@@ -1,27 +1,23 @@
 <template>
-  <div class="grid grid-cols-12 gap-2 pt-5">
-    <div class="col-span-12 text-left">
-      <span class="text-sm text-slate-500"> Emojis </span>
-    </div>
+  <div class="text-sm text-slate-500 mt-5 mb-3">Emojis</div>
+  <div class="flex flex-wrap gap-3 justify-center">
     <div
       v-for="(emoji, i) in EMOJIS"
       :key="i"
-      class="col-span-4 bg-slate-700 rounded-md p-2 cursor-pointer hover:bg-slate-800 select-none grid-item flex justify-center"
+      class="bg-slate-700 rounded-md p-2 cursor-pointer hover:bg-slate-800 select-none grid-item flex justify-center"
       @click="dashboardStore.addObject(emoji)"
     >
       <img class="h-full" :src="`/emojis/${emoji}.png`" />
     </div>
   </div>
-  <div class="grid grid-cols-12 gap-3 py-5">
-    <div class="col-span-12 text-left">
-      <span class="text-sm text-slate-500"> Shapes </span>
-    </div>
+  <div class="text-sm text-slate-500 mt-5 mb-3">Shapes</div>
+  <div class="flex flex-wrap gap-3 pb-5">
     <div
       v-for="(shape, i) in SHAPES"
       :key="i"
-      class="col-span-4 bg-slate-700 rounded-md p-2 cursor-pointer hover:bg-slate-800 select-none flex justify-center items-center grid-item"
+      class="bg-slate-700 rounded-md p-2 cursor-pointer hover:bg-slate-800 select-none grid-item flex justify-center"
     >
-      <img :src="`/shapes/${shape}.svg`" />
+      <img class="h-full" :src="`/shapes/${shape}.svg`" />
     </div>
   </div>
 </template>
@@ -36,5 +32,6 @@ const dashboardStore = useDashboardStore();
 <style scoped>
 .grid-item {
   height: 50px;
+  width: 50px;
 }
 </style>
