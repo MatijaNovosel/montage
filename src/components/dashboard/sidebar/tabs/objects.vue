@@ -6,9 +6,9 @@
     <div
       v-for="(emoji, i) in EMOJIS"
       :key="i"
-      class="col-span-4 bg-slate-700 rounded-md p-2 cursor-pointer hover:bg-slate-800 select-none"
+      class="col-span-4 bg-slate-700 rounded-md p-2 cursor-pointer hover:bg-slate-800 select-none grid-item flex justify-center"
     >
-      <img :src="`/emojis/${emoji}.png`" />
+      <img class="h-full" :src="`/emojis/${emoji}.png`" />
     </div>
   </div>
   <div class="grid grid-cols-12 gap-3 py-5">
@@ -18,7 +18,7 @@
     <div
       v-for="(shape, i) in SHAPES"
       :key="i"
-      class="col-span-4 bg-slate-700 rounded-md p-2 cursor-pointer hover:bg-slate-800 select-none flex justify-center items-center"
+      class="col-span-4 bg-slate-700 rounded-md p-2 cursor-pointer hover:bg-slate-800 select-none flex justify-center items-center grid-item"
     >
       <img :src="`/shapes/${shape}.svg`" />
     </div>
@@ -28,3 +28,9 @@
 <script lang="ts" setup>
 import { EMOJIS, SHAPES } from "../../../../utils/constants";
 </script>
+
+<style scoped>
+.grid-item {
+  height: 50px;
+}
+</style>

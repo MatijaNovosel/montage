@@ -3,3 +3,8 @@ export interface TabItem {
   name: string;
   image: string;
 }
+
+export interface SelectItem<T> {
+  text: string;
+  value: T;
+}
