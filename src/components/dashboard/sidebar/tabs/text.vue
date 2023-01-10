@@ -1,3 +1,3 @@
 <template>
-  <h1>Text</h1>
+  <h1 class="py-5">Text</h1>
 </template>

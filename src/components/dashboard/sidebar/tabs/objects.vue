@@ -7,11 +7,11 @@
       class="bg-slate-700 rounded-md p-2 cursor-pointer hover:bg-slate-800 select-none grid-item flex justify-center"
       @click="dashboardStore.addObject(emoji)"
     >
-      <img class="h-full" :src="`/emojis/${emoji}.png`" />
+      <img class="h-full" :src="`/emojis/${emoji}.svg`" />
     </div>
   </div>
   <div class="text-sm text-slate-500 mt-5 mb-3">Shapes</div>
-  <div class="flex flex-wrap gap-3 pb-5">
+  <div class="flex flex-wrap gap-3 pb-5 justify-center">
     <div
       v-for="(shape, i) in SHAPES"
       :key="i"

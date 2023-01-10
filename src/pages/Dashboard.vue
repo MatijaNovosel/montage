@@ -76,19 +76,16 @@ watch([width, height], async (val) => {
 });
 
 watch(newObj, (val) => {
-  fabric.Image.fromURL(`/emojis/${val}.png`, (img) => {
-    img.set({
-      left: 50,
-      top: 50
-    });
-    fabricCanvas?.add(img);
+  fabric.loadSVGFromURL(`/emojis/${val?.name}.svg`, (objects, options) => {
+    const svgData = fabric.util.groupSVGElements(objects, options);
+    svgData.top = 30;
+    svgData.left = 50;
+    fabricCanvas?.add(svgData);
   });
 });
 
 onKeyDown("Delete", () => {
-  fabricCanvas?.getActiveObjects().forEach((obj) => {
-    fabricCanvas?.remove(obj);
-  });
+  fabricCanvas?.getActiveObjects().forEach((obj) => fabricCanvas?.remove(obj));
   fabricCanvas?.discardActiveObject().renderAll();
 });
 

@@ -2,9 +2,14 @@ import { defineStore } from "pinia";
 import { computed, defineAsyncComponent, ref } from "vue";
 import { TABS } from "../utils/constants";
 
+export interface NewObject {
+  type: string;
+  name: string;
+}
+
 export const useDashboardStore = defineStore("dashboard", () => {
   const activeTab = ref<number>(TABS.OBJECTS);
-  const newObj = ref<string | null>(null);
+  const newObj = ref<NewObject | null>(null);
 
   const activeTabComponent = computed(() => {
     switch (activeTab.value) {
@@ -44,7 +49,10 @@ export const useDashboardStore = defineStore("dashboard", () => {
   };
 
   const addObject = (object: string) => {
-    newObj.value = object;
+    newObj.value = {
+      type: "emoji",
+      name: object
+    };
   };
 
   return {

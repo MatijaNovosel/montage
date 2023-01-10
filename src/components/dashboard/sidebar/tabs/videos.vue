@@ -1,3 +1,3 @@
 <template>
-  <h1>Videos</h1>
+  <h1 class="py-5">Videos</h1>
 </template>
