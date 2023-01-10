@@ -9,12 +9,12 @@
     >
       <button
         @click="undo"
-        class="px-3 bg-slate-700 hover:bg-slate-600 rounded-md py-1 flex justify-center items-center undo-btn"
+        class="px-3 bg-slate-700 hover:bg-slate-600 rounded-md py-1 flex justify-center items-center undo-btn z-10"
       >
         <img class="mr-2" src="/undo.svg" /> Undo
       </button>
       <button
-        class="px-3 bg-slate-600 hover:bg-slate-500 rounded-md py-1 flex justify-center items-center redo-btn"
+        class="px-3 bg-slate-600 hover:bg-slate-500 rounded-md py-1 flex justify-center items-center redo-btn z-10"
       >
         <img style="transform: scaleX(-1)" class="mr-2" src="/undo.svg" />
         Redo
@@ -81,7 +81,10 @@ watch([width, height], async (val) => {
 
 watch(newObj, (val) => {
   fabric.Image.fromURL(`/emojis/${val}.png`, (img) => {
-    img.set({ left: 0, top: 0, width: 150, height: 150 });
+    img.set({
+      left: 50,
+      top: 50
+    });
     fabricCanvas?.add(img);
   });
 });
@@ -89,7 +92,8 @@ watch(newObj, (val) => {
 onMounted(() => {
   fabricCanvas = new fabric.Canvas(canvas.value, {
     width: width.value,
-    height: height.value
+    height: height.value,
+    backgroundColor: "#000000"
   });
   createToast("✅ App successfully started!", "#4BB543");
 });
