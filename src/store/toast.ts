@@ -20,10 +20,7 @@ export const useToastStore = defineStore("toast", () => {
     timeout = 4000,
     permanent = false
   ) => {
-    if (toasts.value.length + 1 > TOAST_LIMIT) {
-      return;
-    }
-
+    if (toasts.value.length + 1 > TOAST_LIMIT) return;
     const id = randInt(1, 9999);
 
     toasts.value.push({
@@ -36,22 +33,18 @@ export const useToastStore = defineStore("toast", () => {
     if (!permanent) {
       setTimeout(() => {
         const toastIdx = toasts.value.findIndex((t) => t.id === id);
-        if (toastIdx !== -1) {
-          toasts.value.splice(toastIdx, 1);
-        }
+        if (toastIdx !== -1) toasts.value.splice(toastIdx, 1);
       }, timeout);
     }
   };
 
-  const permanentToastExists = computed(
-    () => toasts.value.find((t) => t.permanent === true) !== undefined
+  const permanentToastExists = computed(() =>
+    toasts.value.some((t) => t.permanent === true)
   );
 
   const removePermanentToasts = () => {
     const toastIdx = toasts.value.findIndex((t) => t.permanent === true);
-    if (toastIdx !== -1) {
-      toasts.value.splice(toastIdx, 1);
-    }
+    if (toastIdx !== -1) toasts.value.splice(toastIdx, 1);
   };
 
   return {
