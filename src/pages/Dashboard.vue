@@ -48,13 +48,17 @@
 <script setup lang="ts">
 import { useElementSize } from "@vueuse/core";
 import { fabric } from "fabric";
+import { storeToRefs } from "pinia";
 import { nextTick, onMounted, ref, watch } from "vue";
 import Layout from "../components/dashboard/layout/layout.vue";
 import Sidebar from "../components/dashboard/sidebar/sidebar.vue";
+import { useDashboardStore } from "../store/dashboard";
 import { useToastStore } from "../store/toast";
 
+const dashboardStore = useDashboardStore();
 const { createToast } = useToastStore();
-createToast("✅ App successfully started!", "#4BB543");
+
+const { newObj } = storeToRefs(dashboardStore);
 
 const canvas = ref<HTMLCanvasElement | null>(null);
 const main = ref<HTMLElement | null>(null);
@@ -68,13 +72,17 @@ const undo = () => {
 
 watch([width, height], async (val) => {
   const [width, height] = val;
-  console.log({ width, height });
   await nextTick(() => {
-    if (fabricCanvas) {
-      fabricCanvas.setHeight(height);
-      fabricCanvas.setWidth(width);
-      fabricCanvas.renderAll();
-    }
+    fabricCanvas?.setHeight(height);
+    fabricCanvas?.setWidth(width);
+    fabricCanvas?.renderAll();
+  });
+});
+
+watch(newObj, (val) => {
+  fabric.Image.fromURL(`/emojis/${val}.png`, (img) => {
+    img.set({ left: 0, top: 0, width: 150, height: 150 });
+    fabricCanvas?.add(img);
   });
 });
 
@@ -83,13 +91,7 @@ onMounted(() => {
     width: width.value,
     height: height.value
   });
-  fabricCanvas.add(
-    new fabric.Rect({
-      fill: "red",
-      width: 20,
-      height: 20
-    })
-  );
+  createToast("✅ App successfully started!", "#4BB543");
 });
 </script>
 

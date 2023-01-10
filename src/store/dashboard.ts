@@ -4,6 +4,7 @@ import { TABS } from "../utils/constants";
 
 export const useDashboardStore = defineStore("dashboard", () => {
   const activeTab = ref<number>(TABS.OBJECTS);
+  const newObj = ref<string | null>(null);
 
   const activeTabComponent = computed(() => {
     switch (activeTab.value) {
@@ -42,9 +43,15 @@ export const useDashboardStore = defineStore("dashboard", () => {
     activeTab.value = tab;
   };
 
+  const addObject = (object: string) => {
+    newObj.value = object;
+  };
+
   return {
     activeTab,
     setActiveTab,
-    activeTabComponent
+    activeTabComponent,
+    addObject,
+    newObj
   };
 });

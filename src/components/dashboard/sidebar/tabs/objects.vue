@@ -7,6 +7,7 @@
       v-for="(emoji, i) in EMOJIS"
       :key="i"
       class="col-span-4 bg-slate-700 rounded-md p-2 cursor-pointer hover:bg-slate-800 select-none grid-item flex justify-center"
+      @click="dashboardStore.addObject(emoji)"
     >
       <img class="h-full" :src="`/emojis/${emoji}.png`" />
     </div>
@@ -26,7 +27,10 @@
 </template>
 
 <script lang="ts" setup>
+import { useDashboardStore } from "../../../../store/dashboard";
 import { EMOJIS, SHAPES } from "../../../../utils/constants";
+
+const dashboardStore = useDashboardStore();
 </script>
 
 <style scoped>
