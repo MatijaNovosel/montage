@@ -1,38 +1,46 @@
 <template>
-  <floating-vue-dropdown
-    ref="popoverRef"
-    :distance="5"
-    :triggers="['click']"
-    theme="dropdown-menu"
-    placement="bottom-start"
-    auto-hide
-    auto-size
-    :prevent-overflow="false"
-    auto-boundary-max-size
-    :flip="false"
-    @hide="onHide"
-  >
-    <button
-      class="px-3 py-1 bg-slate-800 rounded hover:bg-slate-700 transition duration-150 ease-in-out w-full text-left no-highlight text-sm"
+  <div class="flex w-full">
+    <floating-vue-dropdown
+      ref="popoverRef"
+      :distance="5"
+      :triggers="['click']"
+      theme="dropdown-menu"
+      placement="bottom-start"
+      auto-hide
+      auto-size
+      :prevent-overflow="false"
+      auto-boundary-max-size
+      :flip="false"
+      class="w-full"
+      @hide="onHide"
     >
-      <div class="flex flex-wrap" v-if="selectedItem !== null">
-        {{ selectedItem.text }}
-      </div>
-      <span v-else> {{ placeholder }} </span>
-    </button>
-    <template #popper>
-      <ul class="py-1 bg-slate-600 text-white rounded mx-3">
-        <li
-          v-for="option in options"
-          :key="option.value"
-          class="py-1 px-2 hover:bg-slate-700 cursor-pointer text-sm"
-          @click="selectItem(option)"
-        >
-          {{ option.text }}
-        </li>
-      </ul>
-    </template>
-  </floating-vue-dropdown>
+      <button
+        class="pl-3 py-1 bg-slate-800 rounded-l-lg hover:bg-slate-700 transition duration-150 ease-in-out w-full text-left no-highlight text-sm"
+      >
+        <div class="flex flex-wrap" v-if="selectedItem !== null">
+          {{ selectedItem.text }}
+        </div>
+        <span class="text-slate-400" v-else> {{ placeholder }} </span>
+      </button>
+      <template #popper>
+        <ul class="py-1 bg-slate-600 text-white rounded">
+          <li
+            v-for="option in options"
+            :key="option.value"
+            class="py-1 px-2 hover:bg-slate-700 cursor-pointer text-sm"
+            @click="selectItem(option)"
+          >
+            {{ option.text }}
+          </li>
+        </ul>
+      </template>
+    </floating-vue-dropdown>
+    <div
+      class="bg-slate-800 icon flex justify-center items-center rounded-r-lg px-3 hover:bg-slate-700 cursor-pointer"
+    >
+      <img height="30" width="30" src="/public/close.svg" @click="clear" />
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -53,9 +61,13 @@ const onHide = () => {
   (popoverRef.value as any).$refs.popper.$_targetNodes[0].focus();
 };
 
+const clear = () => {
+  selectItem(null);
+};
+
 const emit = defineEmits(["update:modelValue", "on-selected"]);
 
-const selectItem = (item: SelectItem<number>) => {
+const selectItem = (item: SelectItem<number> | null) => {
   selectedItem.value = item;
   (popoverRef.value as any).$refs.popper.hide();
   emit("update:modelValue", selectedItem.value);

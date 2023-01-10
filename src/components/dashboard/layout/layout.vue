@@ -3,9 +3,10 @@
     <span> Layout settings </span>
     <m-select
       class="mt-4 w-full px-3"
-      placeholder="Placeholder"
+      placeholder="Select"
       :options="options"
     />
+    <m-text-input dense class="mt-3 w-full px-3" placeholder="Text" />
     <color-picker class="mt-3" />
   </div>
 </template>
@@ -14,6 +15,7 @@
 import { SelectItem } from "../../../models/common";
 import colorPicker from "../../app/colorPicker.vue";
 import mSelect from "../../app/mSelect.vue";
+import mTextInput from "../../app/mTextInput.vue";
 
 const options: SelectItem<number>[] = [
   {
