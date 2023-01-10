@@ -7,7 +7,7 @@
       :options="options"
     />
     <m-text-input dense class="mt-3 w-full px-3" placeholder="Text" />
-    <color-picker class="mt-3" />
+    <color-picker class="mt-5" />
   </div>
 </template>
 

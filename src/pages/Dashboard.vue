@@ -1,7 +1,7 @@
 <template>
   <div
     class="w-full flex text-white"
-    style="height: calc(100% - var(--timeline-height))"
+    style="height: calc(100% - var(--timeline-height-full))"
   >
     <sidebar class="w-3/12" />
     <div
@@ -26,16 +26,29 @@
     <layout class="w-2/12" />
   </div>
   <div
-    class="flex justify-between items-center bg-slate-800 text-white px-5"
+    class="flex bg-slate-900 text-white px-5 border-y border-slate-700"
     style="height: var(--timeline-height)"
+  >
+    <div class="w-4/12 border-r border-slate-700 h-full p-5">
+      Keyframes & layers
+    </div>
+    <div class="w-8/12 h-full p-5">Draggable timeline</div>
+  </div>
+  <div
+    class="flex justify-between items-center bg-slate-800 text-white px-5"
+    style="height: var(--timeline-controls-height)"
   >
     <div>Range</div>
     <div class="flex">
+      <span class="mr-5"> 00:00:00 </span>
       <img class="cursor-pointer scale-x-n1" src="/timeline/ff.svg" />
       <img class="mx-5 cursor-pointer" src="/timeline/play.svg" />
       <img class="cursor-pointer" src="/timeline/ff.svg" />
     </div>
-    <button class="px-4 bg-indigo-400 hover:bg-indigo-300 rounded-md py-1">
+    <button
+      @click="save"
+      class="px-4 bg-indigo-400 hover:bg-indigo-300 rounded-md py-1"
+    >
       Save
     </button>
   </div>
@@ -64,6 +77,10 @@ const { width, height } = useElementSize(main);
 
 const undo = () => {
   createToast("🚨 Undo", "#f80000");
+};
+
+const save = () => {
+  createToast("💾 Saved", "#2171b3");
 };
 
 watch([width, height], async (val) => {

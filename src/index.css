@@ -11,7 +11,9 @@
   --input-color: #22233e;
   --accent-color: #166ef1;
   --button-hover: #262746;
-  --timeline-height: 60px;
+  --timeline-height: 180px;
+  --timeline-controls-height: 60px;
+  --timeline-height-full: 240px;
 }
 
 * {
