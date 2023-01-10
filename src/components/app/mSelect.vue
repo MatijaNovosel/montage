@@ -52,8 +52,14 @@ const popoverRef = ref(null);
 const selectedItem = ref<SelectItem<number> | null>(null);
 
 defineProps({
-  modelValue: Array as PropType<number[]>,
-  placeholder: String,
+  modelValue: {
+    type: Object as PropType<SelectItem<number> | null>,
+    default: null
+  },
+  placeholder: {
+    type: String,
+    default: "Placeholder"
+  },
   options: { type: Array as PropType<SelectItem<number>[]>, default: [] }
 });
 
