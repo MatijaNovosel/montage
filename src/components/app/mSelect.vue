@@ -38,7 +38,7 @@
     <div
       class="bg-slate-800 icon flex justify-center items-center rounded-r-lg px-3 hover:bg-slate-700 cursor-pointer"
     >
-      <img height="30" width="30" src="/public/close.svg" @click="clear" />
+      <img height="30" width="30" src="/close.svg" @click="clear" />
     </div>
   </div>
 </template>

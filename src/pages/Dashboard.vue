@@ -63,6 +63,7 @@ import Layout from "../components/dashboard/layout/layout.vue";
 import Sidebar from "../components/dashboard/sidebar/sidebar.vue";
 import { useDashboardStore } from "../store/dashboard";
 import { useToastStore } from "../store/toast";
+import { initializeFabric } from "../utils/fabric";
 
 const dashboardStore = useDashboardStore();
 const { createToast } = useToastStore();
@@ -95,9 +96,10 @@ watch([width, height], async (val) => {
 watch(newObj, (val) => {
   fabric.loadSVGFromURL(`/emojis/${val?.name}.svg`, (objects, options) => {
     const svgData = fabric.util.groupSVGElements(objects, options);
-    svgData.top = 30;
-    svgData.left = 50;
+    svgData.top = 100;
+    svgData.left = 100;
     fabricCanvas?.add(svgData);
+    fabricCanvas?.setActiveObject(svgData);
   });
 });
 
@@ -107,11 +109,11 @@ onKeyDown("Delete", () => {
 });
 
 onMounted(() => {
-  fabricCanvas = new fabric.Canvas(canvas.value, {
-    width: width.value,
-    height: height.value,
-    backgroundColor: "#000000"
-  });
+  fabricCanvas = initializeFabric(
+    canvas.value as HTMLCanvasElement,
+    width.value,
+    height.value
+  );
   createToast("✅ App successfully started!", "#4BB543");
 });
 </script>
