@@ -20,7 +20,6 @@ const i18n = createI18n({
 });
 
 const pinia = createPinia();
-
 const app = createApp(App);
 
 app.use(router);

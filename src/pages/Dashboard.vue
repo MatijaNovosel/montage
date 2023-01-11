@@ -38,7 +38,9 @@
     class="flex justify-between items-center bg-slate-800 text-white px-5"
     style="height: var(--timeline-controls-height)"
   >
-    <div>Range</div>
+    <div>
+      <slider v-model="timelineScale" />
+    </div>
     <div class="flex">
       <span class="mr-5"> 00:00:00 </span>
       <img class="cursor-pointer scale-x-n1" src="/timeline/ff.svg" />
@@ -59,6 +61,7 @@ import { onKeyDown, useElementSize } from "@vueuse/core";
 import { fabric } from "fabric";
 import { storeToRefs } from "pinia";
 import { nextTick, onMounted, ref, watch } from "vue";
+import Slider from "../components/app/slider.vue";
 import Layout from "../components/dashboard/layout/layout.vue";
 import Sidebar from "../components/dashboard/sidebar/sidebar.vue";
 import { useDashboardStore } from "../store/dashboard";
@@ -70,9 +73,15 @@ const { createToast } = useToastStore();
 
 const { newObj } = storeToRefs(dashboardStore);
 
+const ARTBOARD_WIDTH = 800;
+const ARTBOARD_HEIGHT = 450;
+
 const canvas = ref<HTMLCanvasElement | null>(null);
 const main = ref<HTMLElement | null>(null);
+const timelineScale = ref(0);
+
 let fabricCanvas: fabric.Canvas | null = null;
+let artBoard: fabric.Rect | null = null;
 
 const { width, height } = useElementSize(main);
 
@@ -89,6 +98,12 @@ watch([width, height], async (val) => {
   await nextTick(() => {
     fabricCanvas?.setHeight(height);
     fabricCanvas?.setWidth(width);
+
+    if (artBoard) {
+      artBoard.left = width / 2 - ARTBOARD_WIDTH / 2;
+      artBoard.top = height / 2 - ARTBOARD_HEIGHT / 2;
+    }
+
     fabricCanvas?.renderAll();
   });
 });
@@ -108,12 +123,32 @@ onKeyDown("Delete", () => {
   fabricCanvas?.discardActiveObject().renderAll();
 });
 
-onMounted(() => {
+onMounted(async () => {
   fabricCanvas = initializeFabric(
     canvas.value as HTMLCanvasElement,
     width.value,
     height.value
   );
+
+  artBoard = new fabric.Rect({
+    left: width.value / 2 - ARTBOARD_WIDTH / 2,
+    top: height.value / 2 - ARTBOARD_HEIGHT / 2,
+    width: ARTBOARD_WIDTH,
+    height: ARTBOARD_HEIGHT,
+    absolutePositioned: true,
+    rx: 0,
+    ry: 0,
+    fill: "#FFF",
+    hasControls: true,
+    transparentCorners: false,
+    borderColor: "#0E98FC",
+    cornerColor: "#0E98FC"
+  });
+
+  fabricCanvas.renderAll();
+  fabricCanvas.clipPath = artBoard;
+  fabricCanvas.renderAll();
+
   createToast("✅ App successfully started!", "#4BB543");
 });
 </script>
