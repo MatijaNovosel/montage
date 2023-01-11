@@ -29,12 +29,24 @@
       :options="options"
     />
     <m-text-input dense class="mt-3 w-full px-3" placeholder="Text" />
-    <color-picker class="mt-5" />
+    <color-picker v-model="color" class="mt-5" />
   </div>
 </template>
 
 <script lang="ts" setup>
+import { storeToRefs } from "pinia";
+import { ref, watch } from "vue";
 import { SelectItem } from "../../../models/common";
+import { useDashboardStore } from "../../../store/dashboard";
+
+const dashboardStore = useDashboardStore();
+const { artboardColor } = storeToRefs(dashboardStore);
+
+const color = ref(artboardColor.value);
+
+watch(color, (val) => {
+  dashboardStore.setArtboardColor(val);
+});
 
 const options: SelectItem<number>[] = [
   {

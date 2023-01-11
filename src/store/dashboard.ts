@@ -10,6 +10,7 @@ export interface NewObject {
 export const useDashboardStore = defineStore("dashboard", () => {
   const activeTab = ref<number>(TABS.OBJECTS);
   const newObj = ref<NewObject | null>(null);
+  const artboardColor = ref("#000000");
 
   const activeTabComponent = computed(() => {
     switch (activeTab.value) {
@@ -55,11 +56,17 @@ export const useDashboardStore = defineStore("dashboard", () => {
     };
   };
 
+  const setArtboardColor = (color: string) => {
+    artboardColor.value = color;
+  };
+
   return {
     activeTab,
     setActiveTab,
     activeTabComponent,
     addObject,
-    newObj
+    newObj,
+    setArtboardColor,
+    artboardColor
   };
 });

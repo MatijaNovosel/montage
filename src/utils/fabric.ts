@@ -228,12 +228,13 @@ const drawControls = () => {
 export const initializeFabric = (
   canvas: HTMLCanvasElement,
   width: number,
-  height: number
+  height: number,
+  backgroundColor: string
 ) => {
   const fCanvas = new fabric.Canvas(canvas, {
     width,
     height,
-    backgroundColor: "#000000",
+    backgroundColor,
     preserveObjectStacking: true,
     stateful: true,
     selection: false,

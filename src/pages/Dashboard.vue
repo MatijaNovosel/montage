@@ -70,7 +70,7 @@ import { initializeFabric } from "../utils/fabric";
 const dashboardStore = useDashboardStore();
 const { createToast } = useToastStore();
 
-const { newObj } = storeToRefs(dashboardStore);
+const { newObj, artboardColor } = storeToRefs(dashboardStore);
 
 const ARTBOARD_WIDTH = 800;
 const ARTBOARD_HEIGHT = 450;
@@ -128,6 +128,13 @@ watch([width, height], async (val) => {
   });
 });
 
+watch(artboardColor, (val) => {
+  if (fabricCanvas) {
+    fabricCanvas.setBackgroundColor(val, () => {});
+    fabricCanvas.renderAll();
+  }
+});
+
 watch(newObj, (val) => {
   fabric.loadSVGFromURL(`/emojis/${val?.name}.svg`, (objects, options) => {
     const svgData = fabric.util.groupSVGElements(objects, options);
@@ -147,7 +154,8 @@ onMounted(async () => {
   fabricCanvas = initializeFabric(
     canvas.value as HTMLCanvasElement,
     width.value,
-    height.value
+    height.value,
+    artboardColor.value
   );
 
   artBoard = new fabric.Rect({
@@ -158,7 +166,6 @@ onMounted(async () => {
     absolutePositioned: true,
     rx: 0,
     ry: 0,
-    fill: "#FFF",
     hasControls: true,
     transparentCorners: false,
     borderColor: "#0E98FC",

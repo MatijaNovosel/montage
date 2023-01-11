@@ -4,7 +4,15 @@
 
 <script lang="ts" setup>
 import { ref, watch } from "vue";
-const color = ref<string>("#ffffff");
+
+const props = defineProps({
+  modelValue: {
+    type: String,
+    required: true
+  }
+});
+
+const color = ref<string>(props.modelValue);
 
 const emit = defineEmits(["update:modelValue"]);
 
