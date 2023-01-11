@@ -5,7 +5,7 @@
       :distance="5"
       :triggers="['click']"
       theme="dropdown-menu"
-      placement="bottom-start"
+      :placement="placement"
       auto-hide
       auto-size
       :prevent-overflow="false"
@@ -48,10 +48,7 @@ import { Dropdown as FloatingVueDropdown } from "floating-vue";
 import { PropType, ref } from "vue";
 import { SelectItem } from "../../models/common";
 
-const popoverRef = ref(null);
-const selectedItem = ref<SelectItem<number> | null>(null);
-
-defineProps({
+const props = defineProps({
   modelValue: {
     type: Object as PropType<SelectItem<number> | null>,
     default: null
@@ -60,8 +57,15 @@ defineProps({
     type: String,
     default: "Placeholder"
   },
+  placement: {
+    type: String,
+    default: "bottom-start"
+  },
   options: { type: Array as PropType<SelectItem<number>[]>, default: [] }
 });
+
+const popoverRef = ref(null);
+const selectedItem = ref<SelectItem<number> | null>(props.modelValue);
 
 const onHide = () => {
   (popoverRef.value as any).$refs.popper.$_targetNodes[0].focus();

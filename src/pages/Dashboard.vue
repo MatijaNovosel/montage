@@ -38,21 +38,29 @@
     class="flex justify-between items-center bg-slate-800 text-white px-5"
     style="height: var(--timeline-controls-height)"
   >
-    <div>
-      <slider v-model="timelineScale" />
+    <div class="flex justify-center items-center w-4/12">
+      <slider class="mr-3" v-model="timelineScale" />
+      <m-select
+        placement="top-start"
+        placeholder="Speed"
+        :options="timeOptions"
+        v-model="playbackSpeed"
+      />
     </div>
-    <div class="flex">
+    <div class="flex w-4/12">
       <span class="mr-5"> 00:00:00 </span>
       <img class="cursor-pointer scale-x-n1" src="/timeline/ff.svg" />
       <img class="mx-5 cursor-pointer" src="/timeline/play.svg" />
       <img class="cursor-pointer" src="/timeline/ff.svg" />
     </div>
-    <button
-      @click="save"
-      class="px-4 bg-indigo-400 hover:bg-indigo-300 rounded-md py-1"
-    >
-      Save
-    </button>
+    <div>
+      <button
+        @click="save"
+        class="px-4 bg-indigo-400 hover:bg-indigo-300 rounded-md py-1"
+      >
+        Save
+      </button>
+    </div>
   </div>
 </template>
 
@@ -61,9 +69,9 @@ import { onKeyDown, useElementSize } from "@vueuse/core";
 import { fabric } from "fabric";
 import { storeToRefs } from "pinia";
 import { nextTick, onMounted, ref, watch } from "vue";
-import Slider from "../components/app/slider.vue";
 import Layout from "../components/dashboard/layout/layout.vue";
 import Sidebar from "../components/dashboard/sidebar/sidebar.vue";
+import { SelectItem } from "../models/common";
 import { useDashboardStore } from "../store/dashboard";
 import { useToastStore } from "../store/toast";
 import { initializeFabric } from "../utils/fabric";
@@ -75,6 +83,27 @@ const { newObj } = storeToRefs(dashboardStore);
 
 const ARTBOARD_WIDTH = 800;
 const ARTBOARD_HEIGHT = 450;
+
+const timeOptions: SelectItem<number>[] = [
+  {
+    text: "0.5x",
+    value: 1
+  },
+  {
+    text: "1x",
+    value: 2
+  },
+  {
+    text: "1.5x",
+    value: 3
+  },
+  {
+    text: "2x",
+    value: 4
+  }
+];
+
+const playbackSpeed = ref<SelectItem<number> | null>(timeOptions[1]);
 
 const canvas = ref<HTMLCanvasElement | null>(null);
 const main = ref<HTMLElement | null>(null);

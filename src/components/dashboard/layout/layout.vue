@@ -13,9 +13,6 @@
 
 <script lang="ts" setup>
 import { SelectItem } from "../../../models/common";
-import colorPicker from "../../app/colorPicker.vue";
-import mSelect from "../../app/mSelect.vue";
-import mTextInput from "../../app/mTextInput.vue";
 
 const options: SelectItem<number>[] = [
   {
