@@ -41,6 +41,7 @@
     <div class="flex justify-center items-center w-4/12">
       <slider class="mr-3" v-model="timelineScale" />
       <m-select
+        background-color="slate-900"
         placement="top-start"
         placeholder="Speed"
         :options="timeOptions"

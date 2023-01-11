@@ -15,7 +15,10 @@
       @hide="onHide"
     >
       <button
-        class="pl-3 py-1 bg-slate-800 rounded-l-lg hover:bg-slate-700 transition duration-150 ease-in-out w-full text-left no-highlight text-sm"
+        class="pl-3 py-1 rounded-l-lg hover:bg-slate-700 transition duration-150 ease-in-out w-full text-left no-highlight text-sm"
+        :class="{
+          [`bg-${backgroundColor}`]: true
+        }"
       >
         <div class="flex flex-wrap" v-if="selectedItem !== null">
           {{ selectedItem.text }}
@@ -36,7 +39,7 @@
       </template>
     </floating-vue-dropdown>
     <div
-      class="bg-slate-800 icon flex justify-center items-center rounded-r-lg px-3 hover:bg-slate-700 cursor-pointer"
+      class="bg-slate-700 icon flex justify-center items-center rounded-r-lg px-3 hover:bg-slate-600 cursor-pointer"
     >
       <img height="30" width="30" src="/close.svg" @click="clear" />
     </div>
@@ -60,6 +63,10 @@ const props = defineProps({
   placement: {
     type: String,
     default: "bottom-start"
+  },
+  backgroundColor: {
+    type: String,
+    default: "slate-800"
   },
   options: { type: Array as PropType<SelectItem<number>[]>, default: [] }
 });
