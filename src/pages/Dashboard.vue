@@ -7,18 +7,13 @@
     <div
       class="main w-7/12 h-full flex flex-col justify-center items-center relative"
     >
-      <button
-        @click="undo"
-        class="px-3 bg-slate-700 hover:bg-slate-600 rounded-md py-1 flex justify-center items-center undo-btn z-10"
-      >
+      <btn @click="undo" background-color="slate-700" class="undo-btn">
         <img class="mr-2" src="/undo.svg" /> Undo
-      </button>
-      <button
-        class="px-3 bg-slate-600 hover:bg-slate-500 rounded-md py-1 flex justify-center items-center redo-btn z-10"
-      >
+      </btn>
+      <btn class="redo-btn">
         <img class="mr-2 scale-x-n1" src="/undo.svg" />
         Redo
-      </button>
+      </btn>
       <main ref="main" class="h-full w-full">
         <canvas class="block" ref="canvas" />
       </main>
@@ -26,7 +21,7 @@
     <layout class="w-2/12" />
   </div>
   <div
-    class="flex bg-slate-900 text-white px-5 border-y border-slate-700"
+    class="flex bg-slate-900 text-white border-y border-slate-700"
     style="height: var(--timeline-height)"
   >
     <div class="w-4/12 border-r border-slate-700 h-full p-5">
@@ -48,19 +43,14 @@
         v-model="playbackSpeed"
       />
     </div>
-    <div class="flex w-4/12">
+    <div class="flex justify-center items-center w-4/12">
       <span class="mr-5"> 00:00:00 </span>
       <img class="cursor-pointer scale-x-n1" src="/timeline/ff.svg" />
       <img class="mx-5 cursor-pointer" src="/timeline/play.svg" />
       <img class="cursor-pointer" src="/timeline/ff.svg" />
     </div>
-    <div>
-      <button
-        @click="save"
-        class="px-4 bg-indigo-400 hover:bg-indigo-300 rounded-md py-1"
-      >
-        Save
-      </button>
+    <div class="flex justify-end items-center w-4/12">
+      <btn @click="save" background-color="indigo-400"> Save </btn>
     </div>
   </div>
 </template>
@@ -188,11 +178,13 @@ onMounted(async () => {
   position: absolute;
   top: 15px;
   left: 15px;
+  z-index: 10;
 }
 
 .redo-btn {
   position: absolute;
   top: 15px;
   left: 110px;
+  z-index: 10;
 }
 </style>

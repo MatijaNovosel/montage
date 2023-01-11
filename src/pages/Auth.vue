@@ -22,13 +22,12 @@
         <custom-button text="Sign in" />
       </div>
       <RouterLink :to="{ name: ROUTE_NAMES.DASHBOARD }">
-        <custom-button class="mt-5" text="Go to Dashboard" />
+        <button class="mt-5" text="Go to Dashboard" />
       </RouterLink>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import CustomButton from "../components/CustomButton.vue";
 import ROUTE_NAMES from "../router/routeNames";
 </script>

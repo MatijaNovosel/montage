@@ -14,6 +14,8 @@ import router from "./router";
 import "floating-vue/dist/style.css";
 import "./index.css";
 
+import btn from "./components/app/btn.vue";
+
 const i18n = createI18n({
   locale: "en",
   fallbackLocale: "en",
@@ -43,5 +45,6 @@ app.component("m-select", mSelect);
 app.component("m-text-input", mTextInput);
 app.component("slider", slider);
 app.component("color-picker", colorPicker);
+app.component("btn", btn);
 
 app.mount("#app");
