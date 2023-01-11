@@ -239,8 +239,8 @@ export const initializeFabric = (
     stateful: true,
     selection: false,
     controlsAboveOverlay: true,
-    selectionColor: "rgba(46, 115, 252, 0.11)",
-    selectionBorderColor: "rgba(98, 155, 255, 0.81)",
+    selectionColor: "#2e73fc10",
+    selectionBorderColor: "#629bff80",
     selectionLineWidth: 1.5
   });
 

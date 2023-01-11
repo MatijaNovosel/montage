@@ -33,7 +33,7 @@
     class="flex justify-between items-center bg-slate-800 text-white px-5"
     style="height: var(--timeline-controls-height)"
   >
-    <div class="flex justify-center items-center w-4/12">
+    <div class="flex justify-center items-center w-3/12">
       <slider class="mr-3" v-model="timelineScale" />
       <m-select
         background-color="slate-900"
@@ -43,13 +43,13 @@
         v-model="playbackSpeed"
       />
     </div>
-    <div class="flex justify-center items-center w-4/12">
+    <div class="flex justify-center items-center w-6/12">
       <span class="mr-5"> 00:00:00 </span>
       <img class="cursor-pointer scale-x-n1" src="/timeline/ff.svg" />
       <img class="mx-5 cursor-pointer" src="/timeline/play.svg" />
       <img class="cursor-pointer" src="/timeline/ff.svg" />
     </div>
-    <div class="flex justify-end items-center w-4/12">
+    <div class="flex justify-end items-center w-3/12">
       <btn @click="save" background-color="indigo-400"> Save </btn>
     </div>
   </div>
@@ -129,10 +129,8 @@ watch([width, height], async (val) => {
 });
 
 watch(artboardColor, (val) => {
-  if (fabricCanvas) {
-    fabricCanvas.setBackgroundColor(val, () => {});
-    fabricCanvas.renderAll();
-  }
+  fabricCanvas?.setBackgroundColor(val, () => {});
+  fabricCanvas?.renderAll();
 });
 
 watch(newObj, (val) => {
