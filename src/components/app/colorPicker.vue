@@ -1,5 +1,12 @@
 <template>
-  <input v-model="color" type="color" id="head" name="head" />
+  <div class="bg-slate-900 w-full flex justify-center items-center">
+    <input v-model="color" type="color" id="head" name="head" />
+    <div
+      class="px-3 h-full bg-slate-800 rounded-r-md flex justify-center items-center"
+    >
+      {{ color.toUpperCase() }}
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>

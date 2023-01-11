@@ -70,10 +70,8 @@ import { initializeFabric } from "../utils/fabric";
 const dashboardStore = useDashboardStore();
 const { createToast } = useToastStore();
 
-const { newObj, artboardColor } = storeToRefs(dashboardStore);
-
-const ARTBOARD_WIDTH = 800;
-const ARTBOARD_HEIGHT = 450;
+const { newObj, artboardColor, artboardHeight, artboardWidth } =
+  storeToRefs(dashboardStore);
 
 const timeOptions: SelectItem<number>[] = [
   {
@@ -120,8 +118,8 @@ watch([width, height], async (val) => {
     fabricCanvas?.setWidth(width);
 
     if (artBoard) {
-      artBoard.left = width / 2 - ARTBOARD_WIDTH / 2;
-      artBoard.top = height / 2 - ARTBOARD_HEIGHT / 2;
+      artBoard.left = width / 2 - parseInt(artboardWidth.value) / 2;
+      artBoard.top = height / 2 - parseInt(artboardHeight.value) / 2;
     }
 
     fabricCanvas?.renderAll();
@@ -133,11 +131,21 @@ watch(artboardColor, (val) => {
   fabricCanvas?.renderAll();
 });
 
+watch([artboardHeight, artboardWidth], ([heightA, widthA]) => {
+  if (artBoard) {
+    artBoard.width = parseInt(widthA);
+    artBoard.height = parseInt(heightA);
+    artBoard.left = width.value / 2 - parseInt(widthA) / 2;
+    artBoard.top = height.value / 2 - parseInt(heightA) / 2;
+    fabricCanvas?.renderAll();
+  }
+});
+
 watch(newObj, (val) => {
   fabric.loadSVGFromURL(`/emojis/${val?.name}.svg`, (objects, options) => {
     const svgData = fabric.util.groupSVGElements(objects, options);
-    svgData.top = 100;
-    svgData.left = 100;
+    svgData.top = height.value / 2;
+    svgData.left = width.value / 2;
     fabricCanvas?.add(svgData);
     fabricCanvas?.setActiveObject(svgData);
   });
@@ -157,10 +165,10 @@ onMounted(async () => {
   );
 
   artBoard = new fabric.Rect({
-    left: width.value / 2 - ARTBOARD_WIDTH / 2,
-    top: height.value / 2 - ARTBOARD_HEIGHT / 2,
-    width: ARTBOARD_WIDTH,
-    height: ARTBOARD_HEIGHT,
+    left: width.value / 2 - parseInt(artboardWidth.value) / 2,
+    top: height.value / 2 - parseInt(artboardHeight.value) / 2,
+    width: parseInt(artboardWidth.value),
+    height: parseInt(artboardHeight.value),
     absolutePositioned: true,
     rx: 0,
     ry: 0,
