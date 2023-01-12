@@ -146,13 +146,11 @@ watch(artboardColor, (val) => {
 });
 
 watch([artboardHeight, artboardWidth], ([heightA, widthA]) => {
-  if (artBoard) {
-    artBoard.width = parseInt(widthA);
-    artBoard.height = parseInt(heightA);
-    artBoard.left = width.value / 2 - parseInt(widthA) / 2;
-    artBoard.top = height.value / 2 - parseInt(heightA) / 2;
-    fabricCanvas?.renderAll();
-  }
+  artBoard!.width = parseInt(widthA);
+  artBoard!.height = parseInt(heightA);
+  artBoard!.left = width.value / 2 - parseInt(widthA) / 2;
+  artBoard!.top = height.value / 2 - parseInt(heightA) / 2;
+  fabricCanvas?.renderAll();
 });
 
 watch(newObj, (val) => {
@@ -167,127 +165,121 @@ watch(newObj, (val) => {
 
 const getObjectById = (id: string) => {
   let object = null;
-
-  if (fabricCanvas) {
-    const allObjects = fabricCanvas.getObjects();
-    for (let i = 0; i < fabricCanvas.size(); i++) {
-      if (allObjects[i].get("type") == "group") {
-        //@ts-ignore
-        if (allObjects[i].get("id") && allObjects[i].get("id") === id) {
-          object = allObjects[i];
-          break;
-        }
-        const wip = i;
-        //@ts-ignore
-        for (let o = 0; o < allObjects[i]._objects.length; o++) {
-          if (
-            //@ts-ignore
-            allObjects[wip]._objects[o].id &&
-            //@ts-ignore
-            allObjects[wip]._objects[o].id === id
-          ) {
-            //@ts-ignore
-            object = allObjects[wip]._objects[o];
-            break;
-          }
-        }
-        //@ts-ignore
-      } else if (allObjects[i].id && allObjects[i].id === id) {
+  const allObjects = fabricCanvas!.getObjects();
+  for (let i = 0; i < fabricCanvas!.size(); i++) {
+    if (allObjects[i].get("type") == "group") {
+      //@ts-ignore
+      if (allObjects[i].get("id") && allObjects[i].get("id") === id) {
         object = allObjects[i];
         break;
       }
+      const wip = i;
+      //@ts-ignore
+      for (let o = 0; o < allObjects[i]._objects.length; o++) {
+        if (
+          //@ts-ignore
+          allObjects[wip]._objects[o].id &&
+          //@ts-ignore
+          allObjects[wip]._objects[o].id === id
+        ) {
+          //@ts-ignore
+          object = allObjects[wip]._objects[o];
+          break;
+        }
+      }
+      //@ts-ignore
+    } else if (allObjects[i].id && allObjects[i].id === id) {
+      object = allObjects[i];
+      break;
     }
   }
-
   return object;
 };
 
 const initLines = () => {
-  if (fabricCanvas && artBoard) {
-    if (getObjectById("centerH")) {
-      fabricCanvas.remove(getObjectById("centerH"));
-      fabricCanvas.remove(getObjectById("centerV"));
-    }
-
-    if (getObjectById("lineH")) {
-      fabricCanvas.remove(getObjectById("lineH"));
-      fabricCanvas.remove(getObjectById("lineV"));
-    }
-
-    fabricCanvas.add(
-      new fabric.Line(
-        [
-          fabricCanvas.getWidth() / 2,
-          0,
-          fabricCanvas.getWidth() / 2,
-          fabricCanvas.getHeight()
-        ],
-        {
-          opacity: 0,
-          selectable: false,
-          evented: false,
-          //@ts-ignore
-          id: "centerH"
-        }
-      )
-    );
-
-    fabricCanvas.add(
-      new fabric.Line(
-        [
-          0,
-          fabricCanvas.getHeight() / 2,
-          fabricCanvas.getWidth(),
-          fabricCanvas.getHeight() / 2
-        ],
-        {
-          opacity: 0,
-          selectable: false,
-          evented: false,
-          //@ts-ignore
-          id: "centerV"
-        }
-      )
-    );
-
-    // Canvas alignemnt guides
-    lineH = new fabric.Line(
-      [
-        fabricCanvas.getWidth() / 2,
-        artBoard.top as number,
-        fabricCanvas.getWidth() / 2,
-        parseInt(artboardHeight.value) + (artBoard.top as number)
-      ],
-      {
-        stroke: "red",
-        opacity: 0,
-        selectable: false,
-        evented: false,
-        //@ts-ignore
-        id: "lineH"
-      }
-    );
-
-    lineV = new fabric.Line(
-      [
-        artBoard.left as number,
-        fabricCanvas.getHeight() / 2,
-        parseInt(artboardWidth.value) + (artBoard.left as number),
-        fabricCanvas.getHeight() / 2
-      ],
-      {
-        stroke: "red",
-        opacity: 0,
-        selectable: false,
-        evented: false,
-        //@ts-ignore
-        id: "lineV"
-      }
-    );
-
-    fabricCanvas.add(lineH);
-    fabricCanvas.add(lineV);
+  if (getObjectById("centerH")) {
+    fabricCanvas!.remove(getObjectById("centerH"));
+    fabricCanvas!.remove(getObjectById("centerV"));
   }
+
+  if (getObjectById("lineH")) {
+    fabricCanvas!.remove(getObjectById("lineH"));
+    fabricCanvas!.remove(getObjectById("lineV"));
+  }
+
+  fabricCanvas!.add(
+    new fabric.Line(
+      [
+        fabricCanvas!.getWidth() / 2,
+        0,
+        fabricCanvas!.getWidth() / 2,
+        fabricCanvas!.getHeight()
+      ],
+      {
+        opacity: 0,
+        selectable: false,
+        evented: false,
+        //@ts-ignore
+        id: "centerH"
+      }
+    )
+  );
+
+  fabricCanvas!.add(
+    new fabric.Line(
+      [
+        0,
+        fabricCanvas!.getHeight() / 2,
+        fabricCanvas!.getWidth(),
+        fabricCanvas!.getHeight() / 2
+      ],
+      {
+        opacity: 0,
+        selectable: false,
+        evented: false,
+        //@ts-ignore
+        id: "centerV"
+      }
+    )
+  );
+
+  // Canvas alignemnt guides
+  lineH = new fabric.Line(
+    [
+      fabricCanvas!.getWidth() / 2,
+      artBoard!.top as number,
+      fabricCanvas!.getWidth() / 2,
+      parseInt(artboardHeight.value) + (artBoard!.top as number)
+    ],
+    {
+      stroke: "red",
+      opacity: 0,
+      selectable: false,
+      evented: false,
+      //@ts-ignore
+      id: "lineH"
+    }
+  );
+
+  lineV = new fabric.Line(
+    [
+      artBoard!.left as number,
+      fabricCanvas!.getHeight() / 2,
+      parseInt(artboardWidth.value) + (artBoard!.left as number),
+      fabricCanvas!.getHeight() / 2
+    ],
+    {
+      stroke: "red",
+      opacity: 0,
+      selectable: false,
+      evented: false,
+      //@ts-ignore
+      id: "lineV"
+    }
+  );
+
+  fabricCanvas!.add(lineH);
+  fabricCanvas!.add(lineV);
 };
 
 const checkHSnap = (
@@ -297,11 +289,11 @@ const checkHSnap = (
   e: fabric.IEvent<MouseEvent>,
   type: number
 ) => {
-  if (a > b - snapZone && a < b + snapZone && lineH && lineV) {
+  if (a > b - snapZone && a < b + snapZone) {
     const width = e.target?.get("height") as number;
     const scaleX = e.target?.get("scaleX") as number;
-    lineH.opacity = 1;
-    lineH.bringToFront();
+    lineH!.opacity = 1;
+    lineH!.bringToFront();
     let value = b;
     if (type == 1) {
       value = b;
@@ -315,7 +307,7 @@ const checkHSnap = (
         left: value
       })
       .setCoords();
-    lineH
+    lineH!
       .set({
         x1: b,
         y1: artBoard?.top,
@@ -334,11 +326,11 @@ const checkVSnap = (
   e: fabric.IEvent<MouseEvent>,
   type: number
 ) => {
-  if (a > b - snapZone && a < b + snapZone && lineH && lineV) {
+  if (a > b - snapZone && a < b + snapZone) {
     const height = e.target?.get("height") as number;
     const scaleY = e.target?.get("scaleY") as number;
-    lineV.opacity = 1;
-    lineV.bringToFront();
+    lineV!.opacity = 1;
+    lineV!.bringToFront();
     let value = b;
     if (type == 1) {
       value = b;
@@ -352,7 +344,7 @@ const checkVSnap = (
         top: value
       })
       .setCoords();
-    lineV
+    lineV!
       .set({
         y1: b,
         x1: artBoard?.left,
@@ -365,68 +357,65 @@ const checkVSnap = (
 };
 
 const centerLines = (e: fabric.IEvent<MouseEvent>) => {
-  if (fabricCanvas && lineH && lineV) {
-    lineH.opacity = 0;
-    lineV.opacity = 0;
+  lineH!.opacity = 0;
+  lineV!.opacity = 0;
+  fabricCanvas!.renderAll();
 
-    fabricCanvas.renderAll();
+  const snapZone = 5;
+  const targetLeft = e.target?.left as number;
+  const targetTop = e.target?.top as number;
+  const targetWidth =
+    (e.target?.get("width") as number) * (e.target?.get("scaleX") as number);
+  const targetHeight =
+    (e.target?.get("height") as number) * (e.target?.get("scaleY") as number);
 
-    const snapZone = 5;
-    const objLeft = e.target?.left as number;
-    const objTop = e.target?.top as number;
+  fabricCanvas!.forEachObject((obj) => {
+    if (obj != e.target && obj != lineH && obj != lineV) {
+      const left = obj.get("left") as number;
+      const top = obj.get("top") as number;
+      const width = obj.get("width") as number;
+      const height = obj.get("height") as number;
+      const scaleX = obj.get("scaleX") as number;
+      const scaleY = obj.get("scaleY") as number;
 
-    const objWidth =
-      (e.target?.get("width") as number) * (e.target?.get("scaleX") as number);
+      //@ts-ignore
+      if (obj.get("id") == "centerH" || obj.get("id") == "centerV") {
+        checkHSnap(targetLeft, left, snapZone, e, 1);
+        checkVSnap(targetTop, top, snapZone, e, 1);
+      } else {
+        const check1 = [
+          [targetLeft, left, 1],
+          [targetLeft, left + (width * scaleX) / 2, 1],
+          [targetLeft, left - (width * scaleX) / 2, 1],
+          [targetLeft + targetWidth / 2, left, 2],
+          [targetLeft + targetWidth / 2, left + (width * scaleX) / 2, 2],
+          [targetLeft + targetWidth / 2, left - (width * scaleX) / 2, 2],
+          [targetLeft - targetWidth / 2, left, 3],
+          [targetLeft - targetWidth / 2, left + (width * scaleX) / 2, 3],
+          [targetLeft - targetWidth / 2, left - (width * scaleX) / 2, 3]
+        ];
 
-    const objHeight =
-      (e.target?.get("height") as number) * (e.target?.get("scaleY") as number);
+        const check2 = [
+          [targetTop, top, 1],
+          [targetTop, top + (height * scaleY) / 2, 1],
+          [targetTop, top - (height * scaleY) / 2, 1],
+          [targetTop + targetHeight / 2, top, 2],
+          [targetTop + targetHeight / 2, top + (height * scaleY) / 2, 2],
+          [targetTop + targetHeight / 2, top - (height * scaleY) / 2, 2],
+          [targetTop - targetHeight / 2, top, 3],
+          [targetTop - targetHeight / 2, top + (height * scaleY) / 2, 3],
+          [targetTop - targetHeight / 2, top - (height * scaleY) / 2, 3]
+        ];
 
-    fabricCanvas.forEachObject((obj) => {
-      if (obj != e.target && obj != lineH && obj != lineV) {
-        const left = obj.get("left") as number;
-        const top = obj.get("top") as number;
-        const width = obj.get("width") as number;
-        const height = obj.get("height") as number;
-        const scaleX = obj.get("scaleX") as number;
-        const scaleY = obj.get("scaleY") as number;
-
-        //@ts-ignore
-        if (obj.get("id") == "centerH" || obj.get("id") == "centerV") {
-          checkHSnap(objLeft, left, snapZone, e, 1);
-          checkVSnap(objTop, top, snapZone, e, 1);
-        } else {
-          const check1 = [
-            [objLeft, left, 1],
-            [objLeft, left + (width * scaleX) / 2, 1],
-            [objLeft, left - (width * scaleX) / 2, 1],
-            [objLeft + objWidth / 2, left, 2],
-            [objLeft + objWidth / 2, left + (width * scaleX) / 2, 2],
-            [objLeft + objWidth / 2, left - (width * scaleX) / 2, 2],
-            [objLeft - objWidth / 2, left, 3],
-            [objLeft - objWidth / 2, left + (width * scaleX) / 2, 3],
-            [objLeft - objWidth / 2, left - (width * scaleX) / 2, 3]
-          ];
-
-          const check2 = [
-            [objTop, top, 1],
-            [objTop, top + (height * scaleY) / 2, 1],
-            [objTop, top - (height * scaleY) / 2, 1],
-            [objTop + objHeight / 2, top, 2],
-            [objTop + objHeight / 2, top + (height * scaleY) / 2, 2],
-            [objTop + objHeight / 2, top - (height * scaleY) / 2, 2],
-            [objTop - objHeight / 2, top, 3],
-            [objTop - objHeight / 2, top + (height * scaleY) / 2, 3],
-            [objTop - objHeight / 2, top - (height * scaleY) / 2, 3]
-          ];
-
-          for (let i = 0; i < check1.length; i++) {
-            checkHSnap(check1[i][0], check1[i][1], snapZone, e, check1[i][2]);
-            checkVSnap(check2[i][0], check2[i][1], snapZone, e, check2[i][2]);
-          }
+        for (let i = 0; i < check1.length; i++) {
+          const [a1, b1, type1] = check1[i];
+          const [a2, b2, type2] = check2[i];
+          checkHSnap(a1, b1, snapZone, e, type1);
+          checkVSnap(a2, b2, snapZone, e, type2);
         }
       }
-    });
-  }
+    }
+  });
 };
 
 watch([width, height], async (val) => {
@@ -434,12 +423,8 @@ watch([width, height], async (val) => {
   await nextTick(() => {
     fabricCanvas?.setHeight(height);
     fabricCanvas?.setWidth(width);
-
-    if (artBoard) {
-      artBoard.left = width / 2 - parseInt(artboardWidth.value) / 2;
-      artBoard.top = height / 2 - parseInt(artboardHeight.value) / 2;
-    }
-
+    artBoard!.left = width / 2 - parseInt(artboardWidth.value) / 2;
+    artBoard!.top = height / 2 - parseInt(artboardHeight.value) / 2;
     fabricCanvas?.renderAll();
     initLines();
   });
@@ -452,20 +437,18 @@ onKeyDown("Delete", () => {
 
 const wheelScrollEvent = useEventListener(document, "wheel", (e) => {
   const scrollingUp = Math.sign(e.deltaY) < 0; // Down = 1, Up = -1
-  if (fabricCanvas) {
-    let zoom = fabricCanvas.getZoom() + (scrollingUp ? 0.02 : -0.02);
-    if (zoom < 0.02) zoom = 0.02;
-    fabricCanvas.setZoom(1);
-    fabricCanvas.renderAll();
-    const vpw = width.value / zoom;
-    const vph = height.value / zoom;
-    const x = artBoard?.left || 0 + parseInt(artboardWidth.value) / 2 - vpw / 2;
-    const y = artBoard?.top || 0 + parseInt(artboardHeight.value) / 2 - vph / 2;
-    fabricCanvas.absolutePan({ x, y });
-    fabricCanvas.setZoom(zoom);
-    fabricCanvas.renderAll();
-    zoomLevel.value = `${(fabricCanvas.getZoom() * 100).toFixed(0)}%`;
-  }
+  let zoom = fabricCanvas!.getZoom() + (scrollingUp ? 0.02 : -0.02);
+  if (zoom < 0.02) zoom = 0.02;
+  fabricCanvas!.setZoom(1);
+  fabricCanvas!.renderAll();
+  const vpw = width.value / zoom;
+  const vph = height.value / zoom;
+  const x = artBoard?.left || 0 + parseInt(artboardWidth.value) / 2 - vpw / 2;
+  const y = artBoard?.top || 0 + parseInt(artboardHeight.value) / 2 - vph / 2;
+  fabricCanvas!.absolutePan({ x, y });
+  fabricCanvas!.setZoom(zoom);
+  fabricCanvas!.renderAll();
+  zoomLevel.value = `${(fabricCanvas!.getZoom() * 100).toFixed(0)}%`;
 });
 
 onMounted(async () => {
@@ -495,7 +478,23 @@ onMounted(async () => {
   fabricCanvas.renderAll();
 
   fabricCanvas.on("object:moving", (e) => {
+    e.target!.hasControls = false;
     centerLines(e);
+  });
+
+  fabricCanvas.on("object:scaling", (e) => {
+    e.target!.hasControls = false;
+    centerLines(e);
+  });
+
+  fabricCanvas.on("object:modified", (e) => {
+    e.target!.hasControls = true;
+    fabricCanvas!.renderAll();
+  });
+
+  fabricCanvas.on("mouse:up", () => {
+    lineH!.opacity = 0;
+    lineV!.opacity = 0;
   });
 
   createToast("✅ App successfully started!", "#4BB543");
