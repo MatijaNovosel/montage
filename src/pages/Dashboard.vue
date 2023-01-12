@@ -7,13 +7,32 @@
     <div
       class="main w-7/12 h-full flex flex-col justify-center items-center relative"
     >
-      <btn @click="undo" background-color="slate-700" class="undo-btn">
-        <img class="mr-2" src="/undo.svg" /> Undo
-      </btn>
-      <btn class="redo-btn">
-        <img class="mr-2 scale-x-n1" src="/undo.svg" />
-        Redo
-      </btn>
+      <div class="top-left flex flex-col" v-if="memory">
+        <div>
+          <span class="text-slate-500 font-bold">Used</span>
+          {{ bytesToMB(memory.usedJSHeapSize) }}
+        </div>
+        <div>
+          <span class="text-slate-500 font-bold">Allocated</span>
+          {{ bytesToMB(memory.totalJSHeapSize) }}
+        </div>
+        <div>
+          <span class="text-slate-500 font-bold">Limit</span>
+          {{ bytesToMB(memory.jsHeapSizeLimit) }}
+        </div>
+      </div>
+      <div class="top-right flex flex-col">
+        <div class="flex">
+          <btn class="mr-2" @click="undo" background-color="slate-700">
+            <img class="mr-2" src="/undo.svg" /> Undo
+          </btn>
+          <btn>
+            <img class="scale-x-n1 mr-2" src="/undo.svg" />
+            Redo
+          </btn>
+        </div>
+        <div class="mt-3 flex justify-end">Zoom: {{ zoomLevel }}</div>
+      </div>
       <main ref="main" class="h-full w-full">
         <canvas class="block" ref="canvas" />
       </main>
@@ -56,16 +75,22 @@
 </template>
 
 <script setup lang="ts">
-import { onKeyDown, useElementSize } from "@vueuse/core";
+import {
+  onKeyDown,
+  useElementSize,
+  useEventListener,
+  useMemory
+} from "@vueuse/core";
 import { fabric } from "fabric";
 import { storeToRefs } from "pinia";
-import { nextTick, onMounted, ref, watch } from "vue";
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import Layout from "../components/dashboard/layout/layout.vue";
 import Sidebar from "../components/dashboard/sidebar/sidebar.vue";
 import { SelectItem } from "../models/common";
 import { useDashboardStore } from "../store/dashboard";
 import { useToastStore } from "../store/toast";
 import { initializeFabric } from "../utils/fabric";
+import { bytesToMB } from "../utils/helpers";
 
 const dashboardStore = useDashboardStore();
 const { createToast } = useToastStore();
@@ -97,11 +122,13 @@ const playbackSpeed = ref<SelectItem<number> | null>(timeOptions[1]);
 const canvas = ref<HTMLCanvasElement | null>(null);
 const main = ref<HTMLElement | null>(null);
 const timelineScale = ref(0);
+const zoomLevel = ref("100%");
 
 let fabricCanvas: fabric.Canvas | null = null;
 let artBoard: fabric.Rect | null = null;
 
 const { width, height } = useElementSize(main);
+const { memory } = useMemory();
 
 const undo = () => {
   createToast("🚨 Undo", "#f80000");
@@ -156,6 +183,25 @@ onKeyDown("Delete", () => {
   fabricCanvas?.discardActiveObject().renderAll();
 });
 
+const wheelScrollEvent = useEventListener(document, "wheel", (e) => {
+  const scrollingUp = Math.sign(e.deltaY) < 0; // Down = 1, Up = -1
+  if (fabricCanvas) {
+    let zoom = fabricCanvas.getZoom() + (scrollingUp ? 0.02 : -0.02);
+    if (zoom > 20) zoom = 20;
+    if (zoom < 0.01) zoom = 0.01;
+    fabricCanvas.setZoom(1);
+    fabricCanvas.renderAll();
+    const vpw = width.value / zoom;
+    const vph = height.value / zoom;
+    const x = artBoard?.left || 0 + parseInt(artboardWidth.value) / 2 - vpw / 2;
+    const y = artBoard?.top || 0 + parseInt(artboardHeight.value) / 2 - vph / 2;
+    fabricCanvas.absolutePan({ x, y });
+    fabricCanvas.setZoom(zoom);
+    fabricCanvas.renderAll();
+    zoomLevel.value = `${(fabricCanvas.getZoom() * 100).toFixed(0)}%`;
+  }
+});
+
 onMounted(async () => {
   fabricCanvas = initializeFabric(
     canvas.value as HTMLCanvasElement,
@@ -182,22 +228,30 @@ onMounted(async () => {
   fabricCanvas.clipPath = artBoard;
   fabricCanvas.renderAll();
 
+  fabricCanvas.on("object:moving", function (e) {
+    //
+  });
+
   createToast("✅ App successfully started!", "#4BB543");
+});
+
+onBeforeUnmount(() => {
+  wheelScrollEvent();
 });
 </script>
 
 <style scoped>
-.undo-btn {
+.top-left {
   position: absolute;
   top: 15px;
   left: 15px;
   z-index: 10;
 }
 
-.redo-btn {
+.top-right {
   position: absolute;
   top: 15px;
-  left: 110px;
+  right: 15px;
   z-index: 10;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="border-l border-slate-700 flex flex-col pt-5 items-center">
+  <div class="border-l border-slate-700 flex flex-col pt-5 px-3 items-center">
     <div class="mb-3">Layout settings</div>
     <div class="flex justify-center items-center">
       <btn v-tooltip="'Align top'" square background-color="slate-800">

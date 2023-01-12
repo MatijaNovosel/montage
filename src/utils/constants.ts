@@ -165,3 +165,5 @@ export const AUDIO = [
   "the-podcast-intro",
   "tropical-summer-music"
 ];
+
+export const SIZES = ["b", "kB", "MB", "GB", "TB"];

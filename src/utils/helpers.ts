@@ -1,4 +1,4 @@
-import { MIME_TYPES, MIME_TYPE_ICONS } from "./constants";
+import { MIME_TYPES, MIME_TYPE_ICONS, SIZES } from "./constants";
 
 export const secondsToElapsedTime = (secs: number) => {
   secs = Math.round(secs);
@@ -28,9 +28,17 @@ export const getFileIcon = (fileName: string) => {
   return MIME_TYPE_ICONS[MIME_TYPES[getFileExtension(fileName)]];
 };
 
-export const bytesToSize = (bytes: number) => {
-  const sizes = ["b", "kB", "MB", "GB", "TB"];
-  if (bytes === 0) return "0 Byte";
-  const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  return Math.round(bytes / Math.pow(1024, i)) + " " + sizes[i];
+export const bytesToSize = (bytes: number | undefined) => {
+  if (bytes) {
+    if (bytes === 0) return "0 Byte";
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    return Math.round(bytes / Math.pow(1024, i)) + " " + SIZES[i];
+  }
+};
+
+export const bytesToMB = (bytes: number | undefined) => {
+  if (bytes) {
+    const kb = bytes / 1024 / 1024;
+    return `${kb.toFixed(2)} MB`;
+  }
 };
