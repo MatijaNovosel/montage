@@ -204,9 +204,9 @@ const getObjectById = (id: string) => {
 
 const initLines = () => {
   if (fabricCanvas && artBoard) {
-    if (getObjectById("center_h")) {
-      fabricCanvas.remove(getObjectById("center_h"));
-      fabricCanvas.remove(getObjectById("center_v"));
+    if (getObjectById("centerH")) {
+      fabricCanvas.remove(getObjectById("centerH"));
+      fabricCanvas.remove(getObjectById("centerV"));
     }
 
     if (getObjectById("lineH")) {
@@ -223,11 +223,11 @@ const initLines = () => {
           fabricCanvas.getHeight()
         ],
         {
-          opacity: 1,
+          opacity: 0,
           selectable: false,
           evented: false,
           //@ts-ignore
-          id: "center_h"
+          id: "centerH"
         }
       )
     );
@@ -241,11 +241,11 @@ const initLines = () => {
           fabricCanvas.getHeight() / 2
         ],
         {
-          opacity: 1,
+          opacity: 0,
           selectable: false,
           evented: false,
           //@ts-ignore
-          id: "center_v"
+          id: "centerV"
         }
       )
     );
@@ -260,7 +260,7 @@ const initLines = () => {
       ],
       {
         stroke: "red",
-        opacity: 1,
+        opacity: 0,
         selectable: false,
         evented: false,
         //@ts-ignore
@@ -277,7 +277,7 @@ const initLines = () => {
       ],
       {
         stroke: "red",
-        opacity: 1,
+        opacity: 0,
         selectable: false,
         evented: false,
         //@ts-ignore
@@ -298,23 +298,17 @@ const checkHSnap = (
   type: number
 ) => {
   if (a > b - snapZone && a < b + snapZone && lineH && lineV) {
+    const width = e.target?.get("height") as number;
+    const scaleX = e.target?.get("scaleX") as number;
     lineH.opacity = 1;
     lineH.bringToFront();
     let value = b;
     if (type == 1) {
       value = b;
     } else if (type == 2) {
-      value =
-        b -
-        ((e.target?.get("width") as number) *
-          (e.target?.get("scaleX") as number)) /
-          2;
+      value = b - (width * scaleX) / 2;
     } else if (type == 3) {
-      value =
-        b +
-        ((e.target?.get("width") as number) *
-          (e.target?.get("scaleX") as number)) /
-          2;
+      value = b + (width * scaleX) / 2;
     }
     e.target
       ?.set({
@@ -341,23 +335,17 @@ const checkVSnap = (
   type: number
 ) => {
   if (a > b - snapZone && a < b + snapZone && lineH && lineV) {
+    const height = e.target?.get("height") as number;
+    const scaleY = e.target?.get("scaleY") as number;
     lineV.opacity = 1;
     lineV.bringToFront();
     let value = b;
     if (type == 1) {
       value = b;
     } else if (type == 2) {
-      value =
-        b -
-        ((e.target?.get("height") as number) *
-          (e.target?.get("scaleY") as number)) /
-          2;
+      value = b - (height * scaleY) / 2;
     } else if (type == 3) {
-      value =
-        b +
-        ((e.target?.get("height") as number) *
-          (e.target?.get("scaleY") as number)) /
-          2;
+      value = b + (height * scaleY) / 2;
     }
     e.target
       ?.set({
@@ -393,36 +381,20 @@ const centerLines = (e: fabric.IEvent<MouseEvent>) => {
     const objHeight =
       (e.target?.get("height") as number) * (e.target?.get("scaleY") as number);
 
-    fabricCanvas.forEachObject(function (obj) {
+    fabricCanvas.forEachObject((obj) => {
       if (obj != e.target && obj != lineH && obj != lineV) {
-        //@ts-ignore
-        if (obj.get("id") == "center_h" || obj.get("id") == "center_v") {
-          const check1 = [[objLeft, obj.get("left"), 1]];
-          const check2 = [[objTop, obj.get("top"), 1]];
-          for (let i = 0; i < check1.length; i++) {
-            checkHSnap(
-              check1[i][0] as number,
-              check1[i][1] as number,
-              snapZone,
-              e,
-              check1[i][2] as number
-            );
-            checkVSnap(
-              check2[i][0] as number,
-              check2[i][1] as number,
-              snapZone,
-              e,
-              check2[i][2] as number
-            );
-          }
-        } else {
-          const left = obj.get("left") as number;
-          const top = obj.get("top") as number;
-          const width = obj.get("width") as number;
-          const height = obj.get("height") as number;
-          const scaleX = obj.get("scaleX") as number;
-          const scaleY = obj.get("scaleY") as number;
+        const left = obj.get("left") as number;
+        const top = obj.get("top") as number;
+        const width = obj.get("width") as number;
+        const height = obj.get("height") as number;
+        const scaleX = obj.get("scaleX") as number;
+        const scaleY = obj.get("scaleY") as number;
 
+        //@ts-ignore
+        if (obj.get("id") == "centerH" || obj.get("id") == "centerV") {
+          checkHSnap(objLeft, left, snapZone, e, 1);
+          checkVSnap(objTop, top, snapZone, e, 1);
+        } else {
           const check1 = [
             [objLeft, left, 1],
             [objLeft, left + (width * scaleX) / 2, 1],
