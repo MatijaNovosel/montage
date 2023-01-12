@@ -126,6 +126,8 @@ const zoomLevel = ref("100%");
 
 let fabricCanvas: fabric.Canvas | null = null;
 let artBoard: fabric.Rect | null = null;
+let lineH: fabric.Line | null = null;
+let lineV: fabric.Line | null = null;
 
 const { width, height } = useElementSize(main);
 const { memory } = useMemory();
@@ -137,21 +139,6 @@ const undo = () => {
 const save = () => {
   createToast("💾 Saved", "#2171b3");
 };
-
-watch([width, height], async (val) => {
-  const [width, height] = val;
-  await nextTick(() => {
-    fabricCanvas?.setHeight(height);
-    fabricCanvas?.setWidth(width);
-
-    if (artBoard) {
-      artBoard.left = width / 2 - parseInt(artboardWidth.value) / 2;
-      artBoard.top = height / 2 - parseInt(artboardHeight.value) / 2;
-    }
-
-    fabricCanvas?.renderAll();
-  });
-});
 
 watch(artboardColor, (val) => {
   fabricCanvas?.setBackgroundColor(val, () => {});
@@ -178,6 +165,311 @@ watch(newObj, (val) => {
   });
 });
 
+const getObjectById = (id: string) => {
+  let object = null;
+
+  if (fabricCanvas) {
+    const allObjects = fabricCanvas.getObjects();
+    for (let i = 0; i < fabricCanvas.size(); i++) {
+      if (allObjects[i].get("type") == "group") {
+        //@ts-ignore
+        if (allObjects[i].get("id") && allObjects[i].get("id") === id) {
+          object = allObjects[i];
+          break;
+        }
+        const wip = i;
+        //@ts-ignore
+        for (let o = 0; o < allObjects[i]._objects.length; o++) {
+          if (
+            //@ts-ignore
+            allObjects[wip]._objects[o].id &&
+            //@ts-ignore
+            allObjects[wip]._objects[o].id === id
+          ) {
+            //@ts-ignore
+            object = allObjects[wip]._objects[o];
+            break;
+          }
+        }
+        //@ts-ignore
+      } else if (allObjects[i].id && allObjects[i].id === id) {
+        object = allObjects[i];
+        break;
+      }
+    }
+  }
+
+  return object;
+};
+
+function initLines() {
+  if (fabricCanvas && artBoard) {
+    if (getObjectById("center_h")) {
+      fabricCanvas.remove(getObjectById("center_h"));
+      fabricCanvas.remove(getObjectById("center_v"));
+    }
+
+    if (getObjectById("lineH")) {
+      fabricCanvas.remove(getObjectById("lineH"));
+      fabricCanvas.remove(getObjectById("lineV"));
+    }
+
+    // Canvas center reference
+    fabricCanvas.add(
+      new fabric.Line(
+        [
+          fabricCanvas.getWidth() / 2,
+          0,
+          fabricCanvas.getWidth() / 2,
+          fabricCanvas.getHeight()
+        ],
+        {
+          opacity: 1,
+          selectable: false,
+          evented: false,
+          //@ts-ignore
+          id: "center_h"
+        }
+      )
+    );
+
+    fabricCanvas.add(
+      new fabric.Line(
+        [
+          0,
+          fabricCanvas.getHeight() / 2,
+          fabricCanvas.getWidth(),
+          fabricCanvas.getHeight() / 2
+        ],
+        {
+          opacity: 1,
+          selectable: false,
+          evented: false,
+          //@ts-ignore
+          id: "center_v"
+        }
+      )
+    );
+
+    // Canvas alignemnt guides
+    lineH = new fabric.Line(
+      [
+        fabricCanvas.getWidth() / 2,
+        artBoard.top as number,
+        fabricCanvas.getWidth() / 2,
+        (artBoard.height as number) + (artBoard.top as number)
+      ],
+      {
+        stroke: "red",
+        opacity: 1,
+        selectable: false,
+        evented: false,
+        //@ts-ignore
+        id: "lineH"
+      }
+    );
+
+    lineV = new fabric.Line(
+      [
+        artBoard.left as number,
+        fabricCanvas.getHeight() / 2,
+        (artBoard.width as number) + (artBoard.left as number),
+        fabricCanvas.getHeight() / 2
+      ],
+      {
+        stroke: "red",
+        opacity: 1,
+        selectable: false,
+        evented: false,
+        //@ts-ignore
+        id: "lineV"
+      }
+    );
+
+    fabricCanvas.add(lineH);
+    fabricCanvas.add(lineV);
+  }
+}
+
+watch([width, height], async (val) => {
+  const [width, height] = val;
+  await nextTick(() => {
+    fabricCanvas?.setHeight(height);
+    fabricCanvas?.setWidth(width);
+
+    if (artBoard) {
+      artBoard.left = width / 2 - parseInt(artboardWidth.value) / 2;
+      artBoard.top = height / 2 - parseInt(artboardHeight.value) / 2;
+    }
+
+    fabricCanvas?.renderAll();
+    initLines();
+  });
+});
+
+/*
+function centerLines(e) {
+  if (fabricCanvas && lineH && lineV) {
+    lineH.opacity = 0;
+    lineV.opacity = 0;
+    fabricCanvas.renderAll();
+    const snapZone = 5;
+    const obj_left = e.target.left;
+    const obj_top = e.target.top;
+    const obj_width = e.target.get("width") * e.target.get("scaleX");
+    const obj_height = e.target.get("height") * e.target.get("scaleY");
+    fabricCanvas.forEachObject(function (obj) {
+      // Check for horizontal snapping
+      function checkHSnap(a, b, snapZone, e, type) {
+        if (a > b - snapZone && a < b + snapZone && lineH && lineV) {
+          lineH.opacity = 1;
+          lineH.bringToFront();
+          var value = b;
+          if (type == 1) {
+            value = b;
+          } else if (type == 2) {
+            value = b - (e.target.get("width") * e.target.get("scaleX")) / 2;
+          } else if (type == 3) {
+            value = b + (e.target.get("width") * e.target.get("scaleX")) / 2;
+          }
+          e.target
+            .set({
+              left: value
+            })
+            .setCoords();
+          lineH
+            .set({
+              x1: b,
+              y1: artBoard?.top,
+              x2: b,
+              y2: artBoard?.get("height") + artBoard?.top
+            })
+            .setCoords();
+          fabricCanvas?.renderAll();
+        }
+      }
+
+      // Check for vertical snapping
+      function checkVSnap(a, b, snapZone, e, type) {
+        if (a > b - snapZone && a < b + snapZone && lineH && lineV) {
+          lineV.opacity = 1;
+          lineV.bringToFront();
+          let value = b;
+          if (type == 1) {
+            value = b;
+          } else if (type == 2) {
+            value = b - (e.target.get("height") * e.target.get("scaleY")) / 2;
+          } else if (type == 3) {
+            value = b + (e.target.get("height") * e.target.get("scaleY")) / 2;
+          }
+          e.target
+            .set({
+              top: value
+            })
+            .setCoords();
+          lineV
+            .set({
+              y1: b,
+              x1: artBoard?.left,
+              y2: b,
+              x2: artBoard?.get("width") + artBoard?.left
+            })
+            .setCoords();
+          fabricCanvas?.renderAll();
+        }
+      }
+
+      if (obj != e.target && obj != lineH && obj != lineV) {
+        if (obj.get("id") == "center_h" || obj.get("id") == "center_v") {
+          const check1 = [[obj_left, obj.get("left"), 1]];
+          const check2 = [[obj_top, obj.get("top"), 1]];
+          for (let i = 0; i < check1.length; i++) {
+            checkHSnap(check1[i][0], check1[i][1], snapZone, e, check1[i][2]);
+            checkVSnap(check2[i][0], check2[i][1], snapZone, e, check2[i][2]);
+          }
+        } else {
+          const check1 = [
+            [obj_left, obj.get("left"), 1],
+            [
+              obj_left,
+              obj.get("left") + (obj.get("width") * obj.get("scaleX")) / 2,
+              1
+            ],
+            [
+              obj_left,
+              obj.get("left") - (obj.get("width") * obj.get("scaleX")) / 2,
+              1
+            ],
+            [obj_left + obj_width / 2, obj.get("left"), 2],
+            [
+              obj_left + obj_width / 2,
+              obj.get("left") + (obj.get("width") * obj.get("scaleX")) / 2,
+              2
+            ],
+            [
+              obj_left + obj_width / 2,
+              obj.get("left") - (obj.get("width") * obj.get("scaleX")) / 2,
+              2
+            ],
+            [obj_left - obj_width / 2, obj.get("left"), 3],
+            [
+              obj_left - obj_width / 2,
+              obj.get("left") + (obj.get("width") * obj.get("scaleX")) / 2,
+              3
+            ],
+            [
+              obj_left - obj_width / 2,
+              obj.get("left") - (obj.get("width") * obj.get("scaleX")) / 2,
+              3
+            ]
+          ];
+          const check2 = [
+            [obj_top, obj.get("top"), 1],
+            [
+              obj_top,
+              obj.get("top") + (obj.get("height") * obj.get("scaleY")) / 2,
+              1
+            ],
+            [
+              obj_top,
+              obj.get("top") - (obj.get("height") * obj.get("scaleY")) / 2,
+              1
+            ],
+            [obj_top + obj_height / 2, obj.get("top"), 2],
+            [
+              obj_top + obj_height / 2,
+              obj.get("top") + (obj.get("height") * obj.get("scaleY")) / 2,
+              2
+            ],
+            [
+              obj_top + obj_height / 2,
+              obj.get("top") - (obj.get("height") * obj.get("scaleY")) / 2,
+              2
+            ],
+            [obj_top - obj_height / 2, obj.get("top"), 3],
+            [
+              obj_top - obj_height / 2,
+              obj.get("top") + (obj.get("height") * obj.get("scaleY")) / 2,
+              3
+            ],
+            [
+              obj_top - obj_height / 2,
+              obj.get("top") - (obj.get("height") * obj.get("scaleY")) / 2,
+              3
+            ]
+          ];
+
+          for (var i = 0; i < check1.length; i++) {
+            checkHSnap(check1[i][0], check1[i][1], snapZone, e, check1[i][2]);
+            checkVSnap(check2[i][0], check2[i][1], snapZone, e, check2[i][2]);
+          }
+        }
+      }
+    });
+  }
+}
+*/
+
 onKeyDown("Delete", () => {
   fabricCanvas?.getActiveObjects().forEach((obj) => fabricCanvas?.remove(obj));
   fabricCanvas?.discardActiveObject().renderAll();
@@ -187,8 +479,7 @@ const wheelScrollEvent = useEventListener(document, "wheel", (e) => {
   const scrollingUp = Math.sign(e.deltaY) < 0; // Down = 1, Up = -1
   if (fabricCanvas) {
     let zoom = fabricCanvas.getZoom() + (scrollingUp ? 0.02 : -0.02);
-    if (zoom > 20) zoom = 20;
-    if (zoom < 0.01) zoom = 0.01;
+    if (zoom < 0.02) zoom = 0.02;
     fabricCanvas.setZoom(1);
     fabricCanvas.renderAll();
     const vpw = width.value / zoom;
