@@ -3,7 +3,7 @@
 </p>
 
 <h1 align=center>Montage</h1>
-<p align=center>A video editor made with Tauri.</p>
+<p align=center>A clip editor made with Tauri.</p>
 <p align=center>⚠ Currently a work in progress ⚠</p>
 
 ## 🔨 Built With
@@ -15,21 +15,24 @@
 
 ## 🚀 Features
 
-- Lightweight video editing
-- Video effects such as chroma keying, transitions, panning
-- Exporting videos and converting into popular formats
+- Lightweight clip editing
+- Adding various objects and effects on top of clips and videos
+- Exporting clips and converting them into popular formats
 
 ## Install the dependencies
+
 ```bash
 yarn
 ```
 
 ### Start the app in development mode (hot-code reloading, error reporting, etc.)
+
 ```bash
 yarn tauri dev
 ```
 
 ### Build the app for production
+
 ```bash
 yarn tauri build
 ```
