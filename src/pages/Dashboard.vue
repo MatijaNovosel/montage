@@ -37,7 +37,7 @@
         <canvas class="block" ref="canvas" />
       </main>
     </div>
-    <layout class="w-2/12" />
+    <layout @align="alignActiveObject" class="w-2/12" />
   </div>
   <div
     class="flex bg-slate-900 text-white border-y border-slate-700"
@@ -89,6 +89,7 @@ import Sidebar from "../components/dashboard/sidebar/sidebar.vue";
 import { SelectItem } from "../models/common";
 import { useDashboardStore } from "../store/dashboard";
 import { useToastStore } from "../store/toast";
+import { ALIGN_OPTIONS } from "../utils/constants";
 import { initializeFabric } from "../utils/fabric";
 import { bytesToMB } from "../utils/helpers";
 
@@ -353,6 +354,55 @@ const checkVSnap = (
         x2: parseInt(artboardWidth.value) + (artBoard?.left as number)
       })
       .setCoords();
+    fabricCanvas?.renderAll();
+  }
+};
+
+const alignActiveObject = (option: number) => {
+  const activeObject = fabricCanvas?.getActiveObject();
+  if (activeObject) {
+    const artBoardTop = artBoard?.get("top") as number;
+    const artBoardLeft = artBoard?.get("left") as number;
+    const artBoardHeight = artBoard?.get("height") as number;
+    const artBoardWidth = artBoard?.get("width") as number;
+
+    const objectHeight = activeObject.get("height") as number;
+    const objectWidth = activeObject.get("width") as number;
+    const objectScaleY = activeObject.get("scaleY") as number;
+    const objectScaleX = activeObject.get("scaleX") as number;
+
+    switch (option) {
+      case ALIGN_OPTIONS.TOP:
+        activeObject.set(
+          "top",
+          artBoardTop + (objectHeight * objectScaleY) / 2
+        );
+        break;
+      case ALIGN_OPTIONS.CENTER_V:
+        activeObject.set("top", artBoardTop + artBoardHeight / 2);
+        break;
+      case ALIGN_OPTIONS.BOTTOM:
+        activeObject.set(
+          "top",
+          artBoardTop + artBoardHeight - (objectHeight * objectScaleY) / 2
+        );
+        break;
+      case ALIGN_OPTIONS.LEFT:
+        activeObject.set(
+          "left",
+          artBoardLeft + (objectWidth * objectScaleX) / 2
+        );
+        break;
+      case ALIGN_OPTIONS.CENTER_H:
+        activeObject.set("left", artBoardLeft + artBoardWidth / 2);
+        break;
+      case ALIGN_OPTIONS.RIGHT:
+        activeObject.set(
+          "left",
+          artBoardLeft + artBoardWidth - (objectWidth * objectScaleX) / 2
+        );
+        break;
+    }
     fabricCanvas?.renderAll();
   }
 };

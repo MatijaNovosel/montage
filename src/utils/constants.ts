@@ -167,3 +167,12 @@ export const AUDIO = [
 ];
 
 export const SIZES = ["b", "kB", "MB", "GB", "TB"];
+
+export const ALIGN_OPTIONS: Record<string, number> = {
+  TOP: 1,
+  CENTER_V: 2,
+  BOTTOM: 3,
+  LEFT: 4,
+  CENTER_H: 5,
+  RIGHT: 6
+};
