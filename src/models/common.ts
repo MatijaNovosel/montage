@@ -8,3 +8,9 @@ export interface SelectItem<T> {
   text: string;
   value: T;
 }
+
+export interface Layer {
+  object: fabric.Object | null;
+  id: string;
+  type: "image" | "text";
+}

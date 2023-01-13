@@ -44,7 +44,10 @@
     style="height: var(--timeline-height)"
   >
     <div class="w-4/12 border-r border-slate-700 h-full p-5">
-      Keyframes & layers
+      <div>Layers</div>
+      <div class="text-slate-500 mt-3">
+        {{ layers.length ? "Layers" : "No layers added." }}
+      </div>
     </div>
     <div class="w-8/12 h-full p-5">Draggable timeline</div>
   </div>
@@ -86,7 +89,7 @@ import { storeToRefs } from "pinia";
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import Layout from "../components/dashboard/layout/layout.vue";
 import Sidebar from "../components/dashboard/sidebar/sidebar.vue";
-import { SelectItem } from "../models/common";
+import { Layer, SelectItem } from "../models/common";
 import { useDashboardStore } from "../store/dashboard";
 import { useToastStore } from "../store/toast";
 import { ALIGN_OPTIONS } from "../utils/constants";
@@ -124,6 +127,7 @@ const canvas = ref<HTMLCanvasElement | null>(null);
 const main = ref<HTMLElement | null>(null);
 const timelineScale = ref(0);
 const zoomLevel = ref("100%");
+const layers = ref<Layer[]>([]);
 
 let fabricCanvas: fabric.Canvas | null = null;
 let artBoard: fabric.Rect | null = null;
