@@ -128,6 +128,7 @@ let fabricCanvas: fabric.Canvas | null = null;
 let artBoard: fabric.Rect | null = null;
 let lineH: fabric.Line | null = null;
 let lineV: fabric.Line | null = null;
+let centerCircle: fabric.Circle | null = null;
 
 const { width, height } = useElementSize(main);
 const { memory } = useMemory();
@@ -252,7 +253,7 @@ const initLines = () => {
       parseInt(artboardHeight.value) + (artBoard!.top as number)
     ],
     {
-      stroke: "red",
+      stroke: "#0E98FC",
       opacity: 0,
       selectable: false,
       evented: false,
@@ -269,7 +270,7 @@ const initLines = () => {
       fabricCanvas!.getHeight() / 2
     ],
     {
-      stroke: "red",
+      stroke: "#0E98FC",
       opacity: 0,
       selectable: false,
       evented: false,
@@ -425,6 +426,8 @@ watch([width, height], async (val) => {
     fabricCanvas?.setWidth(width);
     artBoard!.left = width / 2 - parseInt(artboardWidth.value) / 2;
     artBoard!.top = height / 2 - parseInt(artboardHeight.value) / 2;
+    centerCircle!.left = width / 2 - 20;
+    centerCircle!.top = height / 2 - 20;
     fabricCanvas?.renderAll();
     initLines();
   });
@@ -473,6 +476,16 @@ onMounted(async () => {
     cornerColor: "#0E98FC"
   });
 
+  centerCircle = new fabric.Circle({
+    opacity: 0,
+    left: width.value / 2 - 10,
+    top: height.value / 2 - 10,
+    width: 20,
+    height: 20
+  });
+
+  fabricCanvas.add(centerCircle);
+
   fabricCanvas.renderAll();
   fabricCanvas.clipPath = artBoard;
   fabricCanvas.renderAll();
@@ -490,6 +503,12 @@ onMounted(async () => {
   fabricCanvas.on("object:modified", (e) => {
     e.target!.hasControls = true;
     fabricCanvas!.renderAll();
+  });
+
+  fabricCanvas.on("object:rotating", function (e) {
+    if (e.e.shiftKey) fabricCanvas!.getActiveObject()!.snapAngle = 15;
+    else fabricCanvas!.getActiveObject()!.snapAngle = 0;
+    e.target!.hasControls = false;
   });
 
   fabricCanvas.on("mouse:up", () => {
