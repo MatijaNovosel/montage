@@ -81,21 +81,21 @@
 
 <script setup lang="ts">
 import {
-  onKeyDown,
-  useElementSize,
-  useEventListener,
-  useMemory
+onKeyDown,
+useElementSize,
+useEventListener,
+useMemory
 } from "@vueuse/core";
 import { fabric } from "fabric";
 import { randInt } from "matija-utils";
 import { storeToRefs } from "pinia";
 import {
-  computed,
-  nextTick,
-  onBeforeUnmount,
-  onMounted,
-  ref,
-  watch
+computed,
+nextTick,
+onBeforeUnmount,
+onMounted,
+ref,
+watch
 } from "vue";
 import Layout from "../components/dashboard/layout/layout.vue";
 import Sidebar from "../components/dashboard/sidebar/sidebar.vue";
@@ -104,9 +104,9 @@ import { useDashboardStore } from "../store/dashboard";
 import { useToastStore } from "../store/toast";
 import { COLORS } from "../utils/colors";
 import {
-  ALIGN_OPTIONS,
-  SNAP_CHECK_DIRECTION,
-  TIME_OPTIONS
+ALIGN_OPTIONS,
+SNAP_CHECK_DIRECTION,
+TIME_OPTIONS
 } from "../utils/constants";
 import { getObjectById, initializeFabric } from "../utils/fabric";
 import { bytesToMB } from "../utils/helpers";
@@ -556,8 +556,7 @@ const centerLines = (e: fabric.IEvent<MouseEvent>) => {
   });
 };
 
-watch([mainWidth, mainHeight], async (val) => {
-  const [width, height] = val;
+watch([mainWidth, mainHeight], async ([width, height]) => {
   await nextTick(() => {
     fabricCanvas?.setHeight(height);
     fabricCanvas?.setWidth(width);
