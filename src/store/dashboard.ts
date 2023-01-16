@@ -14,6 +14,9 @@ export const useDashboardStore = defineStore("dashboard", () => {
   const artboardHeight = ref("450");
   const artboardWidth = ref("800");
 
+  const artHeight = computed(() => parseInt(artboardHeight.value) || 0);
+  const artWidth = computed(() => parseInt(artboardWidth.value) || 0);
+
   const activeTabComponent = computed(() => {
     switch (activeTab.value) {
       case TABS.OBJECTS:
@@ -79,8 +82,8 @@ export const useDashboardStore = defineStore("dashboard", () => {
     newObj,
     setArtboardColor,
     artboardColor,
-    artboardHeight,
-    artboardWidth,
+    artHeight,
+    artWidth,
     setArtboardDimensions
   };
 });

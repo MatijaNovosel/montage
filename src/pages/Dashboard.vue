@@ -79,10 +79,10 @@
 
 <script setup lang="ts">
 import {
-  onKeyDown,
-  useElementSize,
-  useEventListener,
-  useMemory
+onKeyDown,
+useElementSize,
+useEventListener,
+useMemory
 } from "@vueuse/core";
 import { fabric } from "fabric";
 import { storeToRefs } from "pinia";
@@ -99,7 +99,7 @@ import { bytesToMB } from "../utils/helpers";
 const dashboardStore = useDashboardStore();
 const { createToast } = useToastStore();
 
-const { newObj, artboardColor, artboardHeight, artboardWidth } =
+const { newObj, artboardColor, artWidth, artHeight } =
   storeToRefs(dashboardStore);
 
 const timeOptions: SelectItem<number>[] = [
@@ -151,11 +151,11 @@ watch(artboardColor, (val) => {
   fabricCanvas?.renderAll();
 });
 
-watch([artboardHeight, artboardWidth], ([heightA, widthA]) => {
-  artBoard!.width = parseInt(widthA);
-  artBoard!.height = parseInt(heightA);
-  artBoard!.left = width.value / 2 - parseInt(widthA) / 2;
-  artBoard!.top = height.value / 2 - parseInt(heightA) / 2;
+watch([artHeight, artWidth], ([heightA, widthA]) => {
+  artBoard!.width = widthA;
+  artBoard!.height = heightA;
+  artBoard!.left = width.value / 2 - widthA / 2;
+  artBoard!.top = height.value / 2 - heightA / 2;
   fabricCanvas?.renderAll();
 });
 
@@ -255,7 +255,7 @@ const initLines = () => {
       fabricCanvas!.getWidth() / 2,
       artBoard!.top as number,
       fabricCanvas!.getWidth() / 2,
-      parseInt(artboardHeight.value) + (artBoard!.top as number)
+      artHeight.value + (artBoard!.top as number)
     ],
     {
       stroke: "#0E98FC",
@@ -271,7 +271,7 @@ const initLines = () => {
     [
       artBoard!.left as number,
       fabricCanvas!.getHeight() / 2,
-      parseInt(artboardWidth.value) + (artBoard!.left as number),
+      artWidth.value + (artBoard!.left as number),
       fabricCanvas!.getHeight() / 2
     ],
     {
@@ -318,7 +318,7 @@ const checkHSnap = (
         x1: b,
         y1: artBoard?.top,
         x2: b,
-        y2: parseInt(artboardHeight.value) + (artBoard?.top as number)
+        y2: artHeight.value + (artBoard?.top as number)
       })
       .setCoords();
     fabricCanvas?.renderAll();
@@ -355,7 +355,7 @@ const checkVSnap = (
         y1: b,
         x1: artBoard?.left,
         y2: b,
-        x2: parseInt(artboardWidth.value) + (artBoard?.left as number)
+        x2: artWidth.value + (artBoard?.left as number)
       })
       .setCoords();
     fabricCanvas?.renderAll();
@@ -438,7 +438,7 @@ const centerLines = (e: fabric.IEvent<MouseEvent>) => {
         checkHSnap(targetLeft, left, snapZone, e, 1);
         checkVSnap(targetTop, top, snapZone, e, 1);
       } else {
-        const check1 = [
+        const checkLeft = [
           [targetLeft, left, 1],
           [targetLeft, left + (width * scaleX) / 2, 1],
           [targetLeft, left - (width * scaleX) / 2, 1],
@@ -450,7 +450,7 @@ const centerLines = (e: fabric.IEvent<MouseEvent>) => {
           [targetLeft - targetWidth / 2, left - (width * scaleX) / 2, 3]
         ];
 
-        const check2 = [
+        const checkTop = [
           [targetTop, top, 1],
           [targetTop, top + (height * scaleY) / 2, 1],
           [targetTop, top - (height * scaleY) / 2, 1],
@@ -462,11 +462,11 @@ const centerLines = (e: fabric.IEvent<MouseEvent>) => {
           [targetTop - targetHeight / 2, top - (height * scaleY) / 2, 3]
         ];
 
-        for (let i = 0; i < check1.length; i++) {
-          const [a1, b1, type1] = check1[i];
-          const [a2, b2, type2] = check2[i];
-          checkHSnap(a1, b1, snapZone, e, type1);
-          checkVSnap(a2, b2, snapZone, e, type2);
+        for (let i = 0; i < checkLeft.length; i++) {
+          const [aLeft, bLeft, type1] = checkLeft[i];
+          const [aTop, bTop, type2] = checkTop[i];
+          checkHSnap(aLeft, bLeft, snapZone, e, type1);
+          checkVSnap(aTop, bTop, snapZone, e, type2);
         }
       }
     }
@@ -478,8 +478,8 @@ watch([width, height], async (val) => {
   await nextTick(() => {
     fabricCanvas?.setHeight(height);
     fabricCanvas?.setWidth(width);
-    artBoard!.left = width / 2 - parseInt(artboardWidth.value) / 2;
-    artBoard!.top = height / 2 - parseInt(artboardHeight.value) / 2;
+    artBoard!.left = width / 2 - artWidth.value / 2;
+    artBoard!.top = height / 2 - artHeight.value / 2;
     centerCircle!.left = width / 2 - 20;
     centerCircle!.top = height / 2 - 20;
     fabricCanvas?.renderAll();
@@ -500,8 +500,8 @@ const wheelScrollEvent = useEventListener(document, "wheel", (e) => {
   fabricCanvas!.renderAll();
   const vpw = width.value / zoom;
   const vph = height.value / zoom;
-  const x = artBoard?.left || 0 + parseInt(artboardWidth.value) / 2 - vpw / 2;
-  const y = artBoard?.top || 0 + parseInt(artboardHeight.value) / 2 - vph / 2;
+  const x = artBoard?.left || 0 + artWidth.value / 2 - vpw / 2;
+  const y = artBoard?.top || 0 + artHeight.value / 2 - vph / 2;
   fabricCanvas!.absolutePan({ x, y });
   fabricCanvas!.setZoom(zoom);
   fabricCanvas!.renderAll();
@@ -517,10 +517,10 @@ onMounted(async () => {
   );
 
   artBoard = new fabric.Rect({
-    left: width.value / 2 - parseInt(artboardWidth.value) / 2,
-    top: height.value / 2 - parseInt(artboardHeight.value) / 2,
-    width: parseInt(artboardWidth.value),
-    height: parseInt(artboardHeight.value),
+    left: width.value / 2 - artWidth.value / 2,
+    top: height.value / 2 - artHeight.value / 2,
+    width: artWidth.value,
+    height: artHeight.value,
     absolutePositioned: true,
     rx: 0,
     ry: 0,

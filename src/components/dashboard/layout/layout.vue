@@ -84,12 +84,11 @@ import { useDashboardStore } from "../../../store/dashboard";
 import { ALIGN_OPTIONS } from "../../../utils/constants";
 
 const dashboardStore = useDashboardStore();
-const { artboardColor, artboardHeight, artboardWidth } =
-  storeToRefs(dashboardStore);
+const { artboardColor, artHeight, artWidth } = storeToRefs(dashboardStore);
 
 const color = ref(artboardColor.value);
-const width = ref(artboardWidth.value);
-const height = ref(artboardHeight.value);
+const width = ref(artWidth.value.toString());
+const height = ref(artHeight.value.toString());
 
 defineEmits(["align"]);
 
