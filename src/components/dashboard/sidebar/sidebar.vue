@@ -20,7 +20,7 @@
       </div>
     </div>
     <div class="w-9/12 text-center flex flex-col">
-      <div class="shadow-xl py-3">
+      <div class="shadow-xl bg-slate-800 py-3">
         {{ TAB_ITEMS[activeTab].name }}
       </div>
       <div class="overflow-auto px-8">

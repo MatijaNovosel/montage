@@ -66,12 +66,8 @@ export const useDashboardStore = defineStore("dashboard", () => {
   };
 
   const setArtboardDimensions = (width?: string, height?: string) => {
-    if (width) {
-      artboardWidth.value = width;
-    }
-    if (height) {
-      artboardHeight.value = height;
-    }
+    if (width) artboardWidth.value = width;
+    if (height) artboardHeight.value = height;
   };
 
   return {

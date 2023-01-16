@@ -175,3 +175,39 @@ export const initializeFabric = (
 
   return fCanvas;
 };
+
+export const getObjectById = (
+  fabricCanvas: fabric.Canvas | null,
+  id: string
+) => {
+  let object = null;
+  const allObjects = fabricCanvas!.getObjects();
+  for (let i = 0; i < fabricCanvas!.size(); i++) {
+    if (allObjects[i].get("type") == "group") {
+      //@ts-ignore
+      if (allObjects[i].get("id") && allObjects[i].get("id") === id) {
+        object = allObjects[i];
+        break;
+      }
+      const wip = i;
+      //@ts-ignore
+      for (let o = 0; o < allObjects[i]._objects.length; o++) {
+        if (
+          //@ts-ignore
+          allObjects[wip]._objects[o].id &&
+          //@ts-ignore
+          allObjects[wip]._objects[o].id === id
+        ) {
+          //@ts-ignore
+          object = allObjects[wip]._objects[o];
+          break;
+        }
+      }
+      //@ts-ignore
+    } else if (allObjects[i].id && allObjects[i].id === id) {
+      object = allObjects[i];
+      break;
+    }
+  }
+  return object;
+};

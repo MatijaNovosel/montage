@@ -7,18 +7,18 @@
     <div
       class="main w-7/12 h-full flex flex-col justify-center items-center relative"
     >
-      <div class="top-left flex flex-col" v-if="memory">
+      <div class="top-left flex flex-col">
         <div>
           <span class="text-slate-500 font-bold">Used</span>
-          {{ bytesToMB(memory.usedJSHeapSize) }}
+          {{ bytesToMB(memory?.usedJSHeapSize) }}
         </div>
         <div>
           <span class="text-slate-500 font-bold">Allocated</span>
-          {{ bytesToMB(memory.totalJSHeapSize) }}
+          {{ bytesToMB(memory?.totalJSHeapSize) }}
         </div>
         <div>
           <span class="text-slate-500 font-bold">Limit</span>
-          {{ bytesToMB(memory.jsHeapSizeLimit) }}
+          {{ bytesToMB(memory?.jsHeapSizeLimit) }}
         </div>
       </div>
       <div class="top-right flex flex-col">
@@ -31,7 +31,9 @@
             Redo
           </btn>
         </div>
-        <div class="mt-3 flex justify-end">Zoom: {{ zoomLevel }}</div>
+        <div class="mt-3 flex justify-center bg-slate-800 py-1 rounded-md">
+          {{ zoomLevel }}
+        </div>
       </div>
       <main ref="main" class="h-full w-full">
         <canvas class="block" ref="canvas" />
@@ -61,7 +63,7 @@
         background-color="slate-900"
         placement="top-start"
         placeholder="Speed"
-        :options="timeOptions"
+        :options="TIME_OPTIONS"
         v-model="playbackSpeed"
       />
     </div>
@@ -79,21 +81,34 @@
 
 <script setup lang="ts">
 import {
-onKeyDown,
-useElementSize,
-useEventListener,
-useMemory
+  onKeyDown,
+  useElementSize,
+  useEventListener,
+  useMemory
 } from "@vueuse/core";
 import { fabric } from "fabric";
+import { randInt } from "matija-utils";
 import { storeToRefs } from "pinia";
-import { nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import {
+  computed,
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  watch
+} from "vue";
 import Layout from "../components/dashboard/layout/layout.vue";
 import Sidebar from "../components/dashboard/sidebar/sidebar.vue";
 import { Layer, SelectItem } from "../models/common";
 import { useDashboardStore } from "../store/dashboard";
 import { useToastStore } from "../store/toast";
-import { ALIGN_OPTIONS } from "../utils/constants";
-import { initializeFabric } from "../utils/fabric";
+import { COLORS } from "../utils/colors";
+import {
+  ALIGN_OPTIONS,
+  SNAP_CHECK_DIRECTION,
+  TIME_OPTIONS
+} from "../utils/constants";
+import { getObjectById, initializeFabric } from "../utils/fabric";
 import { bytesToMB } from "../utils/helpers";
 
 const dashboardStore = useDashboardStore();
@@ -102,26 +117,7 @@ const { createToast } = useToastStore();
 const { newObj, artboardColor, artWidth, artHeight } =
   storeToRefs(dashboardStore);
 
-const timeOptions: SelectItem<number>[] = [
-  {
-    text: "0.5x",
-    value: 1
-  },
-  {
-    text: "1x",
-    value: 2
-  },
-  {
-    text: "1.5x",
-    value: 3
-  },
-  {
-    text: "2x",
-    value: 4
-  }
-];
-
-const playbackSpeed = ref<SelectItem<number> | null>(timeOptions[1]);
+const playbackSpeed = ref<SelectItem<number> | null>(TIME_OPTIONS[1]);
 
 const canvas = ref<HTMLCanvasElement | null>(null);
 const main = ref<HTMLElement | null>(null);
@@ -135,7 +131,10 @@ let lineH: fabric.Line | null = null;
 let lineV: fabric.Line | null = null;
 let centerCircle: fabric.Circle | null = null;
 
-const { width, height } = useElementSize(main);
+const artBoardLeft = computed(() => artBoard?.get("left") as number);
+const artBoardTop = computed(() => artBoard?.get("top") as number);
+
+const { width: mainWidth, height: mainHeight } = useElementSize(main);
 const { memory } = useMemory();
 
 const undo = () => {
@@ -154,72 +153,120 @@ watch(artboardColor, (val) => {
 watch([artHeight, artWidth], ([heightA, widthA]) => {
   artBoard!.width = widthA;
   artBoard!.height = heightA;
-  artBoard!.left = width.value / 2 - widthA / 2;
-  artBoard!.top = height.value / 2 - heightA / 2;
+  artBoard!.left = mainWidth.value / 2 - widthA / 2;
+  artBoard!.top = mainHeight.value / 2 - heightA / 2;
   fabricCanvas?.renderAll();
 });
 
 watch(newObj, (val) => {
   fabric.loadSVGFromURL(`/emojis/${val?.name}.svg`, (objects, options) => {
     const svgData = fabric.util.groupSVGElements(objects, options);
-    svgData.top = height.value / 2;
-    svgData.left = width.value / 2;
+    svgData.top = mainHeight.value / 2 - (svgData.height as number) / 2;
+    svgData.left = mainWidth.value / 2 - (svgData.width as number) / 2;
     fabricCanvas?.add(svgData);
     fabricCanvas?.setActiveObject(svgData);
+    layers.value.push({
+      id: randInt(1, 9999).toString(),
+      object: svgData,
+      type: "image"
+    });
   });
 });
 
-const getObjectById = (id: string) => {
-  let object = null;
-  const allObjects = fabricCanvas!.getObjects();
-  for (let i = 0; i < fabricCanvas!.size(); i++) {
-    if (allObjects[i].get("type") == "group") {
-      //@ts-ignore
-      if (allObjects[i].get("id") && allObjects[i].get("id") === id) {
-        object = allObjects[i];
-        break;
-      }
-      const wip = i;
-      //@ts-ignore
-      for (let o = 0; o < allObjects[i]._objects.length; o++) {
-        if (
-          //@ts-ignore
-          allObjects[wip]._objects[o].id &&
-          //@ts-ignore
-          allObjects[wip]._objects[o].id === id
-        ) {
-          //@ts-ignore
-          object = allObjects[wip]._objects[o];
-          break;
-        }
-      }
-      //@ts-ignore
-    } else if (allObjects[i].id && allObjects[i].id === id) {
-      object = allObjects[i];
-      break;
-    }
+const newVideo = (
+  file: HTMLVideoElement,
+  src: string,
+  x: number,
+  y: number,
+  duration: number,
+  center: boolean
+) => {
+  const newVideo = new fabric.Image(file, {
+    left: x,
+    top: y,
+    width: file.width,
+    height: file.height,
+    originX: "center",
+    originY: "center",
+    backgroundColor: "rgba(255,255,255,0)",
+    stroke: "#000",
+    strokeUniform: true,
+    paintFirst: "stroke",
+    strokeWidth: 0,
+    //@ts-ignore
+    source: src,
+    duration: duration * 1000,
+    assetType: "video",
+    id: "Video" + layers.value.length,
+    objectCaching: false,
+    inGroup: false
+  });
+
+  //@ts-ignore
+  newVideo.saveElem = newVideo.getElement();
+  fabricCanvas?.add(newVideo);
+
+  if ((newVideo.get("width") as number) > artWidth.value) {
+    newVideo.scaleToWidth(artWidth.value);
   }
-  return object;
+
+  newVideo.scaleToWidth(150);
+
+  fabricCanvas?.renderAll();
+  fabricCanvas?.setActiveObject(newVideo);
+  fabricCanvas?.bringToFront(newVideo);
+
+  if (center) {
+    newVideo.set(
+      "left",
+      (artBoard?.get("left") as number) + artWidth.value / 2
+    );
+    newVideo.set("top", artBoardTop.value + artHeight.value / 2);
+    fabricCanvas?.renderAll();
+  }
+};
+
+const loadVideo = (src: string, x: number, y: number, center: boolean) => {
+  var vidObj = document.createElement("video");
+  var vidSrc = document.createElement("source");
+  vidSrc.src = src;
+  vidObj.crossOrigin = "anonymous";
+  vidObj.appendChild(vidSrc);
+  vidObj.addEventListener("loadeddata", function () {
+    vidObj.width = this.videoWidth;
+    vidObj.height = this.videoHeight;
+    vidObj.currentTime = 0;
+    vidObj.muted = false;
+    const waitLoad = () => {
+      if (vidObj.readyState >= 3) {
+        newVideo(vidObj, src, x, y, vidObj.duration, center);
+      } else {
+        setTimeout(waitLoad, 100);
+      }
+    };
+    setTimeout(waitLoad, 100);
+  });
+  vidObj.currentTime = 0;
 };
 
 const initLines = () => {
-  if (getObjectById("centerH")) {
-    fabricCanvas!.remove(getObjectById("centerH"));
-    fabricCanvas!.remove(getObjectById("centerV"));
+  if (getObjectById(fabricCanvas, "centerH")) {
+    fabricCanvas?.remove(getObjectById(fabricCanvas, "centerH"));
+    fabricCanvas?.remove(getObjectById(fabricCanvas, "centerV"));
   }
 
-  if (getObjectById("lineH")) {
-    fabricCanvas!.remove(getObjectById("lineH"));
-    fabricCanvas!.remove(getObjectById("lineV"));
+  if (getObjectById(fabricCanvas, "lineH")) {
+    fabricCanvas?.remove(getObjectById(fabricCanvas, "lineH"));
+    fabricCanvas?.remove(getObjectById(fabricCanvas, "lineV"));
   }
 
-  fabricCanvas!.add(
+  fabricCanvas?.add(
     new fabric.Line(
       [
-        fabricCanvas!.getWidth() / 2,
+        fabricCanvas?.getWidth() / 2,
         0,
-        fabricCanvas!.getWidth() / 2,
-        fabricCanvas!.getHeight()
+        fabricCanvas?.getWidth() / 2,
+        fabricCanvas?.getHeight()
       ],
       {
         opacity: 0,
@@ -231,13 +278,13 @@ const initLines = () => {
     )
   );
 
-  fabricCanvas!.add(
+  fabricCanvas?.add(
     new fabric.Line(
       [
         0,
-        fabricCanvas!.getHeight() / 2,
-        fabricCanvas!.getWidth(),
-        fabricCanvas!.getHeight() / 2
+        fabricCanvas?.getHeight() / 2,
+        fabricCanvas?.getWidth(),
+        fabricCanvas?.getHeight() / 2
       ],
       {
         opacity: 0,
@@ -249,7 +296,6 @@ const initLines = () => {
     )
   );
 
-  // Canvas alignemnt guides
   lineH = new fabric.Line(
     [
       fabricCanvas!.getWidth() / 2,
@@ -258,7 +304,7 @@ const initLines = () => {
       artHeight.value + (artBoard!.top as number)
     ],
     {
-      stroke: "#0E98FC",
+      stroke: COLORS.SELECTION,
       opacity: 0,
       selectable: false,
       evented: false,
@@ -275,7 +321,7 @@ const initLines = () => {
       fabricCanvas!.getHeight() / 2
     ],
     {
-      stroke: "#0E98FC",
+      stroke: COLORS.SELECTION,
       opacity: 0,
       selectable: false,
       evented: false,
@@ -299,15 +345,15 @@ const checkHSnap = (
     const width = e.target?.get("height") as number;
     const scaleX = e.target?.get("scaleX") as number;
     lineH!.opacity = 1;
-    lineH!.bringToFront();
+    lineH?.bringToFront();
     let value = b;
-    if (type == 1) {
-      value = b;
-    } else if (type == 2) {
+
+    if (type == SNAP_CHECK_DIRECTION.BOTTOM) {
       value = b - (width * scaleX) / 2;
-    } else if (type == 3) {
+    } else if (type == SNAP_CHECK_DIRECTION.TOP) {
       value = b + (width * scaleX) / 2;
     }
+
     e.target
       ?.set({
         left: value
@@ -336,15 +382,15 @@ const checkVSnap = (
     const height = e.target?.get("height") as number;
     const scaleY = e.target?.get("scaleY") as number;
     lineV!.opacity = 1;
-    lineV!.bringToFront();
+    lineV?.bringToFront();
     let value = b;
-    if (type == 1) {
-      value = b;
-    } else if (type == 2) {
+
+    if (type == SNAP_CHECK_DIRECTION.BOTTOM) {
       value = b - (height * scaleY) / 2;
-    } else if (type == 3) {
+    } else if (type == SNAP_CHECK_DIRECTION.TOP) {
       value = b + (height * scaleY) / 2;
     }
+
     e.target
       ?.set({
         top: value
@@ -365,11 +411,6 @@ const checkVSnap = (
 const alignActiveObject = (option: number) => {
   const activeObject = fabricCanvas?.getActiveObject();
   if (activeObject) {
-    const artBoardTop = artBoard?.get("top") as number;
-    const artBoardLeft = artBoard?.get("left") as number;
-    const artBoardHeight = artBoard?.get("height") as number;
-    const artBoardWidth = artBoard?.get("width") as number;
-
     const objectHeight = activeObject.get("height") as number;
     const objectWidth = activeObject.get("width") as number;
     const objectScaleY = activeObject.get("scaleY") as number;
@@ -379,31 +420,33 @@ const alignActiveObject = (option: number) => {
       case ALIGN_OPTIONS.TOP:
         activeObject.set(
           "top",
-          artBoardTop + (objectHeight * objectScaleY) / 2
+          artBoardTop.value + (objectHeight * objectScaleY) / 2
         );
         break;
       case ALIGN_OPTIONS.CENTER_V:
-        activeObject.set("top", artBoardTop + artBoardHeight / 2);
+        activeObject.set("top", artBoardTop.value + artHeight.value / 2);
         break;
       case ALIGN_OPTIONS.BOTTOM:
         activeObject.set(
           "top",
-          artBoardTop + artBoardHeight - (objectHeight * objectScaleY) / 2
+          artBoardTop.value +
+            artHeight.value -
+            (objectHeight * objectScaleY) / 2
         );
         break;
       case ALIGN_OPTIONS.LEFT:
         activeObject.set(
           "left",
-          artBoardLeft + (objectWidth * objectScaleX) / 2
+          artBoardLeft.value + (objectWidth * objectScaleX) / 2
         );
         break;
       case ALIGN_OPTIONS.CENTER_H:
-        activeObject.set("left", artBoardLeft + artBoardWidth / 2);
+        activeObject.set("left", artBoardLeft.value + artWidth.value / 2);
         break;
       case ALIGN_OPTIONS.RIGHT:
         activeObject.set(
           "left",
-          artBoardLeft + artBoardWidth - (objectWidth * objectScaleX) / 2
+          artBoardLeft.value + artWidth.value - (objectWidth * objectScaleX) / 2
         );
         break;
     }
@@ -439,27 +482,67 @@ const centerLines = (e: fabric.IEvent<MouseEvent>) => {
         checkVSnap(targetTop, top, snapZone, e, 1);
       } else {
         const checkLeft = [
-          [targetLeft, left, 1],
-          [targetLeft, left + (width * scaleX) / 2, 1],
-          [targetLeft, left - (width * scaleX) / 2, 1],
-          [targetLeft + targetWidth / 2, left, 2],
-          [targetLeft + targetWidth / 2, left + (width * scaleX) / 2, 2],
-          [targetLeft + targetWidth / 2, left - (width * scaleX) / 2, 2],
-          [targetLeft - targetWidth / 2, left, 3],
-          [targetLeft - targetWidth / 2, left + (width * scaleX) / 2, 3],
-          [targetLeft - targetWidth / 2, left - (width * scaleX) / 2, 3]
+          [targetLeft, left, SNAP_CHECK_DIRECTION.MIDDLE],
+          [
+            targetLeft,
+            left + (width * scaleX) / 2,
+            SNAP_CHECK_DIRECTION.MIDDLE
+          ],
+          [
+            targetLeft,
+            left - (width * scaleX) / 2,
+            SNAP_CHECK_DIRECTION.MIDDLE
+          ],
+          [targetLeft + targetWidth / 2, left, SNAP_CHECK_DIRECTION.BOTTOM],
+          [
+            targetLeft + targetWidth / 2,
+            left + (width * scaleX) / 2,
+            SNAP_CHECK_DIRECTION.BOTTOM
+          ],
+          [
+            targetLeft + targetWidth / 2,
+            left - (width * scaleX) / 2,
+            SNAP_CHECK_DIRECTION.BOTTOM
+          ],
+          [targetLeft - targetWidth / 2, left, SNAP_CHECK_DIRECTION.TOP],
+          [
+            targetLeft - targetWidth / 2,
+            left + (width * scaleX) / 2,
+            SNAP_CHECK_DIRECTION.TOP
+          ],
+          [
+            targetLeft - targetWidth / 2,
+            left - (width * scaleX) / 2,
+            SNAP_CHECK_DIRECTION.TOP
+          ]
         ];
 
         const checkTop = [
-          [targetTop, top, 1],
-          [targetTop, top + (height * scaleY) / 2, 1],
-          [targetTop, top - (height * scaleY) / 2, 1],
-          [targetTop + targetHeight / 2, top, 2],
-          [targetTop + targetHeight / 2, top + (height * scaleY) / 2, 2],
-          [targetTop + targetHeight / 2, top - (height * scaleY) / 2, 2],
-          [targetTop - targetHeight / 2, top, 3],
-          [targetTop - targetHeight / 2, top + (height * scaleY) / 2, 3],
-          [targetTop - targetHeight / 2, top - (height * scaleY) / 2, 3]
+          [targetTop, top, SNAP_CHECK_DIRECTION.MIDDLE],
+          [targetTop, top + (height * scaleY) / 2, SNAP_CHECK_DIRECTION.MIDDLE],
+          [targetTop, top - (height * scaleY) / 2, SNAP_CHECK_DIRECTION.MIDDLE],
+          [targetTop + targetHeight / 2, top, SNAP_CHECK_DIRECTION.BOTTOM],
+          [
+            targetTop + targetHeight / 2,
+            top + (height * scaleY) / 2,
+            SNAP_CHECK_DIRECTION.BOTTOM
+          ],
+          [
+            targetTop + targetHeight / 2,
+            top - (height * scaleY) / 2,
+            SNAP_CHECK_DIRECTION.BOTTOM
+          ],
+          [targetTop - targetHeight / 2, top, SNAP_CHECK_DIRECTION.TOP],
+          [
+            targetTop - targetHeight / 2,
+            top + (height * scaleY) / 2,
+            SNAP_CHECK_DIRECTION.TOP
+          ],
+          [
+            targetTop - targetHeight / 2,
+            top - (height * scaleY) / 2,
+            SNAP_CHECK_DIRECTION.TOP
+          ]
         ];
 
         for (let i = 0; i < checkLeft.length; i++) {
@@ -473,7 +556,7 @@ const centerLines = (e: fabric.IEvent<MouseEvent>) => {
   });
 };
 
-watch([width, height], async (val) => {
+watch([mainWidth, mainHeight], async (val) => {
   const [width, height] = val;
   await nextTick(() => {
     fabricCanvas?.setHeight(height);
@@ -496,29 +579,29 @@ const wheelScrollEvent = useEventListener(document, "wheel", (e) => {
   const scrollingUp = Math.sign(e.deltaY) < 0; // Down = 1, Up = -1
   let zoom = fabricCanvas!.getZoom() + (scrollingUp ? 0.02 : -0.02);
   if (zoom < 0.02) zoom = 0.02;
-  fabricCanvas!.setZoom(1);
-  fabricCanvas!.renderAll();
-  const vpw = width.value / zoom;
-  const vph = height.value / zoom;
-  const x = artBoard?.left || 0 + artWidth.value / 2 - vpw / 2;
-  const y = artBoard?.top || 0 + artHeight.value / 2 - vph / 2;
-  fabricCanvas!.absolutePan({ x, y });
-  fabricCanvas!.setZoom(zoom);
-  fabricCanvas!.renderAll();
+  fabricCanvas?.setZoom(1);
+  fabricCanvas?.renderAll();
+  const x =
+    artBoard?.left || 0 + artWidth.value / 2 - mainWidth.value / zoom / 2;
+  const y =
+    artBoard?.top || 0 + artHeight.value / 2 - mainHeight.value / zoom / 2;
+  fabricCanvas?.absolutePan({ x, y });
+  fabricCanvas?.setZoom(zoom);
+  fabricCanvas?.renderAll();
   zoomLevel.value = `${(fabricCanvas!.getZoom() * 100).toFixed(0)}%`;
 });
 
 onMounted(async () => {
   fabricCanvas = initializeFabric(
     canvas.value as HTMLCanvasElement,
-    width.value,
-    height.value,
+    mainWidth.value,
+    mainHeight.value,
     artboardColor.value
   );
 
   artBoard = new fabric.Rect({
-    left: width.value / 2 - artWidth.value / 2,
-    top: height.value / 2 - artHeight.value / 2,
+    left: mainWidth.value / 2 - artWidth.value / 2,
+    top: mainHeight.value / 2 - artHeight.value / 2,
     width: artWidth.value,
     height: artHeight.value,
     absolutePositioned: true,
@@ -526,14 +609,14 @@ onMounted(async () => {
     ry: 0,
     hasControls: true,
     transparentCorners: false,
-    borderColor: "#0E98FC",
-    cornerColor: "#0E98FC"
+    borderColor: COLORS.SELECTION,
+    cornerColor: COLORS.SELECTION
   });
 
   centerCircle = new fabric.Circle({
     opacity: 0,
-    left: width.value / 2 - 10,
-    top: height.value / 2 - 10,
+    left: mainWidth.value / 2 - 10,
+    top: mainHeight.value / 2 - 10,
     width: 20,
     height: 20
   });

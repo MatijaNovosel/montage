@@ -92,13 +92,11 @@ const height = ref(artHeight.value.toString());
 
 defineEmits(["align"]);
 
-watch(color, (val) => {
-  dashboardStore.setArtboardColor(val);
-});
+watch(color, (val) => dashboardStore.setArtboardColor(val));
 
-watch([width, height], (val) => {
-  dashboardStore.setArtboardDimensions(val[0], val[1]);
-});
+watch([width, height], (val) =>
+  dashboardStore.setArtboardDimensions(val[0], val[1])
+);
 
 const options: SelectItem<number>[] = [
   {

@@ -1,4 +1,4 @@
-import { TabItem } from "../models/common";
+import { TabItem, SelectItem } from "../models/common";
 
 export const MIME_TYPES: Record<string, string> = {
   css: "text/css",
@@ -176,3 +176,28 @@ export const ALIGN_OPTIONS: Record<string, number> = {
   CENTER_H: 5,
   RIGHT: 6
 };
+
+export const TIME_OPTIONS: SelectItem<number>[] = [
+  {
+    text: "0.5x",
+    value: 1
+  },
+  {
+    text: "1x",
+    value: 2
+  },
+  {
+    text: "1.5x",
+    value: 3
+  },
+  {
+    text: "2x",
+    value: 4
+  }
+];
+
+export const SNAP_CHECK_DIRECTION: Record<string, number> = {
+  MIDDLE: 1,
+  BOTTOM: 2,
+  TOP: 3
+}
