@@ -12,7 +12,10 @@
       }"
       :disabled="loading || !!error"
       :placeholder="placeholder"
-      class="bg-slate-800 w-full rounded-l-lg pl-3"
+      class="w-full rounded-l-lg pl-3"
+      :class="{
+        [`bg-${backgroundColor}`]: true
+      }"
       :value="modelValue"
       @input="
         $emit('update:modelValue', ($event.target as HTMLInputElement).value)
@@ -34,6 +37,10 @@ defineProps({
   modelValue: String,
   placeholder: String,
   loading: Boolean,
+  backgroundColor: {
+    type: String,
+    default: "slate-800"
+  },
   error: Object as PropType<Error | boolean>,
   dense: Boolean
 });

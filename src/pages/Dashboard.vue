@@ -629,7 +629,7 @@ const listener = (event: AssetEvent) => {
 
 const unsubscribe = bus.on(listener);
 
-const wheelScrollEvent = useEventListener(document, "wheel", (e) => {
+const wheelScrollEvent = useEventListener(main, "wheel", (e: WheelEvent) => {
   const scrollingUp = Math.sign(e.deltaY) < 0; // Down = 1, Up = -1
   let zoom = fabricCanvas!.getZoom() + (scrollingUp ? 0.02 : -0.02);
   if (zoom < 0.02) zoom = 0.02;

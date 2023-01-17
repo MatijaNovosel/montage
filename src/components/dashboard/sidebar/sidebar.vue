@@ -20,8 +20,13 @@
       </div>
     </div>
     <div class="w-9/12 text-center flex flex-col">
-      <div class="shadow-xl bg-slate-800 py-3">
-        {{ TAB_ITEMS[activeTab].name }}
+      <div class="shadow-xl bg-slate-800 py-5 flex flex-col">
+        <div>
+          {{ TAB_ITEMS[activeTab].name }}
+        </div>
+        <div class="mt-3 px-4">
+          <text-input background-color="slate-900" placeholder="Search" dense />
+        </div>
       </div>
       <div class="overflow-auto px-8">
         <keep-alive>

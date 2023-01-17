@@ -60,13 +60,13 @@
       placeholder="Select"
       :options="options"
     />
-    <m-text-input
+    <text-input
       v-model="width"
       dense
       class="mt-3 w-full px-3"
       placeholder="Width"
     />
-    <m-text-input
+    <text-input
       v-model="height"
       dense
       class="mt-3 w-full px-3"

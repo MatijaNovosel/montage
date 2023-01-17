@@ -5,16 +5,15 @@ import { createI18n } from "vue-i18n";
 import App from "./App.vue";
 import colorPicker from "./components/app/colorPicker.vue";
 import mSelect from "./components/app/mSelect.vue";
-import mTextInput from "./components/app/mTextInput.vue";
+import textInput from "./components/app/textInput.vue";
 import slider from "./components/app/slider.vue";
 import en from "./i18n/en";
 import hr from "./i18n/hr";
 import router from "./router";
+import btn from "./components/app/btn.vue";
 
 import "floating-vue/dist/style.css";
 import "./index.css";
-
-import btn from "./components/app/btn.vue";
 
 const i18n = createI18n({
   locale: "en",
@@ -42,7 +41,7 @@ app.use(FloatingVue, {
 
 // Global components
 app.component("m-select", mSelect);
-app.component("m-text-input", mTextInput);
+app.component("text-input", textInput);
 app.component("slider", slider);
 app.component("color-picker", colorPicker);
 app.component("btn", btn);
