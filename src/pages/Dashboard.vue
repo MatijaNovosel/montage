@@ -111,7 +111,12 @@ import {
   SNAP_CHECK_DIRECTION,
   TIME_OPTIONS
 } from "../utils/constants";
-import { getObjectById, initializeFabric } from "../utils/fabric";
+import {
+  checkHSnap,
+  checkVSnap,
+  getObjectById,
+  initializeFabric
+} from "../utils/fabric";
 import { bytesToMB } from "../utils/helpers";
 
 interface State {
@@ -246,7 +251,6 @@ const newTextbox = (
   x: number,
   y: number,
   width: number,
-  center: boolean,
   font: string
 ) => {
   var newText = new fabric.Textbox(text, {
@@ -255,7 +259,7 @@ const newTextbox = (
     originX: "center",
     originY: "center",
     fontFamily: "Inter",
-    fill: "#000",
+    fill: "#fff",
     fontSize,
     fontWeight,
     textAlign: "center",
@@ -270,7 +274,7 @@ const newTextbox = (
     //@ts-ignore
     inGroup: false,
     cursorDelay: 250,
-    width: calculateTextWidth(text, fontWeight + " " + fontSize + "px Inter"),
+    width: calculateTextWidth(text, `${fontWeight} ${fontSize}px Inter`),
     id: "Text" + state.layers.length
   });
   newText.setControlsVisibility({
@@ -283,11 +287,8 @@ const newTextbox = (
   newText.enterEditing();
   newText.selectAll();
   fabricCanvas?.renderAll();
-  if (center) {
-    newText.set("left", artBoardLeft.value + artWidth.value / 2);
-    newText.set("top", artBoardTop.value + artHeight.value / 2);
-    fabricCanvas?.renderAll();
-  }
+  newText.set("left", artBoardLeft.value + artWidth.value / 2);
+  newText.set("top", artBoardTop.value + artHeight.value / 2);
   //@ts-ignore
   fabricCanvas!.getActiveObject()!.set("fontFamily", font);
   fabricCanvas?.renderAll();
@@ -378,80 +379,6 @@ const initLines = () => {
   fabricCanvas!.add(lineV);
 };
 
-const checkHSnap = (
-  a: number,
-  b: number,
-  snapZone: number,
-  e: fabric.IEvent<MouseEvent>,
-  type: number
-) => {
-  if (a > b - snapZone && a < b + snapZone) {
-    const width = e.target?.get("height") as number;
-    const scaleX = e.target?.get("scaleX") as number;
-    lineH!.opacity = 1;
-    lineH?.bringToFront();
-    let value = b;
-
-    if (type == SNAP_CHECK_DIRECTION.BOTTOM) {
-      value = b - (width * scaleX) / 2;
-    } else if (type == SNAP_CHECK_DIRECTION.TOP) {
-      value = b + (width * scaleX) / 2;
-    }
-
-    e.target
-      ?.set({
-        left: value
-      })
-      .setCoords();
-    lineH!
-      .set({
-        x1: b,
-        y1: artBoard?.top,
-        x2: b,
-        y2: artHeight.value + (artBoard?.top as number)
-      })
-      .setCoords();
-    fabricCanvas?.renderAll();
-  }
-};
-
-const checkVSnap = (
-  a: number,
-  b: number,
-  snapZone: number,
-  e: fabric.IEvent<MouseEvent>,
-  type: number
-) => {
-  if (a > b - snapZone && a < b + snapZone) {
-    const height = e.target?.get("height") as number;
-    const scaleY = e.target?.get("scaleY") as number;
-    lineV!.opacity = 1;
-    lineV?.bringToFront();
-    let value = b;
-
-    if (type == SNAP_CHECK_DIRECTION.BOTTOM) {
-      value = b - (height * scaleY) / 2;
-    } else if (type == SNAP_CHECK_DIRECTION.TOP) {
-      value = b + (height * scaleY) / 2;
-    }
-
-    e.target
-      ?.set({
-        top: value
-      })
-      .setCoords();
-    lineV!
-      .set({
-        y1: b,
-        x1: artBoard?.left,
-        y2: b,
-        x2: artWidth.value + (artBoard?.left as number)
-      })
-      .setCoords();
-    fabricCanvas?.renderAll();
-  }
-};
-
 const alignActiveObject = (option: number) => {
   const activeObject = fabricCanvas?.getActiveObject();
   if (activeObject) {
@@ -522,8 +449,27 @@ const centerLines = (e: fabric.IEvent<MouseEvent>) => {
 
       //@ts-ignore
       if (obj.get("id") == "centerH" || obj.get("id") == "centerV") {
-        checkHSnap(targetLeft, left, snapZone, e, 1);
-        checkVSnap(targetTop, top, snapZone, e, 1);
+        checkHSnap(
+          lineH,
+          artBoardTop.value,
+          artHeight.value,
+          targetLeft,
+          left,
+          snapZone,
+          e,
+          1
+        );
+        checkVSnap(
+          lineV,
+          artBoardLeft.value,
+          artWidth.value,
+          targetTop,
+          top,
+          snapZone,
+          e,
+          1
+        );
+        fabricCanvas?.renderAll();
       } else {
         const checkLeft = [
           [targetLeft, left, SNAP_CHECK_DIRECTION.MIDDLE],
@@ -592,8 +538,26 @@ const centerLines = (e: fabric.IEvent<MouseEvent>) => {
         for (let i = 0; i < checkLeft.length; i++) {
           const [aLeft, bLeft, type1] = checkLeft[i];
           const [aTop, bTop, type2] = checkTop[i];
-          checkHSnap(aLeft, bLeft, snapZone, e, type1);
-          checkVSnap(aTop, bTop, snapZone, e, type2);
+          checkHSnap(
+            lineH,
+            artBoardTop.value,
+            artHeight.value,
+            aLeft,
+            bLeft,
+            snapZone,
+            e,
+            type1
+          );
+          checkVSnap(
+            lineV,
+            artBoardLeft.value,
+            artWidth.value,
+            aTop,
+            bTop,
+            snapZone,
+            e,
+            type2
+          );
         }
       }
     }
@@ -622,6 +586,17 @@ const listener = (event: AssetEvent) => {
             type: "image"
           });
         }
+      );
+      break;
+    case ASSET_TYPE.TEXT:
+      newTextbox(
+        50,
+        700,
+        "Add a heading",
+        mainHeight.value / 2 - 20,
+        mainWidth.value / 2 - 20,
+        100,
+        "roboto"
       );
       break;
   }

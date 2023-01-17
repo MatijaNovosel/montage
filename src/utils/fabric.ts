@@ -1,4 +1,83 @@
 import { fabric } from "fabric";
+import { SNAP_CHECK_DIRECTION } from "../utils/constants";
+
+export const checkVSnap = (
+  lineV: fabric.Line | null,
+  artBoardLeft: number,
+  artBoardWidth: number,
+  a: number,
+  b: number,
+  snapZone: number,
+  e: fabric.IEvent<MouseEvent>,
+  type: number
+) => {
+  if (a > b - snapZone && a < b + snapZone) {
+    const height = e.target?.get("height") as number;
+    const scaleY = e.target?.get("scaleY") as number;
+    lineV!.opacity = 1;
+    lineV?.bringToFront();
+    let value = b;
+
+    if (type == SNAP_CHECK_DIRECTION.BOTTOM) {
+      value = b - (height * scaleY) / 2;
+    } else if (type == SNAP_CHECK_DIRECTION.TOP) {
+      value = b + (height * scaleY) / 2;
+    }
+
+    e.target
+      ?.set({
+        top: value
+      })
+      .setCoords();
+    lineV!
+      .set({
+        y1: b,
+        x1: artBoardLeft,
+        y2: b,
+        x2: artBoardWidth + artBoardLeft
+      })
+      .setCoords();
+  }
+};
+
+export const checkHSnap = (
+  lineH: fabric.Line | null,
+  artBoardTop: number,
+  artBoardHeight: number,
+  a: number,
+  b: number,
+  snapZone: number,
+  e: fabric.IEvent<MouseEvent>,
+  type: number
+) => {
+  if (a > b - snapZone && a < b + snapZone) {
+    const width = e.target?.get("height") as number;
+    const scaleX = e.target?.get("scaleX") as number;
+    lineH!.opacity = 1;
+    lineH?.bringToFront();
+    let value = b;
+
+    if (type == SNAP_CHECK_DIRECTION.BOTTOM) {
+      value = b - (width * scaleX) / 2;
+    } else if (type == SNAP_CHECK_DIRECTION.TOP) {
+      value = b + (width * scaleX) / 2;
+    }
+
+    e.target
+      ?.set({
+        left: value
+      })
+      .setCoords();
+    lineH!
+      .set({
+        x1: b,
+        y1: artBoardTop,
+        x2: b,
+        y2: artBoardHeight + artBoardTop
+      })
+      .setCoords();
+  }
+};
 
 const renderIcon = (
   ctx: CanvasRenderingContext2D,
