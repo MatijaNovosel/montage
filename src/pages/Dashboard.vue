@@ -32,7 +32,7 @@
           </btn>
         </div>
         <div class="mt-3 flex justify-center bg-slate-800 py-1 rounded-md">
-          {{ zoomLevel }}
+          {{ state.zoomLevel }}
         </div>
       </div>
       <main ref="main" class="h-full w-full">
@@ -48,7 +48,7 @@
     <div class="w-4/12 border-r border-slate-700 h-full p-5">
       <div>Layers</div>
       <div class="text-slate-500 mt-3">
-        {{ layers.length ? "Layers" : "No layers added." }}
+        {{ state.layers.length ? "Layers" : "No layers added." }}
       </div>
     </div>
     <div class="w-8/12 h-full p-5">Draggable timeline</div>
@@ -58,7 +58,7 @@
     style="height: var(--timeline-controls-height)"
   >
     <div class="flex justify-center items-center w-3/12">
-      <slider class="mr-3" v-model="timelineScale" />
+      <slider class="mr-3" v-model="state.timelineScale" />
       <m-select
         background-color="slate-900"
         placement="top-start"
@@ -81,49 +81,61 @@
 
 <script setup lang="ts">
 import {
-onKeyDown,
-useElementSize,
-useEventListener,
-useMemory
+  onKeyDown,
+  useElementSize,
+  useEventBus,
+  useEventListener,
+  useMemory
 } from "@vueuse/core";
 import { fabric } from "fabric";
 import { randInt } from "matija-utils";
 import { storeToRefs } from "pinia";
 import {
-computed,
-nextTick,
-onBeforeUnmount,
-onMounted,
-ref,
-watch
+  computed,
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  reactive,
+  ref,
+  watch
 } from "vue";
 import Layout from "../components/dashboard/layout/layout.vue";
 import Sidebar from "../components/dashboard/sidebar/sidebar.vue";
-import { Layer, SelectItem } from "../models/common";
+import { AssetEvent, Layer, SelectItem } from "../models/common";
 import { useDashboardStore } from "../store/dashboard";
 import { useToastStore } from "../store/toast";
 import { COLORS } from "../utils/colors";
 import {
-ALIGN_OPTIONS,
-SNAP_CHECK_DIRECTION,
-TIME_OPTIONS
+  ALIGN_OPTIONS,
+  ASSET_TYPE,
+  SNAP_CHECK_DIRECTION,
+  TIME_OPTIONS
 } from "../utils/constants";
 import { getObjectById, initializeFabric } from "../utils/fabric";
 import { bytesToMB } from "../utils/helpers";
 
+interface State {
+  timelineScale: number;
+  zoomLevel: string;
+  layers: Layer[];
+}
+
 const dashboardStore = useDashboardStore();
 const { createToast } = useToastStore();
+const bus = useEventBus<AssetEvent>("asset");
 
-const { newObj, artboardColor, artWidth, artHeight } =
-  storeToRefs(dashboardStore);
+const { artboardColor, artWidth, artHeight } = storeToRefs(dashboardStore);
+
+const state: State = reactive({
+  timelineScale: 0,
+  zoomLevel: "100%",
+  layers: []
+});
 
 const playbackSpeed = ref<SelectItem<number> | null>(TIME_OPTIONS[1]);
 
 const canvas = ref<HTMLCanvasElement | null>(null);
 const main = ref<HTMLElement | null>(null);
-const timelineScale = ref(0);
-const zoomLevel = ref("100%");
-const layers = ref<Layer[]>([]);
 
 let fabricCanvas: fabric.Canvas | null = null;
 let artBoard: fabric.Rect | null = null;
@@ -144,34 +156,6 @@ const undo = () => {
 const save = () => {
   createToast("💾 Saved", "#2171b3");
 };
-
-watch(artboardColor, (val) => {
-  fabricCanvas?.setBackgroundColor(val, () => {});
-  fabricCanvas?.renderAll();
-});
-
-watch([artHeight, artWidth], ([heightA, widthA]) => {
-  artBoard!.width = widthA;
-  artBoard!.height = heightA;
-  artBoard!.left = mainWidth.value / 2 - widthA / 2;
-  artBoard!.top = mainHeight.value / 2 - heightA / 2;
-  fabricCanvas?.renderAll();
-});
-
-watch(newObj, (val) => {
-  fabric.loadSVGFromURL(`/emojis/${val?.name}.svg`, (objects, options) => {
-    const svgData = fabric.util.groupSVGElements(objects, options);
-    svgData.top = mainHeight.value / 2 - (svgData.height as number) / 2;
-    svgData.left = mainWidth.value / 2 - (svgData.width as number) / 2;
-    fabricCanvas?.add(svgData);
-    fabricCanvas?.setActiveObject(svgData);
-    layers.value.push({
-      id: randInt(1, 9999).toString(),
-      object: svgData,
-      type: "image"
-    });
-  });
-});
 
 const newVideo = (
   file: HTMLVideoElement,
@@ -197,7 +181,7 @@ const newVideo = (
     source: src,
     duration: duration * 1000,
     assetType: "video",
-    id: "Video" + layers.value.length,
+    id: "Video" + state.layers.length,
     objectCaching: false,
     inGroup: false
   });
@@ -247,6 +231,66 @@ const loadVideo = (src: string, x: number, y: number, center: boolean) => {
     setTimeout(waitLoad, 100);
   });
   vidObj.currentTime = 0;
+};
+
+const calculateTextWidth = (text: string, font: string) => {
+  const ctx = fabricCanvas?.getContext();
+  ctx!.font = font;
+  return ctx!.measureText(text).width + 10;
+};
+
+const newTextbox = (
+  fontSize: number,
+  fontWeight: string | number | undefined,
+  text: string,
+  x: number,
+  y: number,
+  width: number,
+  center: boolean,
+  font: string
+) => {
+  var newText = new fabric.Textbox(text, {
+    left: x,
+    top: y,
+    originX: "center",
+    originY: "center",
+    fontFamily: "Inter",
+    fill: "#000",
+    fontSize,
+    fontWeight,
+    textAlign: "center",
+    cursorWidth: 1,
+    stroke: "#000",
+    strokeWidth: 0,
+    cursorDuration: 1,
+    paintFirst: "stroke",
+    objectCaching: false,
+    absolutePositioned: true,
+    strokeUniform: true,
+    //@ts-ignore
+    inGroup: false,
+    cursorDelay: 250,
+    width: calculateTextWidth(text, fontWeight + " " + fontSize + "px Inter"),
+    id: "Text" + state.layers.length
+  });
+  newText.setControlsVisibility({
+    mt: false,
+    mb: false
+  });
+  fabricCanvas?.add(newText);
+  fabricCanvas?.setActiveObject(newText);
+  fabricCanvas?.bringToFront(newText);
+  newText.enterEditing();
+  newText.selectAll();
+  fabricCanvas?.renderAll();
+  if (center) {
+    newText.set("left", artBoardLeft.value + artWidth.value / 2);
+    newText.set("top", artBoardTop.value + artHeight.value / 2);
+    fabricCanvas?.renderAll();
+  }
+  //@ts-ignore
+  fabricCanvas!.getActiveObject()!.set("fontFamily", font);
+  fabricCanvas?.renderAll();
 };
 
 const initLines = () => {
@@ -556,23 +600,34 @@ const centerLines = (e: fabric.IEvent<MouseEvent>) => {
   });
 };
 
-watch([mainWidth, mainHeight], async ([width, height]) => {
-  await nextTick(() => {
-    fabricCanvas?.setHeight(height);
-    fabricCanvas?.setWidth(width);
-    artBoard!.left = width / 2 - artWidth.value / 2;
-    artBoard!.top = height / 2 - artHeight.value / 2;
-    centerCircle!.left = width / 2 - 20;
-    centerCircle!.top = height / 2 - 20;
-    fabricCanvas?.renderAll();
-    initLines();
-  });
-});
-
 onKeyDown("Delete", () => {
   fabricCanvas?.getActiveObjects().forEach((obj) => fabricCanvas?.remove(obj));
   fabricCanvas?.discardActiveObject().renderAll();
 });
+
+const listener = (event: AssetEvent) => {
+  switch (event.type) {
+    case ASSET_TYPE.EMOJI:
+      fabric.loadSVGFromURL(
+        `/emojis/${event.value}.svg`,
+        (objects, options) => {
+          const svgData = fabric.util.groupSVGElements(objects, options);
+          svgData.top = mainHeight.value / 2 - (svgData.height as number) / 2;
+          svgData.left = mainWidth.value / 2 - (svgData.width as number) / 2;
+          fabricCanvas?.add(svgData);
+          fabricCanvas?.setActiveObject(svgData);
+          state.layers.push({
+            id: randInt(1, 9999).toString(),
+            object: svgData,
+            type: "image"
+          });
+        }
+      );
+      break;
+  }
+};
+
+const unsubscribe = bus.on(listener);
 
 const wheelScrollEvent = useEventListener(document, "wheel", (e) => {
   const scrollingUp = Math.sign(e.deltaY) < 0; // Down = 1, Up = -1
@@ -587,7 +642,33 @@ const wheelScrollEvent = useEventListener(document, "wheel", (e) => {
   fabricCanvas?.absolutePan({ x, y });
   fabricCanvas?.setZoom(zoom);
   fabricCanvas?.renderAll();
-  zoomLevel.value = `${(fabricCanvas!.getZoom() * 100).toFixed(0)}%`;
+  state.zoomLevel = `${(fabricCanvas!.getZoom() * 100).toFixed(0)}%`;
+});
+
+watch([mainWidth, mainHeight], async ([width, height]) => {
+  await nextTick(() => {
+    fabricCanvas?.setHeight(height);
+    fabricCanvas?.setWidth(width);
+    artBoard!.left = width / 2 - artWidth.value / 2;
+    artBoard!.top = height / 2 - artHeight.value / 2;
+    centerCircle!.left = width / 2 - 20;
+    centerCircle!.top = height / 2 - 20;
+    fabricCanvas?.renderAll();
+    initLines();
+  });
+});
+
+watch(artboardColor, (val) => {
+  fabricCanvas?.setBackgroundColor(val, () => {});
+  fabricCanvas?.renderAll();
+});
+
+watch([artHeight, artWidth], ([heightA, widthA]) => {
+  artBoard!.width = widthA;
+  artBoard!.height = heightA;
+  artBoard!.left = mainWidth.value / 2 - widthA / 2;
+  artBoard!.top = mainHeight.value / 2 - heightA / 2;
+  fabricCanvas?.renderAll();
 });
 
 onMounted(async () => {
@@ -613,7 +694,6 @@ onMounted(async () => {
   });
 
   centerCircle = new fabric.Circle({
-    opacity: 0,
     left: mainWidth.value / 2 - 10,
     top: mainHeight.value / 2 - 10,
     width: 20,
@@ -657,6 +737,7 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   wheelScrollEvent();
+  unsubscribe();
 });
 </script>
 

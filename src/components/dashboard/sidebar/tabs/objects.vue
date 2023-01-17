@@ -5,7 +5,12 @@
       v-for="(emoji, i) in EMOJIS"
       :key="i"
       class="bg-slate-700 rounded-md p-2 cursor-pointer hover:bg-slate-800 select-none grid-item flex justify-center"
-      @click="dashboardStore.addObject(emoji)"
+      @click="
+        emit({
+          type: ASSET_TYPE.EMOJI,
+          value: emoji
+        })
+      "
     >
       <img class="h-full" :src="`/emojis/${emoji}.svg`" />
     </div>
@@ -23,10 +28,11 @@
 </template>
 
 <script lang="ts" setup>
-import { useDashboardStore } from "../../../../store/dashboard";
-import { EMOJIS, SHAPES } from "../../../../utils/constants";
+import { useEventBus } from "@vueuse/core";
+import { AssetEvent } from "../../../../models/common";
+import { ASSET_TYPE, EMOJIS, SHAPES } from "../../../../utils/constants";
 
-const dashboardStore = useDashboardStore();
+const { emit } = useEventBus<AssetEvent>("asset");
 </script>
 
 <style scoped>

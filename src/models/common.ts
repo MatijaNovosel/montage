@@ -14,3 +14,8 @@ export interface Layer {
   id: string;
   type: "image" | "text";
 }
+
+export interface AssetEvent {
+  type: string;
+  value: string;
+}

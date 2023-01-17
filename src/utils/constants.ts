@@ -1,4 +1,4 @@
-import { TabItem, SelectItem } from "../models/common";
+import { SelectItem, TabItem } from "../models/common";
 
 export const MIME_TYPES: Record<string, string> = {
   css: "text/css",
@@ -200,4 +200,12 @@ export const SNAP_CHECK_DIRECTION: Record<string, number> = {
   MIDDLE: 1,
   BOTTOM: 2,
   TOP: 3
-}
+};
+
+export const ASSET_TYPE: Record<string, string> = {
+  IMAGE: "image",
+  TEXT: "text",
+  EMOJI: "emoji",
+  SHAPE: "shape",
+  VIDEO: "video"
+};

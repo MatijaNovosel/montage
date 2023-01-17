@@ -2,14 +2,8 @@ import { defineStore } from "pinia";
 import { computed, defineAsyncComponent, ref } from "vue";
 import { TABS } from "../utils/constants";
 
-export interface NewObject {
-  type: string;
-  name: string;
-}
-
 export const useDashboardStore = defineStore("dashboard", () => {
-  const activeTab = ref<number>(TABS.OBJECTS);
-  const newObj = ref<NewObject | null>(null);
+  const activeTab = ref(TABS.OBJECTS);
   const artboardColor = ref("#000000");
   const artboardHeight = ref("450");
   const artboardWidth = ref("800");
@@ -54,13 +48,6 @@ export const useDashboardStore = defineStore("dashboard", () => {
     activeTab.value = tab;
   };
 
-  const addObject = (object: string) => {
-    newObj.value = {
-      type: "emoji",
-      name: object
-    };
-  };
-
   const setArtboardColor = (color: string) => {
     artboardColor.value = color;
   };
@@ -74,8 +61,6 @@ export const useDashboardStore = defineStore("dashboard", () => {
     activeTab,
     setActiveTab,
     activeTabComponent,
-    addObject,
-    newObj,
     setArtboardColor,
     artboardColor,
     artHeight,
