@@ -47,9 +47,9 @@
 </template>
 
 <script lang="ts" setup>
+import { SelectItem } from "@/models/common";
 import { Dropdown as FloatingVueDropdown } from "floating-vue";
 import { PropType, ref } from "vue";
-import { SelectItem } from "../../models/common";
 
 const props = defineProps({
   modelValue: {

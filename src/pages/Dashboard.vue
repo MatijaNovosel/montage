@@ -80,6 +80,25 @@
 </template>
 
 <script setup lang="ts">
+import Layout from "@/components/dashboard/layout/layout.vue";
+import Sidebar from "@/components/dashboard/sidebar/sidebar.vue";
+import { AssetEvent, Layer, SelectItem } from "@/models/common";
+import { useDashboardStore } from "@/store/dashboard";
+import { useToastStore } from "@/store/toast";
+import { COLORS } from "@/utils/colors";
+import {
+  ALIGN_OPTIONS,
+  ASSET_TYPE,
+  SNAP_CHECK_DIRECTION,
+  TIME_OPTIONS
+} from "@/utils/constants";
+import {
+  checkHSnap,
+  checkVSnap,
+  getObjectById,
+  initializeFabric
+} from "@/utils/fabric";
+import { bytesToMB } from "@/utils/helpers";
 import {
   onKeyDown,
   useElementSize,
@@ -100,25 +119,6 @@ import {
   watch
 } from "vue";
 import WebFont from "webfontloader";
-import Layout from "../components/dashboard/layout/layout.vue";
-import Sidebar from "../components/dashboard/sidebar/sidebar.vue";
-import { AssetEvent, Layer, SelectItem } from "../models/common";
-import { useDashboardStore } from "../store/dashboard";
-import { useToastStore } from "../store/toast";
-import { COLORS } from "../utils/colors";
-import {
-  ALIGN_OPTIONS,
-  ASSET_TYPE,
-  SNAP_CHECK_DIRECTION,
-  TIME_OPTIONS
-} from "../utils/constants";
-import {
-  checkHSnap,
-  checkVSnap,
-  getObjectById,
-  initializeFabric
-} from "../utils/fabric";
-import { bytesToMB } from "../utils/helpers";
 
 interface State {
   timelineScale: number;

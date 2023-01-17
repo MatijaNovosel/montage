@@ -3,14 +3,14 @@ import { createPinia } from "pinia";
 import { createApp } from "vue";
 import { createI18n } from "vue-i18n";
 import App from "./App.vue";
+import btn from "./components/app/btn.vue";
 import colorPicker from "./components/app/colorPicker.vue";
 import mSelect from "./components/app/mSelect.vue";
-import textInput from "./components/app/textInput.vue";
 import slider from "./components/app/slider.vue";
+import textInput from "./components/app/textInput.vue";
 import en from "./i18n/en";
 import hr from "./i18n/hr";
 import router from "./router";
-import btn from "./components/app/btn.vue";
 
 import "floating-vue/dist/style.css";
 import "./index.css";

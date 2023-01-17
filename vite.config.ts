@@ -1,22 +1,14 @@
-import alias from "@rollup/plugin-alias";
 import vue from "@vitejs/plugin-vue";
-import { resolve } from "path";
+import { fileURLToPath } from "url";
 import { defineConfig } from "vite";
 
-const projectRootDir = resolve(__dirname);
-
 export default defineConfig({
-  plugins: [
-    vue(),
-    alias({
-      entries: [
-        {
-          find: "@",
-          replacement: resolve(projectRootDir, "src")
-        }
-      ]
-    })
-  ],
+  plugins: [vue()],
+  resolve: {
+    alias: {
+      "@": fileURLToPath(new URL("./src", import.meta.url))
+    }
+  },
   clearScreen: false,
   server: {
     port: 1420,

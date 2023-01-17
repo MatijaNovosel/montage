@@ -1,5 +1,5 @@
+import { SNAP_CHECK_DIRECTION } from "@/utils/constants";
 import { fabric } from "fabric";
-import { SNAP_CHECK_DIRECTION } from "../utils/constants";
 
 export const checkVSnap = (
   lineV: fabric.Line | null,

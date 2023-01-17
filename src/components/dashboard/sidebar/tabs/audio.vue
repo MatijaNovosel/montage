@@ -14,5 +14,5 @@
 </template>
 
 <script lang="ts" setup>
-import { AUDIO } from "../../../../utils/constants";
+import { AUDIO } from "@/utils/constants";
 </script>

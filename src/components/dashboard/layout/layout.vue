@@ -77,13 +77,13 @@
 </template>
 
 <script lang="ts" setup>
+import { SelectItem } from "@/models/common";
+import { useDashboardStore } from "@/store/dashboard";
+import { useToastStore } from "@/store/toast";
+import { ALIGN_OPTIONS } from "@/utils/constants";
 import axios from "axios";
 import { storeToRefs } from "pinia";
 import { computed, onMounted, reactive, watch } from "vue";
-import { SelectItem } from "../../../models/common";
-import { useDashboardStore } from "../../../store/dashboard";
-import { useToastStore } from "../../../store/toast";
-import { ALIGN_OPTIONS } from "../../../utils/constants";
 
 interface FontItem {
   family: string;

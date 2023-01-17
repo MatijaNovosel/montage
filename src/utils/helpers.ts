@@ -1,4 +1,4 @@
-import { MIME_TYPES, MIME_TYPE_ICONS, SIZES } from "./constants";
+import { MIME_TYPES, MIME_TYPE_ICONS, SIZES } from "@/utils/constants";
 
 export const secondsToElapsedTime = (secs: number) => {
   secs = Math.round(secs);

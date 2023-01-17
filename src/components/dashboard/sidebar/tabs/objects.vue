@@ -28,9 +28,9 @@
 </template>
 
 <script lang="ts" setup>
+import { AssetEvent } from "@/models/common";
+import { ASSET_TYPE, EMOJIS, SHAPES } from "@/utils/constants";
 import { useEventBus } from "@vueuse/core";
-import { AssetEvent } from "../../../../models/common";
-import { ASSET_TYPE, EMOJIS, SHAPES } from "../../../../utils/constants";
 
 const { emit } = useEventBus<AssetEvent>("asset");
 </script>

@@ -1,4 +1,4 @@
-import { SelectItem, TabItem } from "../models/common";
+import { SelectItem, TabItem } from "@/models/common";
 
 export const MIME_TYPES: Record<string, string> = {
   css: "text/css",

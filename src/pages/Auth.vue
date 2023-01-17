@@ -29,5 +29,5 @@
 </template>
 
 <script setup lang="ts">
-import ROUTE_NAMES from "../router/routeNames";
+import ROUTE_NAMES from "@/router/routeNames";
 </script>

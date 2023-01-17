@@ -123,11 +123,11 @@
 </template>
 
 <script lang="ts" setup>
+import { AssetEvent } from "@/models/common";
+import { ASSET_TYPE } from "@/utils/constants";
 import { useEventBus } from "@vueuse/core";
 import { onMounted } from "vue";
 import WebFont from "webfontloader";
-import { AssetEvent } from "../../../../models/common";
-import { ASSET_TYPE } from "../../../../utils/constants";
 
 const { emit } = useEventBus<AssetEvent>("asset");
 

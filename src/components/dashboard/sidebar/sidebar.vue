@@ -38,9 +38,9 @@
 </template>
 
 <script lang="ts" setup>
+import { useDashboardStore } from "@/store/dashboard";
+import { TAB_ITEMS } from "@/utils/constants";
 import { storeToRefs } from "pinia";
-import { useDashboardStore } from "../../../store/dashboard";
-import { TAB_ITEMS } from "../../../utils/constants";
 
 const dashboardStore = useDashboardStore();
 const { activeTab, activeTabComponent } = storeToRefs(dashboardStore);

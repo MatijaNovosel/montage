@@ -15,10 +15,10 @@
 </template>
 
 <script setup lang="ts">
+import { useToastStore } from "@/store/toast";
+import { MIME_TYPES } from "@/utils/constants";
+import { getFileExtension } from "@/utils/helpers";
 import { inject, Ref, ref, watch } from "vue";
-import { useToastStore } from "../store/toast";
-import { MIME_TYPES } from "../utils/constants";
-import { getFileExtension } from "../utils/helpers";
 
 const draggingOver = ref(false);
 const filePicker = ref<HTMLInputElement | null>(null);
