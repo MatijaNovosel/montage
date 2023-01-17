@@ -57,67 +57,94 @@
     </div>
     <m-select
       class="mt-4 w-full px-3"
-      placeholder="Select"
-      :options="options"
+      placeholder="Font"
+      :options="fontOptions"
     />
     <text-input
-      v-model="width"
+      v-model="state.width"
       dense
       class="mt-3 w-full px-3"
       placeholder="Width"
     />
     <text-input
-      v-model="height"
+      v-model="state.height"
       dense
       class="mt-3 w-full px-3"
       placeholder="Height"
     />
-    <color-picker v-model="color" class="mt-3" />
+    <color-picker v-model="state.color" class="mt-3" />
   </div>
 </template>
 
 <script lang="ts" setup>
+import axios from "axios";
 import { storeToRefs } from "pinia";
-import { ref, watch } from "vue";
+import { computed, onMounted, reactive, watch } from "vue";
 import { SelectItem } from "../../../models/common";
 import { useDashboardStore } from "../../../store/dashboard";
+import { useToastStore } from "../../../store/toast";
 import { ALIGN_OPTIONS } from "../../../utils/constants";
+
+interface FontItem {
+  family: string;
+  variants: string[];
+  subsets: string[];
+  version: string;
+  lastModified: string;
+  files: Record<string, string>;
+  category: string;
+  kind: string;
+}
+
+interface FontResponse {
+  kind: string;
+  items: FontItem[];
+}
+
+interface State {
+  color: string;
+  width: string;
+  height: string;
+  fonts: FontItem[];
+}
 
 const dashboardStore = useDashboardStore();
 const { artboardColor, artHeight, artWidth } = storeToRefs(dashboardStore);
-
-const color = ref(artboardColor.value);
-const width = ref(artWidth.value.toString());
-const height = ref(artHeight.value.toString());
+const { createToast } = useToastStore();
 
 defineEmits(["align"]);
 
-watch(color, (val) => dashboardStore.setArtboardColor(val));
+const state: State = reactive({
+  color: artboardColor.value,
+  width: artWidth.value.toString(),
+  height: artHeight.value.toString(),
+  fonts: []
+});
 
-watch([width, height], (val) =>
-  dashboardStore.setArtboardDimensions(val[0], val[1])
+const fontOptions = computed(() =>
+  state.fonts.map<SelectItem<string>>((f) => ({
+    text: f.family,
+    value: ""
+  }))
 );
 
-const options: SelectItem<number>[] = [
-  {
-    text: "A",
-    value: 1
-  },
-  {
-    text: "B",
-    value: 2
-  },
-  {
-    text: "C",
-    value: 3
-  },
-  {
-    text: "D",
-    value: 4
-  },
-  {
-    text: "E",
-    value: 5
-  }
-];
+watch(
+  () => state.color,
+  (val) => dashboardStore.setArtboardColor(val)
+);
+
+watch(
+  () => [state.width, state.height],
+  (val) => dashboardStore.setArtboardDimensions(val[0], val[1])
+);
+
+onMounted(async () => {
+  const { data } = await axios.get<FontResponse>(
+    `https://www.googleapis.com/webfonts/v1/webfonts?key=${
+      import.meta.env.VITE_GOOGLE_FONTS_API_KEY
+    }&sort=alpha`
+  );
+  state.fonts = data.items;
+  createToast("✅ Fonts loaded!", "#3F7040");
+});
 </script>

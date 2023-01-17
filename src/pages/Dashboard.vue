@@ -87,7 +87,6 @@ import {
   useEventListener,
   useMemory
 } from "@vueuse/core";
-import axios from "axios";
 import { fabric } from "fabric";
 import { randInt } from "matija-utils";
 import { storeToRefs } from "pinia";
@@ -645,7 +644,7 @@ watch([artHeight, artWidth], ([heightA, widthA]) => {
   fabricCanvas?.renderAll();
 });
 
-onMounted(async () => {
+onMounted(() => {
   fabricCanvas = initializeFabric(
     canvas.value as HTMLCanvasElement,
     mainWidth.value,
@@ -694,14 +693,6 @@ onMounted(async () => {
     lineH!.opacity = 0;
     lineV!.opacity = 0;
   });
-
-  const { data } = await axios.get(
-    `https://www.googleapis.com/webfonts/v1/webfonts?key=${
-      import.meta.env.VITE_GOOGLE_FONTS_API_KEY
-    }&sort=alpha`
-  );
-
-  console.log(data);
 
   createToast("✅ App successfully started!", "#4BB543");
 });
