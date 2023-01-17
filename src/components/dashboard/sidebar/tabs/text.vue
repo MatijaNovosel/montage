@@ -45,7 +45,7 @@
       @click="
         emit({
           type: ASSET_TYPE.TEXT,
-          value: 'heading'
+          value: f
         })
       "
     >
@@ -62,7 +62,7 @@
       @click="
         emit({
           type: ASSET_TYPE.TEXT,
-          value: 'heading'
+          value: f
         })
       "
     >
@@ -79,7 +79,7 @@
       @click="
         emit({
           type: ASSET_TYPE.TEXT,
-          value: 'heading'
+          value: f
         })
       "
     >
@@ -96,7 +96,7 @@
       @click="
         emit({
           type: ASSET_TYPE.TEXT,
-          value: 'heading'
+          value: f
         })
       "
     >
@@ -113,7 +113,7 @@
       @click="
         emit({
           type: ASSET_TYPE.TEXT,
-          value: 'heading'
+          value: f
         })
       "
     >
@@ -159,6 +159,7 @@ onMounted(() => {
   font-weight: 700;
   height: 44px;
   line-height: 44px;
+  font-family: Roboto;
 }
 
 #subheading-text {
@@ -166,6 +167,7 @@ onMounted(() => {
   font-weight: 500;
   height: 34px;
   line-height: 34px;
+  font-family: Roboto;
 }
 
 #body-text {
@@ -173,6 +175,7 @@ onMounted(() => {
   font-weight: 400;
   height: 28px;
   line-height: 28px;
+  font-family: Roboto;
 }
 
 #item-text {

@@ -99,6 +99,7 @@ import {
   ref,
   watch
 } from "vue";
+import WebFont from "webfontloader";
 import Layout from "../components/dashboard/layout/layout.vue";
 import Sidebar from "../components/dashboard/sidebar/sidebar.vue";
 import { AssetEvent, Layer, SelectItem } from "../models/common";
@@ -257,7 +258,7 @@ const newTextbox = (
     top: y,
     originX: "center",
     originY: "center",
-    fontFamily: "Inter",
+    fontFamily: "Roboto",
     fill: "#fff",
     fontSize,
     fontWeight,
@@ -273,7 +274,7 @@ const newTextbox = (
     //@ts-ignore
     inGroup: false,
     cursorDelay: 250,
-    width: calculateTextWidth(text, `${fontWeight} ${fontSize}px Inter`),
+    width: calculateTextWidth(text, `${fontWeight} ${fontSize}px Roboto`),
     id: "Text" + state.layers.length
   });
   newText.setControlsVisibility({
@@ -588,14 +589,48 @@ const listener = (event: AssetEvent) => {
       );
       break;
     case ASSET_TYPE.TEXT:
-      newTextbox(
-        50,
-        700,
-        "Add a heading",
-        mainHeight.value / 2 - 20,
-        mainWidth.value / 2 - 20,
-        "roboto"
-      );
+      switch (event.value) {
+        case "heading":
+          newTextbox(
+            50,
+            700,
+            "Heading",
+            mainHeight.value / 2 - 20,
+            mainWidth.value / 2 - 20,
+            "Roboto"
+          );
+          break;
+        case "subheading":
+          newTextbox(
+            22,
+            500,
+            "Subheading",
+            mainHeight.value / 2 - 20,
+            mainWidth.value / 2 - 20,
+            "Roboto"
+          );
+          break;
+        case "body":
+          newTextbox(
+            18,
+            400,
+            "Body",
+            mainHeight.value / 2 - 20,
+            mainWidth.value / 2 - 20,
+            "Roboto"
+          );
+          break;
+        default:
+          newTextbox(
+            18,
+            400,
+            "Text",
+            mainHeight.value / 2 - 20,
+            mainWidth.value / 2 - 20,
+            event.value
+          );
+          break;
+      }
       break;
   }
 };
@@ -645,6 +680,13 @@ watch([artHeight, artWidth], ([heightA, widthA]) => {
 });
 
 onMounted(() => {
+  // TODO: Convert this to a static include
+  WebFont.load({
+    google: {
+      families: ["Roboto"]
+    }
+  });
+
   fabricCanvas = initializeFabric(
     canvas.value as HTMLCanvasElement,
     mainWidth.value,
