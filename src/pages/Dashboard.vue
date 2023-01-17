@@ -9,21 +9,21 @@
     >
       <div class="top-left flex flex-col select-none">
         <div>
-          <span class="text-slate-500 font-bold">Used</span>
+          <span class="text-slate-500 font-bold">🗑️ Used </span>
           {{ bytesToMB(memory?.usedJSHeapSize) }}
         </div>
-        <div>
-          <span class="text-slate-500 font-bold">Allocated</span>
+        <div class="py-1">
+          <span class="text-slate-500 font-bold">📦 Allocated </span>
           {{ bytesToMB(memory?.totalJSHeapSize) }}
         </div>
         <div>
-          <span class="text-slate-500 font-bold">Limit</span>
+          <span class="text-slate-500 font-bold">💾 Limit </span>
           {{ bytesToMB(memory?.jsHeapSizeLimit) }}
         </div>
       </div>
       <div class="top-right flex flex-col">
         <div class="flex">
-          <btn class="mr-2" @click="undo" background-color="slate-700">
+          <btn class="mr-2" @click="undo" background-color="#475569">
             <img class="mr-2" src="/undo.svg" /> Undo
           </btn>
           <btn>
@@ -76,7 +76,7 @@
       <img class="cursor-pointer" src="/timeline/ff.svg" />
     </div>
     <div class="flex justify-end items-center w-3/12">
-      <btn @click="save" background-color="indigo-400"> Save </btn>
+      <btn @click="save" background-color="#2171b3"> Save </btn>
     </div>
   </div>
 </template>

@@ -2,7 +2,7 @@
   <button
     class="px-3 rounded-md flex justify-center items-center"
     :class="{
-      [`bg-${backgroundColor}`]: true,
+      [`bg-${backgroundColor}`]: !isBgColorHex,
       'py-3': square,
       'py-1': !square
     }"
@@ -33,6 +33,9 @@ const props = defineProps({
 
 const style = computed(() => ({
   width: `${props.width}px`,
-  height: `${props.height}px`
+  height: `${props.height}px`,
+  backgroundColor: isBgColorHex ? props.backgroundColor : undefined
 }));
+
+const isBgColorHex = computed(() => props.backgroundColor.startsWith("#"));
 </script>
