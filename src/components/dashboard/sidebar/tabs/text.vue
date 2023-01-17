@@ -1,5 +1,5 @@
 <template>
-  <div class="flex text-left flex-col gap-y-3 mt-5">
+  <div class="flex text-left flex-col gap-y-3 py-5">
     <div class="text-slate-500">Basic text</div>
     <btn
       id="heading-text"
@@ -41,6 +41,74 @@
       id="item-text"
       :style="{
         fontFamily: `${f}, sans-serif`
+      }"
+      @click="
+        emit({
+          type: ASSET_TYPE.TEXT,
+          value: 'heading'
+        })
+      "
+    >
+      {{ f }}
+    </btn>
+    <div class="text-slate-500">Serif</div>
+    <btn
+      v-for="f in TEXT_ITEMS.serif"
+      :key="f"
+      id="item-text"
+      :style="{
+        fontFamily: f
+      }"
+      @click="
+        emit({
+          type: ASSET_TYPE.TEXT,
+          value: 'heading'
+        })
+      "
+    >
+      {{ f }}
+    </btn>
+    <div class="text-slate-500">Monospace</div>
+    <btn
+      v-for="f in TEXT_ITEMS.monospace"
+      :key="f"
+      id="item-text"
+      :style="{
+        fontFamily: f
+      }"
+      @click="
+        emit({
+          type: ASSET_TYPE.TEXT,
+          value: 'heading'
+        })
+      "
+    >
+      {{ f }}
+    </btn>
+    <div class="text-slate-500">Handwriting</div>
+    <btn
+      v-for="f in TEXT_ITEMS.handwriting"
+      :key="f"
+      id="item-text"
+      :style="{
+        fontFamily: f
+      }"
+      @click="
+        emit({
+          type: ASSET_TYPE.TEXT,
+          value: 'heading'
+        })
+      "
+    >
+      {{ f }}
+    </btn>
+    <div class="text-slate-500">Display</div>
+    <btn
+      v-for="f in TEXT_ITEMS.display"
+      :key="f"
+      id="item-text"
+      :style="{
+        fontFamily: f
       }"
       @click="
         emit({
