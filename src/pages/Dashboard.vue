@@ -87,6 +87,7 @@ import {
   useEventListener,
   useMemory
 } from "@vueuse/core";
+import axios from "axios";
 import { fabric } from "fabric";
 import { randInt } from "matija-utils";
 import { storeToRefs } from "pinia";
@@ -250,10 +251,9 @@ const newTextbox = (
   text: string,
   x: number,
   y: number,
-  width: number,
   font: string
 ) => {
-  var newText = new fabric.Textbox(text, {
+  const newText = new fabric.Textbox(text, {
     left: x,
     top: y,
     originX: "center",
@@ -595,7 +595,6 @@ const listener = (event: AssetEvent) => {
         "Add a heading",
         mainHeight.value / 2 - 20,
         mainWidth.value / 2 - 20,
-        100,
         "roboto"
       );
       break;
@@ -691,21 +690,18 @@ onMounted(async () => {
     centerLines(e);
   });
 
-  fabricCanvas.on("object:modified", (e) => {
-    e.target!.hasControls = true;
-    fabricCanvas!.renderAll();
-  });
-
-  fabricCanvas.on("object:rotating", function (e) {
-    if (e.e.shiftKey) fabricCanvas!.getActiveObject()!.snapAngle = 15;
-    else fabricCanvas!.getActiveObject()!.snapAngle = 0;
-    e.target!.hasControls = false;
-  });
-
   fabricCanvas.on("mouse:up", () => {
     lineH!.opacity = 0;
     lineV!.opacity = 0;
   });
+
+  const { data } = await axios.get(
+    `https://www.googleapis.com/webfonts/v1/webfonts?key=${
+      import.meta.env.VITE_GOOGLE_FONTS_API_KEY
+    }&sort=alpha`
+  );
+
+  console.log(data);
 
   createToast("✅ App successfully started!", "#4BB543");
 });
