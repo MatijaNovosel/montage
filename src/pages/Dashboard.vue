@@ -7,7 +7,7 @@
     <div
       class="main w-7/12 h-full flex flex-col justify-center items-center relative"
     >
-      <div class="top-left flex flex-col">
+      <div class="top-left flex flex-col select-none">
         <div>
           <span class="text-slate-500 font-bold">Used</span>
           {{ bytesToMB(memory?.usedJSHeapSize) }}
@@ -31,7 +31,9 @@
             Redo
           </btn>
         </div>
-        <div class="mt-3 flex justify-center bg-slate-800 py-1 rounded-md">
+        <div
+          class="mt-3 flex justify-center bg-slate-800 py-1 rounded-md select-none"
+        >
           {{ state.zoomLevel }}
         </div>
       </div>
@@ -276,10 +278,6 @@ const newTextbox = (
     cursorDelay: 250,
     width: calculateTextWidth(text, `${fontWeight} ${fontSize}px Roboto`),
     id: "Text" + state.layers.length
-  });
-  newText.setControlsVisibility({
-    mt: false,
-    mb: false
   });
   fabricCanvas?.add(newText);
   fabricCanvas?.setActiveObject(newText);
