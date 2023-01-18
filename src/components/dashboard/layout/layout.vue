@@ -103,15 +103,16 @@ interface State {
 }
 
 const dashboardStore = useDashboardStore();
-const { artboardColor, artHeight, artWidth } = storeToRefs(dashboardStore);
+const { artboardColor, artBoardHeight, artBoardWidth } =
+  storeToRefs(dashboardStore);
 const { createToast } = useToastStore();
 
 defineEmits(["align"]);
 
 const state: State = reactive({
   color: artboardColor.value,
-  width: artWidth.value.toString(),
-  height: artHeight.value.toString(),
+  width: artBoardWidth.value.toString(),
+  height: artBoardHeight.value.toString(),
   fonts: []
 });
 

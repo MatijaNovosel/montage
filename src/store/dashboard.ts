@@ -8,8 +8,8 @@ export const useDashboardStore = defineStore("dashboard", () => {
   const artboardHeight = ref("450");
   const artboardWidth = ref("800");
 
-  const artHeight = computed(() => parseInt(artboardHeight.value) || 0);
-  const artWidth = computed(() => parseInt(artboardWidth.value) || 0);
+  const artBoardHeight = computed(() => parseInt(artboardHeight.value) || 0);
+  const artBoardWidth = computed(() => parseInt(artboardWidth.value) || 0);
 
   const activeTabComponent = computed(() => {
     switch (activeTab.value) {
@@ -63,8 +63,8 @@ export const useDashboardStore = defineStore("dashboard", () => {
     activeTabComponent,
     setArtboardColor,
     artboardColor,
-    artHeight,
-    artWidth,
+    artBoardHeight,
+    artBoardWidth,
     setArtboardDimensions
   };
 });

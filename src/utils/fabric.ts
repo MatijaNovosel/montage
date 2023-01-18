@@ -115,6 +115,154 @@ export const getObjectById = (
   return object;
 };
 
+export const centerLines = (
+  e: fabric.IEvent<MouseEvent>,
+  lineH: fabric.Line | null,
+  lineV: fabric.Line | null,
+  fabricCanvas: fabric.Canvas | null,
+  artBoardTop: number,
+  artBoardLeft: number,
+  artBoardWidth: number,
+  artBoardHeight: number
+) => {
+  lineH!.opacity = 0;
+  lineV!.opacity = 0;
+  fabricCanvas!.renderAll();
+
+  const snapZone = 5;
+  const targetLeft = e.target?.left as number;
+  const targetTop = e.target?.top as number;
+  const targetWidth =
+    (e.target?.get("width") as number) * (e.target?.get("scaleX") as number);
+  const targetHeight =
+    (e.target?.get("height") as number) * (e.target?.get("scaleY") as number);
+
+  fabricCanvas!.forEachObject((obj) => {
+    if (obj != e.target && obj != lineH && obj != lineV) {
+      const left = obj.get("left") as number;
+      const top = obj.get("top") as number;
+      const width = obj.get("width") as number;
+      const height = obj.get("height") as number;
+      const scaleX = obj.get("scaleX") as number;
+      const scaleY = obj.get("scaleY") as number;
+
+      //@ts-ignore
+      if (obj.get("id") == "centerH" || obj.get("id") == "centerV") {
+        checkHSnap(
+          lineH,
+          artBoardTop,
+          artBoardHeight,
+          targetLeft,
+          left,
+          snapZone,
+          e,
+          1
+        );
+        checkVSnap(
+          lineV,
+          artBoardLeft,
+          artBoardWidth,
+          targetTop,
+          top,
+          snapZone,
+          e,
+          1
+        );
+        fabricCanvas?.renderAll();
+      } else {
+        const checkLeft = [
+          [targetLeft, left, SNAP_CHECK_DIRECTION.MIDDLE],
+          [
+            targetLeft,
+            left + (width * scaleX) / 2,
+            SNAP_CHECK_DIRECTION.MIDDLE
+          ],
+          [
+            targetLeft,
+            left - (width * scaleX) / 2,
+            SNAP_CHECK_DIRECTION.MIDDLE
+          ],
+          [targetLeft + targetWidth / 2, left, SNAP_CHECK_DIRECTION.BOTTOM],
+          [
+            targetLeft + targetWidth / 2,
+            left + (width * scaleX) / 2,
+            SNAP_CHECK_DIRECTION.BOTTOM
+          ],
+          [
+            targetLeft + targetWidth / 2,
+            left - (width * scaleX) / 2,
+            SNAP_CHECK_DIRECTION.BOTTOM
+          ],
+          [targetLeft - targetWidth / 2, left, SNAP_CHECK_DIRECTION.TOP],
+          [
+            targetLeft - targetWidth / 2,
+            left + (width * scaleX) / 2,
+            SNAP_CHECK_DIRECTION.TOP
+          ],
+          [
+            targetLeft - targetWidth / 2,
+            left - (width * scaleX) / 2,
+            SNAP_CHECK_DIRECTION.TOP
+          ]
+        ];
+
+        const checkTop = [
+          [targetTop, top, SNAP_CHECK_DIRECTION.MIDDLE],
+          [targetTop, top + (height * scaleY) / 2, SNAP_CHECK_DIRECTION.MIDDLE],
+          [targetTop, top - (height * scaleY) / 2, SNAP_CHECK_DIRECTION.MIDDLE],
+          [targetTop + targetHeight / 2, top, SNAP_CHECK_DIRECTION.BOTTOM],
+          [
+            targetTop + targetHeight / 2,
+            top + (height * scaleY) / 2,
+            SNAP_CHECK_DIRECTION.BOTTOM
+          ],
+          [
+            targetTop + targetHeight / 2,
+            top - (height * scaleY) / 2,
+            SNAP_CHECK_DIRECTION.BOTTOM
+          ],
+          [targetTop - targetHeight / 2, top, SNAP_CHECK_DIRECTION.TOP],
+          [
+            targetTop - targetHeight / 2,
+            top + (height * scaleY) / 2,
+            SNAP_CHECK_DIRECTION.TOP
+          ],
+          [
+            targetTop - targetHeight / 2,
+            top - (height * scaleY) / 2,
+            SNAP_CHECK_DIRECTION.TOP
+          ]
+        ];
+
+        for (let i = 0; i < checkLeft.length; i++) {
+          const [aLeft, bLeft, type1] = checkLeft[i];
+          const [aTop, bTop, type2] = checkTop[i];
+          checkHSnap(
+            lineH,
+            artBoardTop,
+            artBoardHeight,
+            aLeft,
+            bLeft,
+            snapZone,
+            e,
+            type1
+          );
+          checkVSnap(
+            lineV,
+            artBoardLeft,
+            artBoardWidth,
+            aTop,
+            bTop,
+            snapZone,
+            e,
+            type2
+          );
+        }
+      }
+    }
+  });
+};
+
 export const initializeFabric = (
   canvas: HTMLCanvasElement,
   width: number,
