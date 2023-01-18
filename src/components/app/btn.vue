@@ -1,6 +1,6 @@
 <template>
   <button
-    class="px-3 rounded-md flex justify-center items-center"
+    class="px-3 rounded-md flex justify-center items-center shadow-xl"
     :class="{
       [`bg-${backgroundColor}`]: !isBgColorHex,
       'py-3': square,
