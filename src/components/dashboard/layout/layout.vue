@@ -100,28 +100,13 @@
 
 <script lang="ts" setup>
 import { SelectItem } from "@/models/common";
+import { FontItem, FontResponse } from "@/models/font";
 import { useDashboardStore } from "@/store/dashboard";
 import { useToastStore } from "@/store/toast";
 import { ALIGN_OPTIONS } from "@/utils/constants";
 import axios from "axios";
 import { storeToRefs } from "pinia";
 import { computed, onMounted, reactive, watch } from "vue";
-
-interface FontItem {
-  family: string;
-  variants: string[];
-  subsets: string[];
-  version: string;
-  lastModified: string;
-  files: Record<string, string>;
-  category: string;
-  kind: string;
-}
-
-interface FontResponse {
-  kind: string;
-  items: FontItem[];
-}
 
 interface State {
   color: string;
@@ -147,7 +132,7 @@ const state: State = reactive({
 const fontOptions = computed(() =>
   state.fonts.map<SelectItem<string>>((f) => ({
     text: f.family,
-    value: ""
+    value: f.family
   }))
 );
 

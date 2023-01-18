@@ -66,7 +66,7 @@
             :key="layer.id"
             @click="setActiveObject(layer.id)"
           >
-            {{ formatLayerTypeIcon(layer.type) }} - {{ layer.id }}
+            {{ formatLayerTypeIcon(layer.type) }} {{ layer.id }}
           </div>
         </template>
         <div class="text-slate-600 p-5" v-else>No layers added.</div>
@@ -281,7 +281,7 @@ const newTextbox = (
     inGroup: false,
     cursorDelay: 250,
     width: calculateTextWidth(text, `${fontWeight} ${fontSize}px Roboto`),
-    id
+    id: `image_${id}`
   });
   fabricCanvas?.add(newText);
   fabricCanvas?.setActiveObject(newText);
@@ -295,7 +295,7 @@ const newTextbox = (
   fabricCanvas!.getActiveObject()!.set("fontFamily", font);
   fabricCanvas?.renderAll();
   state.layers.push({
-    id,
+    id: `image_${id}`,
     object: newText,
     type: "text"
   });
@@ -449,11 +449,11 @@ const newSvg = (path: string) => {
     svgData.left = mainWidth.value / 2 - (svgData.width as number) / 2;
     const id = randInt(1, 9999).toString();
     //@ts-ignore
-    svgData.id = id;
+    svgData.id = `image_${id}`;
     fabricCanvas?.add(svgData);
     fabricCanvas?.setActiveObject(svgData);
     state.layers.push({
-      id,
+      id: `image_${id}`,
       object: svgData,
       type: "image"
     });
