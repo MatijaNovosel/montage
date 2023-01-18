@@ -5,6 +5,8 @@
         @click="$emit('align', ALIGN_OPTIONS.TOP)"
         v-tooltip="'Align top'"
         square
+        background-color="indigo-500"
+        :disabled="!activeObject"
       >
         <img src="/align/align-top.svg" />
       </btn>
@@ -13,6 +15,8 @@
         v-tooltip="'Align center'"
         square
         class="mx-2 py-2"
+        background-color="indigo-500"
+        :disabled="!activeObject"
       >
         <img class="h-full w-full" src="/align/align-center-v.svg" />
       </btn>
@@ -20,6 +24,8 @@
         @click="$emit('align', ALIGN_OPTIONS.BOTTOM)"
         v-tooltip="'Align bottom'"
         square
+        background-color="indigo-500"
+        :disabled="!activeObject"
       >
         <img src="/align/align-bottom.svg" />
       </btn>
@@ -29,6 +35,8 @@
         @click="$emit('align', ALIGN_OPTIONS.LEFT)"
         v-tooltip="'Align left'"
         square
+        background-color="indigo-500"
+        :disabled="!activeObject"
       >
         <img src="/align/align-left.svg" />
       </btn>
@@ -36,7 +44,9 @@
         @click="$emit('align', ALIGN_OPTIONS.CENTER_H)"
         v-tooltip="'Align center'"
         square
+        background-color="indigo-500"
         class="mx-2 py-2"
+        :disabled="!activeObject"
       >
         <img src="/align/align-center-h.svg" />
       </btn>
@@ -44,6 +54,8 @@
         @click="$emit('align', ALIGN_OPTIONS.RIGHT)"
         v-tooltip="'Align right'"
         square
+        background-color="indigo-500"
+        :disabled="!activeObject"
       >
         <img src="/align/align-right.svg" />
       </btn>

@@ -2,9 +2,10 @@
   <button
     class="px-3 rounded-md flex justify-center items-center shadow-xl"
     :class="{
-      [`bg-${backgroundColor}`]: !isBgColorHex,
+      [`bg-${backgroundColor}`]: !isBgColorHex && !disabled,
       'py-3': square,
-      'py-1': !square
+      'py-1': !square,
+      'bg-neutral-700 cursor-not-allowed': disabled
     }"
     :style="style"
   >
@@ -28,6 +29,10 @@ const props = defineProps({
   },
   square: {
     type: Boolean
+  },
+  disabled: {
+    type: Boolean,
+    default: false
   }
 });
 

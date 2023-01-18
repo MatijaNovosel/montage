@@ -6,6 +6,7 @@
     <div
       v-for="(a, i) in AUDIO"
       :key="i"
+      v-tooltip="a"
       class="col-span-3 cursor-pointer select-none"
     >
       <img class="rounded-md" :src="`/audio/${a}-thumb.png`" />

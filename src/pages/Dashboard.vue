@@ -66,10 +66,15 @@
             :key="layer.id"
             @click="setActiveObject(layer.id)"
           >
-            {{ formatLayerTypeIcon(layer.type) }} {{ layer.id }}
+            <span class="mr-3">
+              {{ formatLayerTypeIcon(layer.type) }}
+            </span>
+            <span>
+              {{ layer.id }}
+            </span>
           </div>
         </template>
-        <div class="text-slate-600 p-5" v-else>No layers added.</div>
+        <div class="p-5" v-else>No layers added.</div>
       </div>
     </div>
     <div class="w-8/12 h-full p-5">
@@ -388,7 +393,7 @@ const initLines = () => {
 
 const setActiveObject = (id: string) => {
   const obj = getObjectById(fabricCanvas, id);
-  if (obj) {
+  if (obj && activeObjectId.value !== id) {
     fabricCanvas?.setActiveObject(obj);
     fabricCanvas?.renderAll();
   }
@@ -525,20 +530,6 @@ const formatLayerTypeIcon = (type: string) => {
   }
 };
 
-const handleLines = (e: fabric.IEvent<MouseEvent>) => {
-  e.target!.hasControls = false;
-  centerLines(
-    e,
-    lineH,
-    lineV,
-    fabricCanvas,
-    artBoardTop.value,
-    artBoardLeft.value,
-    artBoardWidth.value,
-    artBoardHeight.value
-  );
-};
-
 watch([mainWidth, mainHeight], async ([width, height]) => {
   await nextTick(() => {
     fabricCanvas?.setHeight(height);
@@ -598,13 +589,29 @@ onMounted(() => {
     left: mainWidth.value / 2 - 10,
     top: mainHeight.value / 2 - 10,
     width: 20,
-    height: 20
+    height: 20,
+    selectable: false,
+    hoverCursor: "auto"
   });
 
   fabricCanvas.add(centerCircle);
   fabricCanvas.clipPath = artBoard;
 
-  fabricCanvas.on("object:moving", handleLines);
+  fabricCanvas.on("object:moving", (e) => {
+    e.target!.hasControls = false;
+    if (e.e.shiftKey)
+      centerLines(
+        e,
+        lineH,
+        lineV,
+        fabricCanvas,
+        artBoardTop.value,
+        artBoardLeft.value,
+        artBoardWidth.value,
+        artBoardHeight.value
+      );
+  });
+
   fabricCanvas.on("mouse:up", () => {
     lineH!.opacity = 0;
     lineV!.opacity = 0;

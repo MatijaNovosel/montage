@@ -166,6 +166,8 @@ export const AUDIO = [
   "tropical-summer-music"
 ];
 
+export const IMAGES = ["drunkDriving", "redPill", "pizzaHat"];
+
 export const SIZES = ["b", "kB", "MB", "GB", "TB"];
 
 export const ALIGN_OPTIONS: Record<string, number> = {
