@@ -7,9 +7,17 @@ export const useDashboardStore = defineStore("dashboard", () => {
   const artboardColor = ref("#000000");
   const artboardHeight = ref("450");
   const artboardWidth = ref("800");
+  const activeObject = ref<fabric.Object | null>(null);
 
   const artBoardHeight = computed(() => parseInt(artboardHeight.value) || 0);
   const artBoardWidth = computed(() => parseInt(artboardWidth.value) || 0);
+
+  const activeObjectId = computed(() => {
+    if (activeObject.value) {
+      //@ts-ignore
+      return activeObject.value.id;
+    }
+  });
 
   const activeTabComponent = computed(() => {
     switch (activeTab.value) {
@@ -57,6 +65,12 @@ export const useDashboardStore = defineStore("dashboard", () => {
     if (height) artboardHeight.value = height;
   };
 
+  const setActiveObject = (obj: fabric.Object | null | undefined) => {
+    if (obj) {
+      activeObject.value = obj;
+    }
+  };
+
   return {
     activeTab,
     setActiveTab,
@@ -65,6 +79,9 @@ export const useDashboardStore = defineStore("dashboard", () => {
     artboardColor,
     artBoardHeight,
     artBoardWidth,
-    setArtboardDimensions
+    setArtboardDimensions,
+    activeObject,
+    setActiveObject,
+    activeObjectId
   };
 });

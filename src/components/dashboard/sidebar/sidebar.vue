@@ -19,13 +19,13 @@
         </span>
       </div>
     </div>
-    <div class="w-9/12 text-center flex flex-col">
-      <div class="shadow-xl bg-slate-800 py-5 flex flex-col">
-        <div>
-          {{ TAB_ITEMS[activeTab].name }}
+    <div class="w-9/12 text-center flex flex-col asset-ctr">
+      <div class="shadow-xl py-5 flex flex-col bg-slate-900">
+        <div class="text-slate-500">
+          {{ TAB_ITEMS[activeTab].name.toUpperCase() }}
         </div>
         <div class="mt-3 px-4">
-          <text-input background-color="slate-900" placeholder="Search" dense />
+          <text-input placeholder="Search" dense />
         </div>
       </div>
       <div class="overflow-auto px-8">
@@ -45,3 +45,9 @@ import { storeToRefs } from "pinia";
 const dashboardStore = useDashboardStore();
 const { activeTab, activeTabComponent } = storeToRefs(dashboardStore);
 </script>
+
+<style scoped>
+.asset-ctr {
+  background-color: #0b111f;
+}
+</style>

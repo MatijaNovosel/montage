@@ -47,13 +47,35 @@
     class="flex bg-slate-900 text-white border-y border-slate-700"
     style="height: var(--timeline-height)"
   >
-    <div class="w-4/12 border-r border-slate-700 h-full p-5">
-      <div>Layers</div>
-      <div class="text-slate-500 mt-3">
-        {{ state.layers.length ? "Layers" : "No layers added." }}
+    <div class="w-4/12 border-r border-slate-700 h-full">
+      <div
+        class="layers-ctr-title border-b border-slate-700 flex items-center pl-4 text-slate-500 select-none"
+      >
+        LAYERS
+      </div>
+      <div class="flex flex-col overflow-auto layers-ctr pr-2">
+        <template v-if="state.layers.length">
+          <div
+            class="pl-4 py-3 cursor-pointer"
+            v-for="(layer, i) of state.layers"
+            :class="{
+              'bg-slate-800 hover:bg-slate-700': i % 2,
+              'bg-slate-900 hover:bg-slate-800': !(i % 2),
+              'bg-indigo-500 hover:bg-indigo-400': activeObjectId === layer.id,
+              'rounded-t-md': i === 0
+            }"
+            :key="layer.id"
+            @click="setActiveObject(layer.id)"
+          >
+            {{ layer.id }} - {{ layer.type }}
+          </div>
+        </template>
+        <div class="text-slate-600 p-5" v-else>No layers added.</div>
       </div>
     </div>
-    <div class="w-8/12 h-full p-5">Draggable timeline</div>
+    <div class="w-8/12 h-full p-5">
+      <div class="text-slate-500 select-none">TIMELINE</div>
+    </div>
   </div>
   <div
     class="flex justify-between items-center bg-slate-800 text-white px-5"
@@ -123,7 +145,7 @@ const dashboardStore = useDashboardStore();
 const { createToast } = useToastStore();
 const bus = useEventBus<AssetEvent>("asset");
 
-const { artboardColor, artBoardWidth, artBoardHeight } =
+const { artboardColor, artBoardWidth, artBoardHeight, activeObjectId } =
   storeToRefs(dashboardStore);
 
 const state: State = reactive({
@@ -188,21 +210,14 @@ const newVideo = (
   //@ts-ignore
   newVideo.saveElem = newVideo.getElement();
   fabricCanvas?.add(newVideo);
-
   if ((newVideo.get("width") as number) > artBoardWidth.value) {
     newVideo.scaleToWidth(artBoardWidth.value);
   }
-
   newVideo.scaleToWidth(150);
-
   fabricCanvas?.renderAll();
   fabricCanvas?.setActiveObject(newVideo);
   fabricCanvas?.bringToFront(newVideo);
-
-  newVideo.set(
-    "left",
-    (artBoard?.get("left") as number) + artBoardWidth.value / 2
-  );
+  newVideo.set("left", artBoardLeft.value + artBoardWidth.value / 2);
   newVideo.set("top", artBoardTop.value + artBoardHeight.value / 2);
   fabricCanvas?.renderAll();
 };
@@ -242,6 +257,7 @@ const newTextbox = (
   text: string,
   font: string
 ) => {
+  const id = randInt(1, 9999).toString();
   const newText = new fabric.Textbox(text, {
     left: mainHeight.value / 2 - 20,
     top: mainWidth.value / 2 - 20,
@@ -264,7 +280,7 @@ const newTextbox = (
     inGroup: false,
     cursorDelay: 250,
     width: calculateTextWidth(text, `${fontWeight} ${fontSize}px Roboto`),
-    id: `text_${state.layers.length}`
+    id
   });
   fabricCanvas?.add(newText);
   fabricCanvas?.setActiveObject(newText);
@@ -277,6 +293,11 @@ const newTextbox = (
   //@ts-ignore
   fabricCanvas!.getActiveObject()!.set("fontFamily", font);
   fabricCanvas?.renderAll();
+  state.layers.push({
+    id,
+    object: newText,
+    type: "text"
+  });
 };
 
 const initLines = () => {
@@ -364,6 +385,14 @@ const initLines = () => {
   fabricCanvas?.add(lineV);
 };
 
+const setActiveObject = (id: string) => {
+  const obj = getObjectById(fabricCanvas, id);
+  if (obj) {
+    fabricCanvas?.setActiveObject(obj);
+    fabricCanvas?.renderAll();
+  }
+};
+
 const alignActiveObject = (option: number) => {
   const activeObject = fabricCanvas?.getActiveObject();
   if (activeObject) {
@@ -413,7 +442,12 @@ const alignActiveObject = (option: number) => {
 };
 
 onKeyDown("Delete", () => {
-  fabricCanvas?.getActiveObjects().forEach((obj) => fabricCanvas?.remove(obj));
+  fabricCanvas?.getActiveObjects().forEach((obj) => {
+    //@ts-ignore
+    const id: string = obj.id;
+    state.layers = state.layers.filter((l) => l.id !== id);
+    fabricCanvas?.remove(obj);
+  });
   fabricCanvas?.discardActiveObject().renderAll();
 });
 
@@ -426,10 +460,13 @@ const addAsset = (event: AssetEvent) => {
           const svgData = fabric.util.groupSVGElements(objects, options);
           svgData.top = mainHeight.value / 2 - (svgData.height as number) / 2;
           svgData.left = mainWidth.value / 2 - (svgData.width as number) / 2;
+          const id = randInt(1, 9999).toString();
+          //@ts-ignore
+          svgData.id = id;
           fabricCanvas?.add(svgData);
           fabricCanvas?.setActiveObject(svgData);
           state.layers.push({
-            id: randInt(1, 9999).toString(),
+            id,
             object: svgData,
             type: "image"
           });
@@ -552,12 +589,20 @@ onMounted(() => {
 
   fabricCanvas.add(centerCircle);
   fabricCanvas.clipPath = artBoard;
+
   fabricCanvas.on("object:moving", handleLines);
   fabricCanvas.on("object:scaling", handleLines);
-
   fabricCanvas.on("mouse:up", () => {
     lineH!.opacity = 0;
     lineV!.opacity = 0;
+  });
+
+  fabricCanvas.on("selection:updated", () => {
+    dashboardStore.setActiveObject(fabricCanvas?.getActiveObject());
+  });
+
+  fabricCanvas.on("selection:created", () => {
+    dashboardStore.setActiveObject(fabricCanvas?.getActiveObject());
   });
 
   fabricCanvas.renderAll();
@@ -584,5 +629,13 @@ onBeforeUnmount(() => {
   top: 15px;
   right: 15px;
   z-index: 10;
+}
+
+.layers-ctr-title {
+  height: 60px;
+}
+
+.layers-ctr {
+  height: 177px;
 }
 </style>

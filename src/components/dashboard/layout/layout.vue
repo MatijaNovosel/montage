@@ -48,7 +48,7 @@
         <img src="/align/align-right.svg" />
       </btn>
     </div>
-    <div class="mt-5 text-slate-400">Canvas settings</div>
+    <div class="mt-5 text-slate-400 select-none">Canvas settings</div>
     <div class="flex items-center my-3 w-full">
       <div class="w-4/12">Width</div>
       <text-input
@@ -71,7 +71,7 @@
       <div class="w-4/12">Color</div>
       <color-picker class="w-8/12" v-model="state.color" />
     </div>
-    <div class="mt-5 text-slate-400">Font settings</div>
+    <div class="mt-5 text-slate-400 select-none">Font settings</div>
     <div class="flex items-center justify-center mt-5 w-full">
       <div class="w-4/12">Font</div>
       <m-select class="w-8/12" placeholder="Font" :options="fontOptions" />

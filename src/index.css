@@ -29,11 +29,11 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background-color: #5e627e33;
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: rgba(160, 165, 208, 0.2);
+  background-color: #a0a5d033;
   border: 4.5px solid transparent;
   border-radius: 10px;
   background-clip: padding-box;
@@ -41,7 +41,7 @@
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(160, 165, 208, 0.4);
+  background-color: #a0a5d066;
 }
 
 ::-webkit-scrollbar-corner {
