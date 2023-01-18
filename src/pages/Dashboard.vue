@@ -76,7 +76,7 @@
       <img class="cursor-pointer" src="/timeline/ff.svg" />
     </div>
     <div class="flex justify-end items-center w-3/12">
-      <btn @click="save" background-color="#2171b3"> Save </btn>
+      <btn @click="$export" background-color="#2171b3"> Export </btn>
     </div>
   </div>
 </template>
@@ -152,17 +152,16 @@ const undo = () => {
   createToast("🚨 Undo", "#f80000");
 };
 
-const save = () => {
-  createToast("💾 Saved", "#2171b3");
+const $export = () => {
+  createToast("💾 Exported!", "#2171b3");
 };
 
 const newVideo = (
   file: HTMLVideoElement,
-  src: string,
+  source: string,
   x: number,
   y: number,
-  duration: number,
-  center: boolean
+  duration: number
 ) => {
   const newVideo = new fabric.Image(file, {
     left: x,
@@ -177,10 +176,10 @@ const newVideo = (
     paintFirst: "stroke",
     strokeWidth: 0,
     //@ts-ignore
-    source: src,
+    source,
     duration: duration * 1000,
     assetType: "video",
-    id: "Video" + state.layers.length,
+    id: `video_${state.layers.length}`,
     objectCaching: false,
     inGroup: false
   });
@@ -199,17 +198,15 @@ const newVideo = (
   fabricCanvas?.setActiveObject(newVideo);
   fabricCanvas?.bringToFront(newVideo);
 
-  if (center) {
-    newVideo.set(
-      "left",
-      (artBoard?.get("left") as number) + artBoardWidth.value / 2
-    );
-    newVideo.set("top", artBoardTop.value + artBoardHeight.value / 2);
-    fabricCanvas?.renderAll();
-  }
+  newVideo.set(
+    "left",
+    (artBoard?.get("left") as number) + artBoardWidth.value / 2
+  );
+  newVideo.set("top", artBoardTop.value + artBoardHeight.value / 2);
+  fabricCanvas?.renderAll();
 };
 
-const loadVideo = (src: string, x: number, y: number, center: boolean) => {
+const loadVideo = (src: string, x: number, y: number) => {
   var vidObj = document.createElement("video");
   var vidSrc = document.createElement("source");
   vidSrc.src = src;
@@ -222,7 +219,7 @@ const loadVideo = (src: string, x: number, y: number, center: boolean) => {
     vidObj.muted = false;
     const waitLoad = () => {
       if (vidObj.readyState >= 3) {
-        newVideo(vidObj, src, x, y, vidObj.duration, center);
+        newVideo(vidObj, src, x, y, vidObj.duration);
       } else {
         setTimeout(waitLoad, 100);
       }
@@ -242,13 +239,11 @@ const newTextbox = (
   fontSize: number,
   fontWeight: string | number | undefined,
   text: string,
-  x: number,
-  y: number,
   font: string
 ) => {
   const newText = new fabric.Textbox(text, {
-    left: x,
-    top: y,
+    left: mainHeight.value / 2 - 20,
+    top: mainWidth.value / 2 - 20,
     originX: "center",
     originY: "center",
     fontFamily: "Roboto",
@@ -268,7 +263,7 @@ const newTextbox = (
     inGroup: false,
     cursorDelay: 250,
     width: calculateTextWidth(text, `${fontWeight} ${fontSize}px Roboto`),
-    id: "Text" + state.layers.length
+    id: `text_${state.layers.length}`
   });
   fabricCanvas?.add(newText);
   fabricCanvas?.setActiveObject(newText);
@@ -364,8 +359,8 @@ const initLines = () => {
     }
   );
 
-  fabricCanvas!.add(lineH);
-  fabricCanvas!.add(lineV);
+  fabricCanvas?.add(lineH);
+  fabricCanvas?.add(lineV);
 };
 
 const alignActiveObject = (option: number) => {
@@ -421,7 +416,7 @@ onKeyDown("Delete", () => {
   fabricCanvas?.discardActiveObject().renderAll();
 });
 
-const listener = (event: AssetEvent) => {
+const addAsset = (event: AssetEvent) => {
   switch (event.type) {
     case ASSET_TYPE.EMOJI:
       fabric.loadSVGFromURL(
@@ -443,51 +438,23 @@ const listener = (event: AssetEvent) => {
     case ASSET_TYPE.TEXT:
       switch (event.value) {
         case "heading":
-          newTextbox(
-            50,
-            700,
-            "Heading",
-            mainHeight.value / 2 - 20,
-            mainWidth.value / 2 - 20,
-            "Roboto"
-          );
+          newTextbox(50, 700, "Heading", "Roboto");
           break;
         case "subheading":
-          newTextbox(
-            22,
-            500,
-            "Subheading",
-            mainHeight.value / 2 - 20,
-            mainWidth.value / 2 - 20,
-            "Roboto"
-          );
+          newTextbox(22, 500, "Subheading", "Roboto");
           break;
         case "body":
-          newTextbox(
-            18,
-            400,
-            "Body",
-            mainHeight.value / 2 - 20,
-            mainWidth.value / 2 - 20,
-            "Roboto"
-          );
+          newTextbox(18, 400, "Body", "Roboto");
           break;
         default:
-          newTextbox(
-            18,
-            400,
-            "Text",
-            mainHeight.value / 2 - 20,
-            mainWidth.value / 2 - 20,
-            event.value
-          );
+          newTextbox(18, 400, "Text", event.value);
           break;
       }
       break;
   }
 };
 
-const unsubscribe = bus.on(listener);
+const unsubscribe = bus.on(addAsset);
 
 const wheelScrollEvent = useEventListener(main, "wheel", (e: WheelEvent) => {
   const scrollingUp = Math.sign(e.deltaY) < 0; // Down = 1, Up = -1
@@ -495,15 +462,30 @@ const wheelScrollEvent = useEventListener(main, "wheel", (e: WheelEvent) => {
   if (zoom < 0.02) zoom = 0.02;
   fabricCanvas?.setZoom(1);
   fabricCanvas?.renderAll();
-  const x =
-    artBoard?.left || 0 + artBoardWidth.value / 2 - mainWidth.value / zoom / 2;
-  const y =
-    artBoard?.top || 0 + artBoardHeight.value / 2 - mainHeight.value / zoom / 2;
-  fabricCanvas?.absolutePan({ x, y });
+  fabricCanvas?.absolutePan({
+    x:
+      artBoardLeft.value + artBoardWidth.value / 2 - mainWidth.value / zoom / 2,
+    y:
+      artBoardTop.value + artBoardHeight.value / 2 - mainHeight.value / zoom / 2
+  });
   fabricCanvas?.setZoom(zoom);
   fabricCanvas?.renderAll();
   state.zoomLevel = `${(fabricCanvas!.getZoom() * 100).toFixed(0)}%`;
 });
+
+const handleLines = (e: fabric.IEvent<MouseEvent>) => {
+  e.target!.hasControls = false;
+  centerLines(
+    e,
+    lineH,
+    lineV,
+    fabricCanvas,
+    artBoardTop.value,
+    artBoardLeft.value,
+    artBoardWidth.value,
+    artBoardHeight.value
+  );
+};
 
 watch([mainWidth, mainHeight], async ([width, height]) => {
   await nextTick(() => {
@@ -568,43 +550,16 @@ onMounted(() => {
   });
 
   fabricCanvas.add(centerCircle);
-
-  fabricCanvas.renderAll();
   fabricCanvas.clipPath = artBoard;
-  fabricCanvas.renderAll();
-
-  fabricCanvas.on("object:moving", (e) => {
-    e.target!.hasControls = false;
-    centerLines(
-      e,
-      lineH,
-      lineV,
-      fabricCanvas,
-      artBoardTop.value,
-      artBoardLeft.value,
-      artBoardWidth.value,
-      artBoardHeight.value
-    );
-  });
-
-  fabricCanvas.on("object:scaling", (e) => {
-    e.target!.hasControls = false;
-    centerLines(
-      e,
-      lineH,
-      lineV,
-      fabricCanvas,
-      artBoardTop.value,
-      artBoardLeft.value,
-      artBoardWidth.value,
-      artBoardHeight.value
-    );
-  });
+  fabricCanvas.on("object:moving", handleLines);
+  fabricCanvas.on("object:scaling", handleLines);
 
   fabricCanvas.on("mouse:up", () => {
     lineH!.opacity = 0;
     lineV!.opacity = 0;
   });
+
+  fabricCanvas.renderAll();
 
   createToast("✅ App successfully started!", "#4BB543");
 });
