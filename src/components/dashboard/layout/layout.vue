@@ -76,6 +76,25 @@
       <div class="w-4/12">Font</div>
       <m-select class="w-8/12" placeholder="Font" :options="fontOptions" />
     </div>
+    <template v-if="activeObject">
+      <div class="mt-5 text-slate-400 select-none">Active object settings</div>
+      <div class="flex items-center my-3 w-full">
+        <div class="w-4/12">Width</div>
+        <text-input class="w-8/12" dense placeholder="Width" />
+      </div>
+      <div class="flex items-center w-full">
+        <div class="w-4/12">Height</div>
+        <text-input class="w-8/12" dense placeholder="Height" />
+      </div>
+      <div class="flex items-center my-3 w-full">
+        <div class="w-4/12">Rotation</div>
+        <text-input class="w-8/12" dense placeholder="Rotation" />
+      </div>
+      <div class="flex items-center w-full">
+        <div class="w-4/12">Opacity</div>
+        <slider class="w-8/12" />
+      </div>
+    </template>
   </div>
 </template>
 
@@ -112,7 +131,7 @@ interface State {
 }
 
 const dashboardStore = useDashboardStore();
-const { artboardColor, artBoardHeight, artBoardWidth } =
+const { artboardColor, artBoardHeight, artBoardWidth, activeObject } =
   storeToRefs(dashboardStore);
 const { createToast } = useToastStore();
 

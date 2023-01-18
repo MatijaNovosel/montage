@@ -61,13 +61,12 @@
             :class="{
               'bg-slate-800 hover:bg-slate-700': i % 2,
               'bg-slate-900 hover:bg-slate-800': !(i % 2),
-              'bg-indigo-500 hover:bg-indigo-400': activeObjectId === layer.id,
-              'rounded-t-md': i === 0
+              'bg-indigo-500 hover:bg-indigo-400': activeObjectId === layer.id
             }"
             :key="layer.id"
             @click="setActiveObject(layer.id)"
           >
-            {{ layer.id }} - {{ layer.type }}
+            {{ formatLayerTypeIcon(layer.type) }} - {{ layer.id }}
           </div>
         </template>
         <div class="text-slate-600 p-5" v-else>No layers added.</div>
@@ -496,8 +495,8 @@ const unsubscribe = bus.on(addAsset);
 
 const wheelScrollEvent = useEventListener(main, "wheel", (e: WheelEvent) => {
   const scrollingUp = Math.sign(e.deltaY) < 0; // Down = 1, Up = -1
-  let zoom = fabricCanvas!.getZoom() + (scrollingUp ? 0.02 : -0.02);
-  if (zoom < 0.02) zoom = 0.02;
+  let zoom = fabricCanvas!.getZoom() + (scrollingUp ? 0.1 : -0.1);
+  if (zoom < 0.1) zoom = 0.1;
   fabricCanvas?.setZoom(1);
   fabricCanvas?.renderAll();
   fabricCanvas?.absolutePan({
@@ -510,6 +509,15 @@ const wheelScrollEvent = useEventListener(main, "wheel", (e: WheelEvent) => {
   fabricCanvas?.renderAll();
   state.zoomLevel = `${(fabricCanvas!.getZoom() * 100).toFixed(0)}%`;
 });
+
+const formatLayerTypeIcon = (type: string) => {
+  switch (type) {
+    case "text":
+      return "✏️";
+    case "image":
+      return "🖼️";
+  }
+};
 
 const handleLines = (e: fabric.IEvent<MouseEvent>) => {
   e.target!.hasControls = false;
@@ -591,7 +599,6 @@ onMounted(() => {
   fabricCanvas.clipPath = artBoard;
 
   fabricCanvas.on("object:moving", handleLines);
-  fabricCanvas.on("object:scaling", handleLines);
   fabricCanvas.on("mouse:up", () => {
     lineH!.opacity = 0;
     lineV!.opacity = 0;
