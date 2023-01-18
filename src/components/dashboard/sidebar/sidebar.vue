@@ -21,7 +21,7 @@
     </div>
     <div class="w-9/12 text-center flex flex-col asset-ctr">
       <div class="shadow-xl py-5 flex flex-col bg-slate-900">
-        <div class="text-slate-500">
+        <div class="text-slate-500 tracking-widest">
           {{ TAB_ITEMS[activeTab].name.toUpperCase() }}
         </div>
         <div class="mt-3 px-4">

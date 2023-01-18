@@ -21,6 +21,12 @@
       v-for="(shape, i) in SHAPES"
       :key="i"
       class="bg-slate-700 rounded-md p-2 cursor-pointer hover:bg-slate-800 select-none grid-item flex justify-center"
+      @click="
+        emit({
+          type: ASSET_TYPE.SHAPE,
+          value: shape
+        })
+      "
     >
       <img class="h-full" :src="`/shapes/${shape}.svg`" />
     </div>

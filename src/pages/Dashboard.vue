@@ -49,7 +49,7 @@
   >
     <div class="w-4/12 border-r border-slate-700 h-full">
       <div
-        class="layers-ctr-title border-b border-slate-700 flex items-center pl-4 text-slate-500 select-none"
+        class="layers-ctr-title border-b border-slate-700 flex items-center pl-4 text-slate-500 select-none tracking-widest"
       >
         LAYERS
       </div>
@@ -73,7 +73,7 @@
       </div>
     </div>
     <div class="w-8/12 h-full p-5">
-      <div class="text-slate-500 select-none">TIMELINE</div>
+      <div class="text-slate-500 select-none tracking-widest">TIMELINE</div>
     </div>
   </div>
   <div
@@ -81,9 +81,11 @@
     style="height: var(--timeline-controls-height)"
   >
     <div class="flex justify-center items-center w-3/12">
-      <slider class="mr-3 w-7/12" v-model="state.timelineScale" />
+      <span> ◻️ </span>
+      <slider class="mx-3 w-7/12" v-model="state.timelineScale" />
+      <span> ⬜ </span>
       <m-select
-        class="w-5/12"
+        class="ml-3 w-5/12"
         background-color="slate-900"
         placement="top-start"
         placeholder="Speed"
@@ -98,7 +100,7 @@
       <img class="cursor-pointer" src="/timeline/ff.svg" />
     </div>
     <div class="flex justify-end items-center w-3/12">
-      <btn @click="$export" background-color="#2171b3"> Export </btn>
+      <btn @click="$export" background-color="#2171b3"> 💾 Export </btn>
     </div>
   </div>
 </template>
@@ -440,6 +442,24 @@ const alignActiveObject = (option: number) => {
   }
 };
 
+const newSvg = (path: string) => {
+  fabric.loadSVGFromURL(path, (objects, options) => {
+    const svgData = fabric.util.groupSVGElements(objects, options);
+    svgData.top = mainHeight.value / 2 - (svgData.height as number) / 2;
+    svgData.left = mainWidth.value / 2 - (svgData.width as number) / 2;
+    const id = randInt(1, 9999).toString();
+    //@ts-ignore
+    svgData.id = id;
+    fabricCanvas?.add(svgData);
+    fabricCanvas?.setActiveObject(svgData);
+    state.layers.push({
+      id,
+      object: svgData,
+      type: "image"
+    });
+  });
+};
+
 onKeyDown("Delete", () => {
   fabricCanvas?.getActiveObjects().forEach((obj) => {
     //@ts-ignore
@@ -453,24 +473,10 @@ onKeyDown("Delete", () => {
 const addAsset = (event: AssetEvent) => {
   switch (event.type) {
     case ASSET_TYPE.EMOJI:
-      fabric.loadSVGFromURL(
-        `/emojis/${event.value}.svg`,
-        (objects, options) => {
-          const svgData = fabric.util.groupSVGElements(objects, options);
-          svgData.top = mainHeight.value / 2 - (svgData.height as number) / 2;
-          svgData.left = mainWidth.value / 2 - (svgData.width as number) / 2;
-          const id = randInt(1, 9999).toString();
-          //@ts-ignore
-          svgData.id = id;
-          fabricCanvas?.add(svgData);
-          fabricCanvas?.setActiveObject(svgData);
-          state.layers.push({
-            id,
-            object: svgData,
-            type: "image"
-          });
-        }
-      );
+      newSvg(`/emojis/${event.value}.svg`);
+      break;
+    case ASSET_TYPE.SHAPE:
+      newSvg(`/shapes/${event.value}.svg`);
       break;
     case ASSET_TYPE.TEXT:
       switch (event.value) {
