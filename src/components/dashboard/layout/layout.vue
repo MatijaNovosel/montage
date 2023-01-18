@@ -1,6 +1,5 @@
 <template>
-  <div class="border-l border-slate-700 flex flex-col pt-5 px-3 items-center">
-    <div class="mb-3">Layout settings</div>
+  <div class="border-l border-slate-700 flex flex-col p-5 items-center">
     <div class="flex justify-center items-center">
       <btn
         @click="$emit('align', ALIGN_OPTIONS.TOP)"
@@ -49,24 +48,34 @@
         <img src="/align/align-right.svg" />
       </btn>
     </div>
-    <m-select
-      class="mt-4 w-full px-3"
-      placeholder="Font"
-      :options="fontOptions"
-    />
-    <text-input
-      v-model="state.width"
-      dense
-      class="mt-3 w-full px-3"
-      placeholder="Width"
-    />
-    <text-input
-      v-model="state.height"
-      dense
-      class="mt-3 w-full px-3"
-      placeholder="Height"
-    />
-    <color-picker v-model="state.color" class="mt-3" />
+    <div class="mt-5 text-slate-400">Canvas settings</div>
+    <div class="flex items-center my-3 w-full">
+      <div class="w-4/12">Width</div>
+      <text-input
+        class="w-8/12"
+        v-model="state.width"
+        dense
+        placeholder="Width"
+      />
+    </div>
+    <div class="flex items-center w-full">
+      <div class="w-4/12">Height</div>
+      <text-input
+        class="w-8/12"
+        v-model="state.height"
+        dense
+        placeholder="Height"
+      />
+    </div>
+    <div class="flex items-center mt-3 w-full">
+      <div class="w-4/12">Color</div>
+      <color-picker class="w-8/12" v-model="state.color" />
+    </div>
+    <div class="mt-5 text-slate-400">Font settings</div>
+    <div class="flex items-center justify-center mt-5 w-full">
+      <div class="w-4/12">Font</div>
+      <m-select class="w-8/12" placeholder="Font" :options="fontOptions" />
+    </div>
   </div>
 </template>
 

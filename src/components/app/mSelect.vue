@@ -1,5 +1,5 @@
 <template>
-  <div class="flex w-full">
+  <div class="flex">
     <floating-vue-dropdown
       ref="popoverRef"
       :distance="5"

@@ -60,8 +60,9 @@
     style="height: var(--timeline-controls-height)"
   >
     <div class="flex justify-center items-center w-3/12">
-      <slider class="mr-3" v-model="state.timelineScale" />
+      <slider class="mr-3 w-7/12" v-model="state.timelineScale" />
       <m-select
+        class="w-5/12"
         background-color="slate-900"
         placement="top-start"
         placeholder="Speed"
