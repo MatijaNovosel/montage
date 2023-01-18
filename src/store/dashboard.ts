@@ -7,7 +7,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
   const artboardColor = ref("#000000");
   const artboardHeight = ref("450");
   const artboardWidth = ref("800");
-  const activeObject = ref<fabric.Object | null>(null);
+  const activeObject = ref<fabric.Object | null | undefined>(null);
 
   const artBoardHeight = computed(() => parseInt(artboardHeight.value) || 0);
   const artBoardWidth = computed(() => parseInt(artboardWidth.value) || 0);
@@ -66,9 +66,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
   };
 
   const setActiveObject = (obj: fabric.Object | null | undefined) => {
-    if (obj) {
-      activeObject.value = obj;
-    }
+    activeObject.value = obj;
   };
 
   return {

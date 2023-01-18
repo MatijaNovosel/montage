@@ -605,6 +605,10 @@ onMounted(() => {
     dashboardStore.setActiveObject(fabricCanvas?.getActiveObject());
   });
 
+  fabricCanvas.on("selection:cleared", () => {
+    dashboardStore.setActiveObject(null);
+  });
+
   fabricCanvas.renderAll();
 
   createToast("✅ App successfully started!", "#4BB543");
