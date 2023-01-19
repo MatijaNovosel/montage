@@ -6,6 +6,12 @@
       :key="i"
       v-tooltip="image"
       class="cursor-pointer grid-item rounded-md"
+      @click="
+        emit({
+          type: ASSET_TYPE.IMAGE,
+          value: image
+        })
+      "
       :style="{
         backgroundImage: `url(/images/${image}.jpg)`,
         backgroundSize: 'cover'
@@ -15,7 +21,11 @@
 </template>
 
 <script lang="ts" setup>
-import { IMAGES } from "@/utils/constants";
+import { AssetEvent } from "@/models/common";
+import { ASSET_TYPE, IMAGES } from "@/utils/constants";
+import { useEventBus } from "@vueuse/core";
+
+const { emit } = useEventBus<AssetEvent>("asset");
 </script>
 
 <style scoped>

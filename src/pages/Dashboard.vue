@@ -185,16 +185,10 @@ const $export = () => {
   createToast("💾 Exported!", "#2171b3");
 };
 
-const newVideo = (
-  file: HTMLVideoElement,
-  source: string,
-  x: number,
-  y: number,
-  duration: number
-) => {
+const newVideo = (file: HTMLVideoElement, source: string, duration: number) => {
   const newVideo = new fabric.Image(file, {
-    left: x,
-    top: y,
+    left: artBoardLeft.value + artBoardWidth.value / 2,
+    top: artBoardTop.value + artBoardHeight.value / 2,
     width: file.width,
     height: file.height,
     originX: "center",
@@ -212,7 +206,6 @@ const newVideo = (
     objectCaching: false,
     inGroup: false
   });
-
   //@ts-ignore
   newVideo.saveElem = newVideo.getElement();
   fabricCanvas?.add(newVideo);
@@ -223,8 +216,6 @@ const newVideo = (
   fabricCanvas?.renderAll();
   fabricCanvas?.setActiveObject(newVideo);
   fabricCanvas?.bringToFront(newVideo);
-  newVideo.set("left", artBoardLeft.value + artBoardWidth.value / 2);
-  newVideo.set("top", artBoardTop.value + artBoardHeight.value / 2);
   fabricCanvas?.renderAll();
 };
 
@@ -241,7 +232,7 @@ const loadVideo = (src: string, x: number, y: number) => {
     vidObj.muted = false;
     const waitLoad = () => {
       if (vidObj.readyState >= 3) {
-        newVideo(vidObj, src, x, y, vidObj.duration);
+        newVideo(vidObj, src, vidObj.duration);
       } else {
         setTimeout(waitLoad, 100);
       }
@@ -265,8 +256,8 @@ const newTextbox = (
 ) => {
   const id = randInt(1, 9999).toString();
   const newText = new fabric.Textbox(text, {
-    left: mainHeight.value / 2 - 20,
-    top: mainWidth.value / 2 - 20,
+    left: artBoardLeft.value + artBoardWidth.value / 2,
+    top: artBoardTop.value + artBoardHeight.value / 2,
     originX: "center",
     originY: "center",
     fontFamily: "Roboto",
@@ -294,8 +285,6 @@ const newTextbox = (
   newText.enterEditing();
   newText.selectAll();
   fabricCanvas?.renderAll();
-  newText.set("left", artBoardLeft.value + artBoardWidth.value / 2);
-  newText.set("top", artBoardTop.value + artBoardHeight.value / 2);
   //@ts-ignore
   fabricCanvas!.getActiveObject()!.set("fontFamily", font);
   fabricCanvas?.renderAll();
@@ -406,6 +395,7 @@ const alignActiveObject = (option: number) => {
     const objectWidth = activeObject.get("width") as number;
     const objectScaleY = activeObject.get("scaleY") as number;
     const objectScaleX = activeObject.get("scaleX") as number;
+    const isTextBox = activeObject.type === "textbox";
 
     switch (option) {
       case ALIGN_OPTIONS.TOP:
@@ -415,7 +405,12 @@ const alignActiveObject = (option: number) => {
         );
         break;
       case ALIGN_OPTIONS.CENTER_V:
-        activeObject.set("top", artBoardTop.value + artBoardHeight.value / 2);
+        activeObject.set(
+          "top",
+          artBoardTop.value +
+            artBoardHeight.value / 2 -
+            (isTextBox ? 0 : (objectHeight * objectScaleY) / 2)
+        );
         break;
       case ALIGN_OPTIONS.BOTTOM:
         activeObject.set(
@@ -432,7 +427,12 @@ const alignActiveObject = (option: number) => {
         );
         break;
       case ALIGN_OPTIONS.CENTER_H:
-        activeObject.set("left", artBoardLeft.value + artBoardWidth.value / 2);
+        activeObject.set(
+          "left",
+          artBoardLeft.value +
+            artBoardWidth.value / 2 -
+            (isTextBox ? 0 : (objectWidth * objectScaleX) / 2)
+        );
         break;
       case ALIGN_OPTIONS.RIGHT:
         activeObject.set(
@@ -475,6 +475,25 @@ onKeyDown("Delete", () => {
   fabricCanvas?.discardActiveObject().renderAll();
 });
 
+const newImage = (path: string) => {
+  const id = randInt(1, 9999).toString();
+  fabric.Image.fromURL(path, (image) => {
+    image.set("top", mainHeight.value / 2 - (image.height as number) / 2);
+    image.set("left", mainWidth.value / 2 - (image.width as number) / 2);
+    //@ts-ignore
+    image.set("id", `image_${id}`);
+    fabricCanvas?.add(image);
+    fabricCanvas?.bringToFront(image);
+    fabricCanvas?.setActiveObject(image);
+    fabricCanvas?.renderAll();
+    state.layers.push({
+      id: `image_${id}`,
+      object: image,
+      type: "text"
+    });
+  });
+};
+
 const addAsset = (event: AssetEvent) => {
   switch (event.type) {
     case ASSET_TYPE.EMOJI:
@@ -482,6 +501,9 @@ const addAsset = (event: AssetEvent) => {
       break;
     case ASSET_TYPE.SHAPE:
       newSvg(`/shapes/${event.value}.svg`);
+      break;
+    case ASSET_TYPE.IMAGE:
+      newImage(`/images/${event.value}.jpg`);
       break;
     case ASSET_TYPE.TEXT:
       switch (event.value) {
