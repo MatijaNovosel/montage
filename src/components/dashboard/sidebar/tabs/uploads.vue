@@ -16,10 +16,26 @@
 </template>
 
 <script lang="ts" setup>
-import { useFileDialog } from "@vueuse/core";
+import { AssetEvent } from "@/models/common";
+import { ASSET_TYPE } from "@/utils/constants";
+import { useEventBus, useFileDialog } from "@vueuse/core";
+import { watch } from "vue";
+
+const { emit } = useEventBus<AssetEvent>("asset");
 
 const { files, open, reset } = useFileDialog({
   multiple: false,
   accept: "image/png, image/jpeg"
+});
+
+watch(files, (val) => {
+  if (val) {
+    const file = val[0];
+    emit({
+      type: ASSET_TYPE.UPLOAD,
+      value: "upload",
+      file
+    });
+  }
 });
 </script>

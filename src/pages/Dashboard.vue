@@ -119,7 +119,7 @@ import { useToastStore } from "@/store/toast";
 import { COLORS } from "@/utils/colors";
 import { ALIGN_OPTIONS, ASSET_TYPE, TIME_OPTIONS } from "@/utils/constants";
 import { centerLines, getObjectById, initializeFabric } from "@/utils/fabric";
-import { bytesToMB } from "@/utils/helpers";
+import { bytesToMB, getFileExtension } from "@/utils/helpers";
 import {
   onKeyDown,
   useElementSize,
@@ -475,7 +475,7 @@ onKeyDown("Delete", () => {
   fabricCanvas?.discardActiveObject().renderAll();
 });
 
-const newImage = (path: string) => {
+const newImageFromPath = (path: string) => {
   const id = randInt(1, 9999).toString();
   fabric.Image.fromURL(path, (image) => {
     image.set("top", mainHeight.value / 2 - (image.height as number) / 2);
@@ -494,6 +494,10 @@ const newImage = (path: string) => {
   });
 };
 
+const newImageFromFile = (file: File) => {
+  const id = randInt(1, 9999).toString();
+};
+
 const addAsset = (event: AssetEvent) => {
   switch (event.type) {
     case ASSET_TYPE.EMOJI:
@@ -503,7 +507,17 @@ const addAsset = (event: AssetEvent) => {
       newSvg(`/shapes/${event.value}.svg`);
       break;
     case ASSET_TYPE.IMAGE:
-      newImage(`/images/${event.value}.jpg`);
+      newImageFromPath(`/images/${event.value}.jpg`);
+      break;
+    case ASSET_TYPE.UPLOAD:
+      if (event.file) {
+        switch (getFileExtension(event.file.name)) {
+          case "png":
+          case "jpg":
+            newImageFromFile(event.file);
+            break;
+        }
+      }
       break;
     case ASSET_TYPE.TEXT:
       switch (event.value) {

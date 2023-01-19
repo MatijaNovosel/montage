@@ -209,5 +209,6 @@ export const ASSET_TYPE: Record<string, string> = {
   TEXT: "text",
   EMOJI: "emoji",
   SHAPE: "shape",
-  VIDEO: "video"
+  VIDEO: "video",
+  UPLOAD: "upload"
 };

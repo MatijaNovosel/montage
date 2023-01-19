@@ -18,4 +18,5 @@ export interface Layer {
 export interface AssetEvent {
   type: string;
   value: string;
+  file?: File;
 }
