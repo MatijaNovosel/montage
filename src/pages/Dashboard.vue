@@ -34,7 +34,7 @@
         <div
           class="mt-3 flex justify-center bg-slate-800 py-1 rounded-md select-none"
         >
-          {{ state.zoomLevel }}
+          🔎 {{ state.zoomLevel }}
         </div>
       </div>
       <main ref="main" class="h-full w-full">
@@ -496,6 +496,23 @@ const newImageFromPath = (path: string) => {
 
 const newImageFromFile = (file: File) => {
   const id = randInt(1, 9999).toString();
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    if (e.target) {
+      const data = e.target.result;
+      fabric.Image.fromURL(data as string, (img) => {
+        //@ts-ignore
+        img.id = `image_${id}`;
+        fabricCanvas?.add(img).renderAll();
+        state.layers.push({
+          id: `image_${id}`,
+          object: img,
+          type: "text"
+        });
+      });
+    }
+  };
+  reader.readAsDataURL(file);
 };
 
 const addAsset = (event: AssetEvent) => {
