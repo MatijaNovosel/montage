@@ -12,7 +12,7 @@ export interface SelectItem<T> {
 export interface Layer {
   object: fabric.Object | null;
   id: string;
-  type: "image" | "text";
+  type: string;
 }
 
 export interface AssetEvent {

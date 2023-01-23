@@ -212,3 +212,8 @@ export const ASSET_TYPE: Record<string, string> = {
   VIDEO: "video",
   UPLOAD: "upload"
 };
+
+export const LAYER_TYPE_ICON: Record<string, string> = {
+  [ASSET_TYPE.IMAGE]: "🖼️",
+  [ASSET_TYPE.TEXT]: "✏️"
+};

@@ -67,7 +67,7 @@
             @click="setActiveObject(layer.id)"
           >
             <span class="mr-3">
-              {{ formatLayerTypeIcon(layer.type) }}
+              {{ LAYER_TYPE_ICON[layer.type] }}
             </span>
             <span>
               {{ layer.id }}
@@ -117,9 +117,14 @@ import { AssetEvent, Layer, SelectItem } from "@/models/common";
 import { useDashboardStore } from "@/store/dashboard";
 import { useToastStore } from "@/store/toast";
 import { COLORS } from "@/utils/colors";
-import { ALIGN_OPTIONS, ASSET_TYPE, TIME_OPTIONS } from "@/utils/constants";
+import {
+  ALIGN_OPTIONS,
+  ASSET_TYPE,
+  LAYER_TYPE_ICON,
+  TIME_OPTIONS
+} from "@/utils/constants";
 import { centerLines, getObjectById, initializeFabric } from "@/utils/fabric";
-import { bytesToMB, getFileExtension } from "@/utils/helpers";
+import { bytesToMB, getFileExtension, readFile } from "@/utils/helpers";
 import {
   onKeyDown,
   useElementSize,
@@ -277,7 +282,7 @@ const newTextbox = (
     inGroup: false,
     cursorDelay: 250,
     width: calculateTextWidth(text, `${fontWeight} ${fontSize}px Roboto`),
-    id: `image_${id}`
+    id: `text_${id}`
   });
   fabricCanvas?.add(newText);
   fabricCanvas?.setActiveObject(newText);
@@ -289,9 +294,9 @@ const newTextbox = (
   fabricCanvas!.getActiveObject()!.set("fontFamily", font);
   fabricCanvas?.renderAll();
   state.layers.push({
-    id: `image_${id}`,
+    id: `text_${id}`,
     object: newText,
-    type: "text"
+    type: ASSET_TYPE.TEXT
   });
 };
 
@@ -460,7 +465,7 @@ const newSvg = (path: string) => {
     state.layers.push({
       id: `image_${id}`,
       object: svgData,
-      type: "image"
+      type: ASSET_TYPE.IMAGE
     });
   });
 };
@@ -474,15 +479,6 @@ onKeyDown("Delete", () => {
   });
   fabricCanvas?.discardActiveObject().renderAll();
 });
-
-const readFile = (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const fr = new FileReader();
-    fr.onload = () => resolve(fr.result as string);
-    fr.onerror = reject;
-    fr.readAsDataURL(file);
-  });
-};
 
 const newImage = async (source: File | string) => {
   const id = randInt(1, 9999).toString();
@@ -499,7 +495,7 @@ const newImage = async (source: File | string) => {
     state.layers.push({
       id: `image_${id}`,
       object: image,
-      type: "text"
+      type: ASSET_TYPE.IMAGE
     });
   });
 };
@@ -562,15 +558,6 @@ const wheelScrollEvent = useEventListener(main, "wheel", (e: WheelEvent) => {
   fabricCanvas?.renderAll();
   state.zoomLevel = `${(fabricCanvas!.getZoom() * 100).toFixed(0)}%`;
 });
-
-const formatLayerTypeIcon = (type: string) => {
-  switch (type) {
-    case "text":
-      return "✏️";
-    case "image":
-      return "🖼️";
-  }
-};
 
 watch([mainWidth, mainHeight], async ([width, height]) => {
   await nextTick(() => {
