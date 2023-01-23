@@ -475,9 +475,19 @@ onKeyDown("Delete", () => {
   fabricCanvas?.discardActiveObject().renderAll();
 });
 
-const newImageFromPath = (path: string) => {
+const readFile = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const fr = new FileReader();
+    fr.onload = () => resolve(fr.result as string);
+    fr.onerror = reject;
+    fr.readAsDataURL(file);
+  });
+};
+
+const newImage = async (source: File | string) => {
   const id = randInt(1, 9999).toString();
-  fabric.Image.fromURL(path, (image) => {
+  if (typeof source !== "string") source = await readFile(source);
+  fabric.Image.fromURL(source, (image) => {
     image.set("top", mainHeight.value / 2 - (image.height as number) / 2);
     image.set("left", mainWidth.value / 2 - (image.width as number) / 2);
     //@ts-ignore
@@ -494,27 +504,6 @@ const newImageFromPath = (path: string) => {
   });
 };
 
-const newImageFromFile = (file: File) => {
-  const id = randInt(1, 9999).toString();
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    if (e.target) {
-      const data = e.target.result;
-      fabric.Image.fromURL(data as string, (img) => {
-        //@ts-ignore
-        img.id = `image_${id}`;
-        fabricCanvas?.add(img).renderAll();
-        state.layers.push({
-          id: `image_${id}`,
-          object: img,
-          type: "text"
-        });
-      });
-    }
-  };
-  reader.readAsDataURL(file);
-};
-
 const addAsset = (event: AssetEvent) => {
   switch (event.type) {
     case ASSET_TYPE.EMOJI:
@@ -524,14 +513,14 @@ const addAsset = (event: AssetEvent) => {
       newSvg(`/shapes/${event.value}.svg`);
       break;
     case ASSET_TYPE.IMAGE:
-      newImageFromPath(`/images/${event.value}.jpg`);
+      newImage(`/images/${event.value}.jpg`);
       break;
     case ASSET_TYPE.UPLOAD:
       if (event.file) {
         switch (getFileExtension(event.file.name)) {
           case "png":
           case "jpg":
-            newImageFromFile(event.file);
+            newImage(event.file);
             break;
         }
       }
