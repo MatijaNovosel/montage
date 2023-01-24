@@ -1,5 +1,6 @@
 <template>
   <div class="border-l border-slate-700 flex flex-col p-5 items-center">
+    <div class="mb-3 text-slate-400 select-none">Vertical alignment</div>
     <div class="flex justify-center items-center">
       <btn
         @click="$emit('align', ALIGN_OPTIONS.TOP)"
@@ -30,6 +31,7 @@
         <img src="/align/align-bottom.svg" />
       </btn>
     </div>
+    <div class="mt-3 text-slate-400 select-none">Horizontal alignment</div>
     <div class="flex justify-center items-center mt-3">
       <btn
         @click="$emit('align', ALIGN_OPTIONS.LEFT)"
@@ -58,6 +60,28 @@
         :disabled="!activeObject"
       >
         <img src="/align/align-right.svg" />
+      </btn>
+    </div>
+    <div class="mt-3 text-slate-400 select-none">Arrangement</div>
+    <div class="flex justify-center items-center mt-3">
+      <btn
+        @click="$emit('bring-forward')"
+        v-tooltip="'Bring forward'"
+        square
+        background-color="indigo-500"
+        class="mx-2 py-2"
+        :disabled="!activeObject"
+      >
+        <img src="/arrangement/bring-forwards.svg" />
+      </btn>
+      <btn
+        @click="$emit('send-backward')"
+        v-tooltip="'Send backwards'"
+        square
+        background-color="indigo-500"
+        :disabled="!activeObject"
+      >
+        <img src="/arrangement/send-backwards.svg" />
       </btn>
     </div>
     <div class="mt-5 text-slate-400 select-none">Canvas settings</div>
@@ -132,7 +156,7 @@ const { artboardColor, artBoardHeight, artBoardWidth, activeObject } =
   storeToRefs(dashboardStore);
 const { createToast } = useToastStore();
 
-defineEmits(["align"]);
+defineEmits(["align", "send-forward", "bring-backward"]);
 
 const state: State = reactive({
   color: artboardColor.value,

@@ -41,7 +41,12 @@
         <canvas class="block" ref="canvas" />
       </main>
     </div>
-    <layout @align="alignActiveObject" class="w-2/12" />
+    <layout
+      @bring-forward="bringActiveObjectForward"
+      @send-backward="sendActiveObjectBackward"
+      @align="alignActiveObject"
+      class="w-2/12"
+    />
   </div>
   <div
     class="flex bg-slate-900 text-white border-y border-slate-700"
@@ -118,31 +123,31 @@ import { useDashboardStore } from "@/store/dashboard";
 import { useToastStore } from "@/store/toast";
 import { COLORS } from "@/utils/colors";
 import {
-  ALIGN_OPTIONS,
-  ASSET_TYPE,
-  LAYER_TYPE_ICON,
-  TIME_OPTIONS
+ALIGN_OPTIONS,
+ASSET_TYPE,
+LAYER_TYPE_ICON,
+TIME_OPTIONS
 } from "@/utils/constants";
-import { centerLines, getObjectById, initializeFabric } from "@/utils/fabric";
+import { bringForward, centerLines, getObjectById, initializeFabric, sendBackwards } from "@/utils/fabric";
 import { bytesToMB, getFileExtension, readFile } from "@/utils/helpers";
 import {
-  onKeyDown,
-  useElementSize,
-  useEventBus,
-  useEventListener,
-  useMemory
+onKeyDown,
+useElementSize,
+useEventBus,
+useEventListener,
+useMemory
 } from "@vueuse/core";
 import { fabric } from "fabric";
 import { randInt } from "matija-utils";
 import { storeToRefs } from "pinia";
 import {
-  computed,
-  nextTick,
-  onBeforeUnmount,
-  onMounted,
-  reactive,
-  ref,
-  watch
+computed,
+nextTick,
+onBeforeUnmount,
+onMounted,
+reactive,
+ref,
+watch
 } from "vue";
 import WebFont from "webfontloader";
 
@@ -558,6 +563,14 @@ const wheelScrollEvent = useEventListener(main, "wheel", (e: WheelEvent) => {
   fabricCanvas?.renderAll();
   state.zoomLevel = `${(fabricCanvas!.getZoom() * 100).toFixed(0)}%`;
 });
+
+const bringActiveObjectForward = () => {
+  bringForward(fabricCanvas?.getActiveObject());
+};
+
+const sendActiveObjectBackward = () => {
+   sendBackwards(fabricCanvas?.getActiveObject());
+};
 
 watch([mainWidth, mainHeight], async ([width, height]) => {
   await nextTick(() => {

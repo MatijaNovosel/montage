@@ -77,11 +77,6 @@ img {
   animation: bounce 0.5s reverse;
 }
 
-.tab {
-  height: 60px;
-  width: 60px;
-}
-
 input[type="color"] {
   cursor: pointer;
   -webkit-appearance: none;

@@ -6,7 +6,7 @@
       <div
         v-for="({ name, image, value }, i) in TAB_ITEMS"
         :key="i"
-        class="tab flex flex-col items-center mt-1 hover:bg-slate-800 cursor-pointer p-3 rounded-md select-none"
+        class="sidebar-item flex flex-col items-center mt-1 hover:bg-slate-800 cursor-pointer p-3 rounded-md select-none"
         :class="activeTab === value ? 'text-white' : 'text-slate-400'"
         @click="dashboardStore.setActiveTab(value)"
       >
@@ -49,5 +49,10 @@ const { activeTab, activeTabComponent } = storeToRefs(dashboardStore);
 <style scoped>
 .asset-ctr {
   background-color: #0b111f;
+}
+
+.sidebar-item {
+  height: 60px;
+  width: 60px;
 }
 </style>
