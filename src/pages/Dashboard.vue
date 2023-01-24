@@ -123,31 +123,37 @@ import { useDashboardStore } from "@/store/dashboard";
 import { useToastStore } from "@/store/toast";
 import { COLORS } from "@/utils/colors";
 import {
-ALIGN_OPTIONS,
-ASSET_TYPE,
-LAYER_TYPE_ICON,
-TIME_OPTIONS
+  ALIGN_OPTIONS,
+  ASSET_TYPE,
+  LAYER_TYPE_ICON,
+  TIME_OPTIONS
 } from "@/utils/constants";
-import { bringForward, centerLines, getObjectById, initializeFabric, sendBackwards } from "@/utils/fabric";
+import {
+  bringForward,
+  centerLines,
+  getObjectById,
+  initializeFabric,
+  sendBackwards
+} from "@/utils/fabric";
 import { bytesToMB, getFileExtension, readFile } from "@/utils/helpers";
 import {
-onKeyDown,
-useElementSize,
-useEventBus,
-useEventListener,
-useMemory
+  onKeyDown,
+  useElementSize,
+  useEventBus,
+  useEventListener,
+  useMemory
 } from "@vueuse/core";
 import { fabric } from "fabric";
 import { randInt } from "matija-utils";
 import { storeToRefs } from "pinia";
 import {
-computed,
-nextTick,
-onBeforeUnmount,
-onMounted,
-reactive,
-ref,
-watch
+  computed,
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  reactive,
+  ref,
+  watch
 } from "vue";
 import WebFont from "webfontloader";
 
@@ -569,7 +575,7 @@ const bringActiveObjectForward = () => {
 };
 
 const sendActiveObjectBackward = () => {
-   sendBackwards(fabricCanvas?.getActiveObject());
+  sendBackwards(fabricCanvas?.getActiveObject());
 };
 
 watch([mainWidth, mainHeight], async ([width, height]) => {
