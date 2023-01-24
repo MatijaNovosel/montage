@@ -1,5 +1,7 @@
 <template>
-  <div class="border-l border-slate-700 flex flex-col p-5 items-center">
+  <div
+    class="border-l border-slate-700 flex flex-col p-5 items-center overflow-auto"
+  >
     <div class="mb-3 text-slate-400 select-none">Vertical alignment</div>
     <div class="flex justify-center items-center">
       <btn
