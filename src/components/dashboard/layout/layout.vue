@@ -90,6 +90,7 @@
     <div class="flex items-center my-3 w-full">
       <div class="w-4/12">Width</div>
       <text-input
+        suffix="px"
         class="w-8/12"
         v-model="state.width"
         dense
@@ -99,11 +100,16 @@
     <div class="flex items-center w-full">
       <div class="w-4/12">Height</div>
       <text-input
+        suffix="px"
         class="w-8/12"
         v-model="state.height"
         dense
         placeholder="Height"
       />
+    </div>
+    <div class="flex items-center w-full mt-3">
+      <div class="w-4/12">Duration</div>
+      <text-input suffix="s" class="w-8/12" dense placeholder="Duration" />
     </div>
     <div class="flex items-center mt-3 w-full">
       <div class="w-4/12">Color</div>

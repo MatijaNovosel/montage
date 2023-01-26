@@ -194,7 +194,7 @@ const { width: mainWidth, height: mainHeight } = useElementSize(main);
 const { memory } = useMemory();
 
 const undo = () => {
-  createToast("🚨 Undo", "#f80000");
+  createToast("🚨 Undo", COLORS.ERROR);
 };
 
 const $export = () => {
@@ -236,8 +236,8 @@ const newVideo = (file: HTMLVideoElement, source: string, duration: number) => {
 };
 
 const loadVideo = (src: string, x: number, y: number) => {
-  var vidObj = document.createElement("video");
-  var vidSrc = document.createElement("source");
+  const vidObj = document.createElement("video");
+  const vidSrc = document.createElement("source");
   vidSrc.src = src;
   vidObj.crossOrigin = "anonymous";
   vidObj.appendChild(vidSrc);
@@ -605,7 +605,6 @@ watch([artBoardHeight, artBoardWidth], ([heightA, widthA]) => {
 });
 
 onMounted(() => {
-  // TODO: Convert this to a static include
   WebFont.load({
     google: {
       families: ["Roboto"]
@@ -613,7 +612,7 @@ onMounted(() => {
   });
 
   fabricCanvas = initializeFabric(
-    canvas.value as HTMLCanvasElement,
+    canvas.value,
     mainWidth.value,
     mainHeight.value,
     artboardColor.value
@@ -679,7 +678,7 @@ onMounted(() => {
 
   fabricCanvas.renderAll();
 
-  createToast("✅ App successfully started!", "#4BB543");
+  createToast("✅ App successfully started!", COLORS.SUCCESS);
 });
 
 onBeforeUnmount(() => {

@@ -276,7 +276,7 @@ export const sendBackwards = (obj: fabric.Object | null | undefined) => {
 };
 
 export const initializeFabric = (
-  canvas: HTMLCanvasElement,
+  canvas: HTMLCanvasElement | null,
   width: number,
   height: number,
   backgroundColor: string

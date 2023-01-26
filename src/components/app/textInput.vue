@@ -1,20 +1,16 @@
 <template>
-  <div
-    class="flex"
-    :style="{
-      height: dense ? '30px' : '50px'
-    }"
-  >
+  <div class="flex relative" :style="ctrStyle">
+    <span class="suffix absolute select-none text-sm text-slate-400">
+      {{ suffix }}
+    </span>
     <input
-      :style="{
-        fontSize: dense ? '14px' : '20px',
-        width: 'calc(100% - 20px)'
-      }"
+      :style="inputStyle"
       :disabled="loading || !!error"
       :placeholder="placeholder"
-      class="w-full rounded-l-lg pl-3"
+      class="rounded-l-lg pl-3"
       :class="{
-        [`bg-${backgroundColor}`]: true
+        [`bg-${backgroundColor}`]: true,
+        'rounded-r-lg': !clearable
       }"
       :value="modelValue"
       @input="
@@ -23,6 +19,7 @@
       type="search"
     />
     <div
+      v-if="clearable"
       class="bg-slate-700 icon flex justify-center items-center rounded-r-lg px-3 hover:bg-slate-600 cursor-pointer"
     >
       <img height="30" width="30" src="/close.svg" @click="clearSearch" />
@@ -31,12 +28,17 @@
 </template>
 
 <script lang="ts" setup>
-import { PropType } from "vue";
+import { computed, PropType } from "vue";
 
-defineProps({
+const props = defineProps({
   modelValue: String,
   placeholder: String,
   loading: Boolean,
+  clearable: {
+    type: Boolean,
+    default: false
+  },
+  suffix: String,
   backgroundColor: {
     type: String,
     default: "slate-800"
@@ -50,6 +52,15 @@ const emit = defineEmits(["update:modelValue"]);
 const clearSearch = () => {
   emit("update:modelValue", "");
 };
+
+const inputStyle = computed(() => ({
+  width: `calc(100% - ${props.clearable ? 20 : 0}px)`,
+  fontSize: props.dense ? "14px" : "20px"
+}));
+
+const ctrStyle = computed(() => ({
+  height: props.dense ? "30px" : "50px"
+}));
 </script>
 
 <style scoped>
@@ -70,5 +81,10 @@ input[type="search"]::-webkit-search-results-button,
 input[type="search"]::-webkit-search-results-decoration {
   -webkit-appearance: none;
   appearance: none;
+}
+
+.suffix {
+  right: 15px;
+  top: 5px;
 }
 </style>
