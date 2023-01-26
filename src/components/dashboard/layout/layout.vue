@@ -124,15 +124,36 @@
       <div class="mt-5 text-slate-400 select-none">Active object settings</div>
       <div class="flex items-center my-3 w-full">
         <div class="w-4/12">Width</div>
-        <text-input class="w-8/12" dense placeholder="Width" />
+        <text-input
+          v-model="activeObjectWidth"
+          readonly
+          suffix="px"
+          class="w-8/12"
+          dense
+          placeholder="Width"
+        />
       </div>
       <div class="flex items-center w-full">
         <div class="w-4/12">Height</div>
-        <text-input class="w-8/12" dense placeholder="Height" />
+        <text-input
+          v-model="activeObjectHeight"
+          readonly
+          suffix="px"
+          class="w-8/12"
+          dense
+          placeholder="Height"
+        />
       </div>
       <div class="flex items-center my-3 w-full">
         <div class="w-4/12">Rotation</div>
-        <text-input class="w-8/12" dense placeholder="Rotation" />
+        <text-input
+          v-model="activeObjectRotation"
+          readonly
+          suffix="○"
+          class="w-8/12"
+          dense
+          placeholder="Rotation"
+        />
       </div>
       <div class="flex items-center w-full">
         <div class="w-4/12">Opacity</div>
@@ -160,8 +181,17 @@ interface State {
 }
 
 const dashboardStore = useDashboardStore();
-const { artboardColor, artBoardHeight, artBoardWidth, activeObject } =
-  storeToRefs(dashboardStore);
+
+const {
+  artboardColor,
+  artBoardHeight,
+  artBoardWidth,
+  activeObject,
+  activeObjectHeight,
+  activeObjectWidth,
+  activeObjectRotation
+} = storeToRefs(dashboardStore);
+
 const { createToast } = useToastStore();
 
 defineEmits(["align", "send-forward", "bring-backward"]);

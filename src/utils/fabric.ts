@@ -304,16 +304,5 @@ export const initializeFabric = (
     borderOpacityWhenMoving: 1
   });
 
-  fCanvas.on("object:rotating", (e) => {
-    if (e.e.shiftKey) fCanvas.getActiveObject()!.snapAngle = 15;
-    else fCanvas.getActiveObject()!.snapAngle = 0;
-    e.target!.hasControls = false;
-  });
-
-  fCanvas.on("object:modified", (e) => {
-    e.target!.hasControls = true;
-    fCanvas.renderAll();
-  });
-
   return fCanvas;
 };

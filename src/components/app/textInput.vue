@@ -4,13 +4,15 @@
       {{ suffix }}
     </span>
     <input
+      :readonly="readonly"
       :style="inputStyle"
       :disabled="loading || !!error"
       :placeholder="placeholder"
       class="rounded-l-lg pl-3"
       :class="{
         [`bg-${backgroundColor}`]: true,
-        'rounded-r-lg': !clearable
+        'rounded-r-lg': !clearable,
+        'cursor-not-allowed': readonly
       }"
       :value="modelValue"
       @input="
@@ -34,6 +36,7 @@ const props = defineProps({
   modelValue: String,
   placeholder: String,
   loading: Boolean,
+  readonly: Boolean,
   clearable: {
     type: Boolean,
     default: false

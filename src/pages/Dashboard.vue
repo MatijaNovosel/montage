@@ -604,6 +604,19 @@ watch([artBoardHeight, artBoardWidth], ([heightA, widthA]) => {
   fabricCanvas?.renderAll();
 });
 
+const updateActiveObjectDimensions = () => {
+  const activeObject = fabricCanvas?.getActiveObject();
+  if (activeObject) {
+    const width = activeObject.get("width") as number;
+    const height = activeObject.get("height") as number;
+    const scaleX = activeObject.get("scaleX") as number;
+    const scaleY = activeObject.get("scaleY") as number;
+    dashboardStore.setActiveObject(activeObject);
+    dashboardStore.setActiveObjectHeight(width * scaleX);
+    dashboardStore.setActiveObjectWidth(height * scaleY);
+  }
+};
+
 onMounted(() => {
   WebFont.load({
     google: {
@@ -664,16 +677,23 @@ onMounted(() => {
     lineV!.opacity = 0;
   });
 
-  fabricCanvas.on("selection:updated", () => {
-    dashboardStore.setActiveObject(fabricCanvas?.getActiveObject());
-  });
-
-  fabricCanvas.on("selection:created", () => {
-    dashboardStore.setActiveObject(fabricCanvas?.getActiveObject());
-  });
+  fabricCanvas.on("selection:updated", updateActiveObjectDimensions);
+  fabricCanvas.on("selection:created", updateActiveObjectDimensions);
 
   fabricCanvas.on("selection:cleared", () => {
     dashboardStore.setActiveObject(null);
+  });
+
+  fabricCanvas.on("object:modified", (e) => {
+    e.target!.hasControls = true;
+    updateActiveObjectDimensions();
+    fabricCanvas?.renderAll();
+  });
+
+  fabricCanvas.on("object:rotating", (e) => {
+    if (e.e.shiftKey) fabricCanvas!.getActiveObject()!.snapAngle = 15;
+    else fabricCanvas!.getActiveObject()!.snapAngle = 0;
+    e.target!.hasControls = false;
   });
 
   fabricCanvas.renderAll();

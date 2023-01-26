@@ -4,9 +4,15 @@ import { TABS } from "../utils/constants";
 
 export const useDashboardStore = defineStore("dashboard", () => {
   const activeTab = ref(TABS.OBJECTS);
+
   const artboardColor = ref("#000000");
   const artboardHeight = ref("450");
   const artboardWidth = ref("800");
+
+  const activeObjectWidth = ref("0");
+  const activeObjectHeight = ref("0");
+  const activeObjectRotation = ref("0");
+
   const activeObject = ref<fabric.Object | null | undefined>(null);
 
   const artBoardHeight = computed(() => parseInt(artboardHeight.value) || 0);
@@ -69,6 +75,18 @@ export const useDashboardStore = defineStore("dashboard", () => {
     activeObject.value = obj;
   };
 
+  const setActiveObjectWidth = (width: number) => {
+    activeObjectWidth.value = width.toFixed(2);
+  };
+
+  const setActiveObjectHeight = (height: number) => {
+    activeObjectHeight.value = height.toFixed(2);
+  };
+
+  const setActiveObjectRotation = (rotation: number) => {
+    activeObjectRotation.value = rotation.toString();
+  };
+
   return {
     activeTab,
     setActiveTab,
@@ -80,6 +98,12 @@ export const useDashboardStore = defineStore("dashboard", () => {
     setArtboardDimensions,
     activeObject,
     setActiveObject,
-    activeObjectId
+    activeObjectId,
+    activeObjectWidth,
+    activeObjectHeight,
+    setActiveObjectWidth,
+    setActiveObjectHeight,
+    activeObjectRotation,
+    setActiveObjectRotation
   };
 });
