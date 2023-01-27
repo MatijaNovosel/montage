@@ -694,6 +694,9 @@ onMounted(() => {
     if (e.e.shiftKey) fabricCanvas!.getActiveObject()!.snapAngle = 15;
     else fabricCanvas!.getActiveObject()!.snapAngle = 0;
     e.target!.hasControls = false;
+    dashboardStore.setActiveObjectRotation(
+      parseFloat(fabricCanvas!.getActiveObject()?.angle?.toFixed() || "")
+    );
   });
 
   fabricCanvas.renderAll();
