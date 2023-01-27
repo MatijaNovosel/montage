@@ -33,7 +33,7 @@
 import { computed, PropType } from "vue";
 
 const props = defineProps({
-  modelValue: String,
+  modelValue: [String, Number],
   placeholder: String,
   loading: Boolean,
   readonly: Boolean,

@@ -19,6 +19,7 @@
 import { computed, ref } from "vue";
 
 const props = defineProps({
+  modelValue: Number,
   progress: {
     type: Number,
     default: 0

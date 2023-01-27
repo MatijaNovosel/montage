@@ -167,7 +167,7 @@ const dashboardStore = useDashboardStore();
 const { createToast } = useToastStore();
 const bus = useEventBus<AssetEvent>("asset");
 
-const { artboardColor, artBoardWidth, artBoardHeight, activeObjectId } =
+const { artboardColor, artboardHeight, artboardWidth, activeObjectId } =
   storeToRefs(dashboardStore);
 
 const state: State = reactive({
@@ -203,8 +203,8 @@ const $export = () => {
 
 const newVideo = (file: HTMLVideoElement, source: string, duration: number) => {
   const newVideo = new fabric.Image(file, {
-    left: artBoardLeft.value + artBoardWidth.value / 2,
-    top: artBoardTop.value + artBoardHeight.value / 2,
+    left: artBoardLeft.value + artboardWidth.value / 2,
+    top: artBoardTop.value + artboardHeight.value / 2,
     width: file.width,
     height: file.height,
     originX: "center",
@@ -225,8 +225,8 @@ const newVideo = (file: HTMLVideoElement, source: string, duration: number) => {
   //@ts-ignore
   newVideo.saveElem = newVideo.getElement();
   fabricCanvas?.add(newVideo);
-  if ((newVideo.get("width") as number) > artBoardWidth.value) {
-    newVideo.scaleToWidth(artBoardWidth.value);
+  if ((newVideo.get("width") as number) > artboardWidth.value) {
+    newVideo.scaleToWidth(artboardWidth.value);
   }
   newVideo.scaleToWidth(150);
   fabricCanvas?.renderAll();
@@ -272,8 +272,8 @@ const newTextbox = (
 ) => {
   const id = randInt(1, 9999).toString();
   const newText = new fabric.Textbox(text, {
-    left: artBoardLeft.value + artBoardWidth.value / 2,
-    top: artBoardTop.value + artBoardHeight.value / 2,
+    left: artBoardLeft.value + artboardWidth.value / 2,
+    top: artBoardTop.value + artboardHeight.value / 2,
     originX: "center",
     originY: "center",
     fontFamily: "Roboto",
@@ -363,7 +363,7 @@ const initLines = () => {
       fabricCanvas!.getWidth() / 2,
       artBoardTop.value,
       fabricCanvas!.getWidth() / 2,
-      artBoardHeight.value + artBoardTop.value
+      artboardHeight.value + artBoardTop.value
     ],
     {
       stroke: COLORS.SELECTION,
@@ -379,7 +379,7 @@ const initLines = () => {
     [
       artBoardLeft.value,
       fabricCanvas!.getHeight() / 2,
-      artBoardWidth.value + artBoardLeft.value,
+      artboardWidth.value + artBoardLeft.value,
       fabricCanvas!.getHeight() / 2
     ],
     {
@@ -424,7 +424,7 @@ const alignActiveObject = (option: number) => {
         activeObject.set(
           "top",
           artBoardTop.value +
-            artBoardHeight.value / 2 -
+            artboardHeight.value / 2 -
             (isTextBox ? 0 : (objectHeight * objectScaleY) / 2)
         );
         break;
@@ -432,7 +432,7 @@ const alignActiveObject = (option: number) => {
         activeObject.set(
           "top",
           artBoardTop.value +
-            artBoardHeight.value -
+            artboardHeight.value -
             (objectHeight * objectScaleY) / 2
         );
         break;
@@ -446,7 +446,7 @@ const alignActiveObject = (option: number) => {
         activeObject.set(
           "left",
           artBoardLeft.value +
-            artBoardWidth.value / 2 -
+            artboardWidth.value / 2 -
             (isTextBox ? 0 : (objectWidth * objectScaleX) / 2)
         );
         break;
@@ -454,7 +454,7 @@ const alignActiveObject = (option: number) => {
         activeObject.set(
           "left",
           artBoardLeft.value +
-            artBoardWidth.value -
+            artboardWidth.value -
             (objectWidth * objectScaleX) / 2
         );
         break;
@@ -561,9 +561,9 @@ const wheelScrollEvent = useEventListener(main, "wheel", (e: WheelEvent) => {
   fabricCanvas?.renderAll();
   fabricCanvas?.absolutePan({
     x:
-      artBoardLeft.value + artBoardWidth.value / 2 - mainWidth.value / zoom / 2,
+      artBoardLeft.value + artboardWidth.value / 2 - mainWidth.value / zoom / 2,
     y:
-      artBoardTop.value + artBoardHeight.value / 2 - mainHeight.value / zoom / 2
+      artBoardTop.value + artboardHeight.value / 2 - mainHeight.value / zoom / 2
   });
   fabricCanvas?.setZoom(zoom);
   fabricCanvas?.renderAll();
@@ -582,8 +582,8 @@ watch([mainWidth, mainHeight], async ([width, height]) => {
   await nextTick(() => {
     fabricCanvas?.setHeight(height);
     fabricCanvas?.setWidth(width);
-    artBoard!.left = width / 2 - artBoardWidth.value / 2;
-    artBoard!.top = height / 2 - artBoardHeight.value / 2;
+    artBoard!.left = width / 2 - artboardWidth.value / 2;
+    artBoard!.top = height / 2 - artboardHeight.value / 2;
     centerCircle!.left = width / 2 - 20;
     centerCircle!.top = height / 2 - 20;
     fabricCanvas?.renderAll();
@@ -596,7 +596,7 @@ watch(artboardColor, (val) => {
   fabricCanvas?.renderAll();
 });
 
-watch([artBoardHeight, artBoardWidth], ([heightA, widthA]) => {
+watch([artboardHeight, artboardWidth], ([heightA, widthA]) => {
   artBoard!.width = widthA;
   artBoard!.height = heightA;
   artBoard!.left = mainWidth.value / 2 - widthA / 2;
@@ -632,10 +632,10 @@ onMounted(() => {
   );
 
   artBoard = new fabric.Rect({
-    left: mainWidth.value / 2 - artBoardWidth.value / 2,
-    top: mainHeight.value / 2 - artBoardHeight.value / 2,
-    width: artBoardWidth.value,
-    height: artBoardHeight.value,
+    left: mainWidth.value / 2 - artboardWidth.value / 2,
+    top: mainHeight.value / 2 - artboardHeight.value / 2,
+    width: artboardWidth.value,
+    height: artboardHeight.value,
     absolutePositioned: true,
     rx: 0,
     ry: 0,
@@ -667,8 +667,8 @@ onMounted(() => {
         fabricCanvas,
         artBoardTop.value,
         artBoardLeft.value,
-        artBoardWidth.value,
-        artBoardHeight.value
+        artboardWidth.value,
+        artboardHeight.value
       );
   });
 

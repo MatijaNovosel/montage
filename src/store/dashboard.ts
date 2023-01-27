@@ -6,17 +6,15 @@ export const useDashboardStore = defineStore("dashboard", () => {
   const activeTab = ref(TABS.OBJECTS);
 
   const artboardColor = ref("#000000");
-  const artboardHeight = ref("450");
-  const artboardWidth = ref("800");
+  const artboardHeight = ref(450);
+  const artboardWidth = ref(800);
 
   const activeObjectWidth = ref("0");
   const activeObjectHeight = ref("0");
   const activeObjectRotation = ref("0");
+  const activeObjectOpacity = ref(0);
 
   const activeObject = ref<fabric.Object | null | undefined>(null);
-
-  const artBoardHeight = computed(() => parseInt(artboardHeight.value) || 0);
-  const artBoardWidth = computed(() => parseInt(artboardWidth.value) || 0);
 
   const activeObjectId = computed(() => {
     if (activeObject.value) {
@@ -66,7 +64,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
     artboardColor.value = color;
   };
 
-  const setArtboardDimensions = (width?: string, height?: string) => {
+  const setArtboardDimensions = (width?: number, height?: number) => {
     if (width) artboardWidth.value = width;
     if (height) artboardHeight.value = height;
   };
@@ -87,14 +85,19 @@ export const useDashboardStore = defineStore("dashboard", () => {
     activeObjectRotation.value = rotation.toString();
   };
 
+  const setActiveObjectOpacity = (opacity: number) => {
+    activeObjectOpacity.value = opacity;
+    activeObject.value?.set("opacity", opacity);
+  };
+
   return {
     activeTab,
     setActiveTab,
     activeTabComponent,
     setArtboardColor,
     artboardColor,
-    artBoardHeight,
-    artBoardWidth,
+    artboardHeight,
+    artboardWidth,
     setArtboardDimensions,
     activeObject,
     setActiveObject,
@@ -104,6 +107,8 @@ export const useDashboardStore = defineStore("dashboard", () => {
     setActiveObjectWidth,
     setActiveObjectHeight,
     activeObjectRotation,
-    setActiveObjectRotation
+    setActiveObjectRotation,
+    activeObjectOpacity,
+    setActiveObjectOpacity
   };
 });

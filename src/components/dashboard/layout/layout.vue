@@ -92,7 +92,7 @@
       <text-input
         suffix="px"
         class="w-8/12"
-        v-model="state.width"
+        v-model.number="state.width"
         dense
         placeholder="Width"
       />
@@ -102,7 +102,7 @@
       <text-input
         suffix="px"
         class="w-8/12"
-        v-model="state.height"
+        v-model.number="state.height"
         dense
         placeholder="Height"
       />
@@ -163,7 +163,7 @@
       </div>
       <div class="flex items-center w-full">
         <div class="w-4/12">Opacity</div>
-        <slider class="w-8/12" />
+        <slider v-model.number="state.activeObjectOpacity" class="w-8/12" />
       </div>
     </template>
   </div>
@@ -182,17 +182,18 @@ import WebFont from "webfontloader";
 
 interface State {
   color: string;
-  width: string;
-  height: string;
+  width: number;
+  height: number;
   fonts: FontItem[];
+  activeObjectOpacity: number;
 }
 
 const dashboardStore = useDashboardStore();
 
 const {
   artboardColor,
-  artBoardHeight,
-  artBoardWidth,
+  artboardWidth,
+  artboardHeight,
   activeObject,
   activeObjectHeight,
   activeObjectWidth,
@@ -205,8 +206,9 @@ defineEmits(["align", "send-forward", "bring-backward"]);
 
 const state: State = reactive({
   color: artboardColor.value,
-  width: artBoardWidth.value.toString(),
-  height: artBoardHeight.value.toString(),
+  width: artboardWidth.value,
+  height: artboardHeight.value,
+  activeObjectOpacity: 0,
   fonts: []
 });
 
@@ -225,6 +227,13 @@ watch(
 watch(
   () => [state.width, state.height],
   (val) => dashboardStore.setArtboardDimensions(val[0], val[1])
+);
+
+watch(
+  () => state.activeObjectOpacity,
+  (val) => {
+    dashboardStore.setActiveObjectOpacity(val);
+  }
 );
 
 onMounted(async () => {
