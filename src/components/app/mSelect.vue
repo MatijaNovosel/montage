@@ -33,7 +33,10 @@
             class="py-1 px-2 hover:bg-slate-700 cursor-pointer text-sm"
             @click="selectItem(option)"
           >
-            {{ option.text }}
+            <slot v-if="$slots.text" name="text" :data="option" />
+            <span v-else>
+              {{ option.text }}
+            </span>
           </li>
         </ul>
       </template>

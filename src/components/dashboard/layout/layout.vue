@@ -118,7 +118,13 @@
     <div class="mt-5 text-slate-400 select-none">Font settings</div>
     <div class="flex items-center justify-center mt-5 w-full">
       <div class="w-4/12">Font</div>
-      <m-select class="w-8/12" placeholder="Font" :options="fontOptions" />
+      <m-select class="w-8/12" placeholder="Font" :options="fontOptions">
+        <template #text="{ data }: { data: SelectItem<string> }">
+          <span :stlye="{ fontFamily: data.value }">
+            {{ data.value }}
+          </span>
+        </template>
+      </m-select>
     </div>
     <template v-if="activeObject">
       <div class="mt-5 text-slate-400 select-none">Active object settings</div>
@@ -172,6 +178,7 @@ import { ALIGN_OPTIONS } from "@/utils/constants";
 import axios from "axios";
 import { storeToRefs } from "pinia";
 import { computed, onMounted, reactive, watch } from "vue";
+import WebFont from "webfontloader";
 
 interface State {
   color: string;
@@ -226,7 +233,12 @@ onMounted(async () => {
       import.meta.env.VITE_GOOGLE_FONTS_API_KEY
     }&sort=alpha`
   );
-  state.fonts = data.items;
+  state.fonts = data.items.slice(0, 25);
+  WebFont.load({
+    google: {
+      families: state.fonts.map((f) => f.family)
+    }
+  });
   createToast("✅ Fonts loaded!", "#3F7040");
 });
 </script>

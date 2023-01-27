@@ -142,12 +142,10 @@ const TEXT_ITEMS: Record<string, string[]> = {
 onMounted(() => {
   Object.keys(TEXT_ITEMS).forEach((type) => {
     const fonts = TEXT_ITEMS[type];
-    fonts.forEach((font) => {
-      WebFont.load({
-        google: {
-          families: [font]
-        }
-      });
+    WebFont.load({
+      google: {
+        families: fonts
+      }
     });
   });
 });
