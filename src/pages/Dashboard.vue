@@ -49,19 +49,30 @@
     />
   </div>
   <div
-    class="flex bg-slate-900 text-white border-y border-slate-700"
-    style="height: var(--timeline-height)"
+    class="flex bg-slate-900 text-white border-y border-slate-700 layers-ctr-title"
   >
-    <div class="w-4/12 border-r border-slate-700 h-full">
+    <div
+      class="w-4/12 border-r border-slate-700 flex items-center pl-4 text-slate-500 select-none tracking-widest"
+    >
+      LAYERS
+    </div>
+    <div class="w-8/12 flex items-center justify-between px-5 py-3">
       <div
-        class="layers-ctr-title border-b border-slate-700 flex items-center pl-4 text-slate-500 select-none tracking-widest"
+        class="flex flex-col pt-4 text-slate-400"
+        :key="i"
+        v-for="(n, i) in 10"
       >
-        LAYERS
+        <span> {{ n }}s </span>
+        <span class="time-tick pt-5" />
       </div>
-      <div class="flex flex-col overflow-auto layers-ctr pr-2">
+    </div>
+  </div>
+  <div class="flex bg-slate-900 text-white border-slate-700 layers-ctr">
+    <div class="w-4/12 border-r border-slate-700 h-full">
+      <div class="flex flex-col overflow-auto layers-ctr">
         <template v-if="state.layers.length">
           <div
-            class="pl-4 py-3 cursor-pointer"
+            class="pl-4 cursor-pointer layer-item flex items-center"
             v-for="(layer, i) of state.layers"
             :class="{
               'bg-slate-800 hover:bg-slate-700': i % 2,
@@ -74,7 +85,7 @@
             <span class="mr-3">
               {{ LAYER_TYPE_ICON[layer.type] }}
             </span>
-            <span>
+            <span class="text-xs">
               {{ layer.id }}
             </span>
           </div>
@@ -82,8 +93,22 @@
         <div class="p-5" v-else>No layers added.</div>
       </div>
     </div>
-    <div class="w-8/12 h-full p-5">
-      <div class="text-slate-500 select-none tracking-widest">TIMELINE</div>
+    <div class="w-8/12 h-full relative">
+      <div
+        class="flex flex-col layers-ctr overflow-auto"
+        v-if="state.layers.length"
+      >
+        <div
+          v-for="layer of state.layers"
+          :key="layer.id"
+          class="layer-item pl-4 flex items-center text-xs font-bold"
+          :style="{
+            backgroundColor: layer.color
+          }"
+        >
+          {{ layer.id }}
+        </div>
+      </div>
     </div>
   </div>
   <div
@@ -144,7 +169,7 @@ import {
   useMemory
 } from "@vueuse/core";
 import { fabric } from "fabric";
-import { randInt } from "matija-utils";
+import { randInt, randomColorHex } from "matija-utils";
 import { storeToRefs } from "pinia";
 import {
   computed,
@@ -307,7 +332,8 @@ const newTextbox = (
   state.layers.push({
     id: `text_${id}`,
     object: newText,
-    type: ASSET_TYPE.TEXT
+    type: ASSET_TYPE.TEXT,
+    color: randomColorHex()
   });
 };
 
@@ -476,7 +502,8 @@ const newSvg = (path: string) => {
     state.layers.push({
       id: `image_${id}`,
       object: svgData,
-      type: ASSET_TYPE.IMAGE
+      type: ASSET_TYPE.IMAGE,
+      color: randomColorHex()
     });
   });
 };
@@ -506,7 +533,8 @@ const newImage = async (source: File | string) => {
     state.layers.push({
       id: `image_${id}`,
       object: image,
-      type: ASSET_TYPE.IMAGE
+      type: ASSET_TYPE.IMAGE,
+      color: randomColorHex()
     });
   });
 };
@@ -726,10 +754,14 @@ onBeforeUnmount(() => {
 }
 
 .layers-ctr-title {
-  height: 60px;
+  height: 45px;
 }
 
 .layers-ctr {
-  height: 177px;
+  height: 195px;
+}
+
+.layer-item {
+  min-height: 40px;
 }
 </style>

@@ -13,6 +13,7 @@ export interface Layer {
   object: fabric.Object | null;
   id: string;
   type: string;
+  color?: string;
 }
 
 export interface AssetEvent {

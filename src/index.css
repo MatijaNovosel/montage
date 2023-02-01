@@ -100,3 +100,10 @@ input[type="color"]::-webkit-color-swatch {
 .scale-x-n1 {
   transform: scaleX(-1);
 }
+
+.time-tick {
+  width: 1px;
+  height: 8px;
+  background-color: rgba(255, 255, 255, 0.212);
+  margin: 0 auto;
+}

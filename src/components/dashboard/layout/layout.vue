@@ -109,7 +109,13 @@
     </div>
     <div class="flex items-center w-full mt-3">
       <div class="w-4/12">Duration</div>
-      <text-input suffix="s" class="w-8/12" dense placeholder="Duration" />
+      <text-input
+        suffix="s"
+        class="w-8/12"
+        dense
+        placeholder="Duration"
+        v-model="state.duration"
+      />
     </div>
     <div class="flex items-center mt-3 w-full">
       <div class="w-4/12">Color</div>
@@ -183,6 +189,7 @@ import WebFont from "webfontloader";
 interface State {
   color: string;
   width: number;
+  duration: number;
   height: number;
   fonts: FontItem[];
   activeObjectOpacity: number;
@@ -209,6 +216,7 @@ const state: State = reactive({
   width: artboardWidth.value,
   height: artboardHeight.value,
   activeObjectOpacity: 0,
+  duration: 10,
   fonts: []
 });
 
