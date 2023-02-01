@@ -106,7 +106,9 @@
             backgroundColor: layer.color
           }"
         >
-          {{ layer.id }}
+          <span class="bg-black p-1 rounded-md">
+            {{ layer.id }}
+          </span>
         </div>
       </div>
     </div>
