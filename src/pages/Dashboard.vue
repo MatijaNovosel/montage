@@ -779,7 +779,6 @@ onBeforeUnmount(() => {
 .bottom {
   bottom: 15px;
   position: absolute;
-  left: 50%;
 }
 
 .seeker {
