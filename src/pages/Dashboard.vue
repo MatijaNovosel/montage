@@ -7,7 +7,9 @@
     <div
       class="main w-7/12 h-full flex flex-col justify-center items-center relative"
     >
-      <div class="top-left flex flex-col select-none">
+      <div
+        class="top-left flex flex-col select-none bg-black bg-opacity-50 p-2 rounded-lg"
+      >
         <div>
           <span class="text-slate-500 font-bold">🗑️ Used </span>
           {{ bytesToMB(memory?.usedJSHeapSize) }}
@@ -37,6 +39,11 @@
           🔎 {{ state.zoomLevel }}
         </div>
       </div>
+      <div
+        class="bottom bg-black bg-opacity-50 px-4 py-2 rounded-lg z-10 text-2xl"
+      >
+        {{ state.currentTime }}
+      </div>
       <main ref="main" class="h-full w-full">
         <canvas class="block" ref="canvas" />
       </main>
@@ -56,7 +63,8 @@
     >
       LAYERS
     </div>
-    <div class="w-8/12 flex items-center justify-between px-5 py-3">
+    <div class="w-8/12 flex items-center justify-between px-5 py-3 relative">
+      <div class="seeker" />
       <div
         class="flex flex-col pt-4 text-slate-400"
         :key="i"
@@ -106,7 +114,7 @@
             backgroundColor: layer.color
           }"
         >
-          <span class="bg-black p-1 rounded-md">
+          <span class="bg-black px-2 py-1 rounded-md">
             {{ layer.id }}
           </span>
         </div>
@@ -131,7 +139,6 @@
       />
     </div>
     <div class="flex justify-center items-center w-6/12">
-      <span class="mr-5"> 00:00:00 </span>
       <img class="cursor-pointer scale-x-n1" src="/timeline/ff.svg" />
       <img class="mx-5 cursor-pointer" src="/timeline/play.svg" />
       <img class="cursor-pointer" src="/timeline/ff.svg" />
@@ -188,6 +195,7 @@ interface State {
   timelineScale: number;
   zoomLevel: string;
   layers: Layer[];
+  currentTime: string;
 }
 
 const dashboardStore = useDashboardStore();
@@ -200,7 +208,8 @@ const { artboardColor, artboardHeight, artboardWidth, activeObjectId } =
 const state: State = reactive({
   timelineScale: 0,
   zoomLevel: "100%",
-  layers: []
+  layers: [],
+  currentTime: "00:00:00"
 });
 
 const playbackSpeed = ref<SelectItem<number> | null>(TIME_OPTIONS[1]);
@@ -765,5 +774,28 @@ onBeforeUnmount(() => {
 
 .layer-item {
   min-height: 40px;
+}
+
+.bottom {
+  bottom: 15px;
+  position: absolute;
+  left: 50%;
+}
+
+.seeker {
+  position: absolute;
+}
+
+.seeker::after {
+  background: url(/controls/seeker.svg);
+  display: block;
+  content: "";
+  position: absolute;
+  width: 13px;
+  height: 18px;
+  margin-left: 2px;
+  margin-top: 15px;
+  z-index: 9;
+  box-sizing: border-box;
 }
 </style>
