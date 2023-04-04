@@ -2,6 +2,7 @@ import FloatingVue from "floating-vue";
 import { createPinia } from "pinia";
 import { createApp } from "vue";
 import { createI18n } from "vue-i18n";
+import WebFont from "webfontloader";
 import App from "./App.vue";
 import btn from "./components/app/btn.vue";
 import colorPicker from "./components/app/colorPicker.vue";
@@ -26,6 +27,12 @@ const i18n = createI18n({
 
 const pinia = createPinia();
 const app = createApp(App);
+
+WebFont.load({
+  google: {
+    families: ["Roboto"]
+  }
+});
 
 app.use(router);
 app.use(i18n);

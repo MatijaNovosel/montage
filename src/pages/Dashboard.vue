@@ -189,7 +189,6 @@ import {
   ref,
   watch
 } from "vue";
-import WebFont from "webfontloader";
 
 interface State {
   timelineScale: number;
@@ -657,12 +656,6 @@ const updateActiveObjectDimensions = () => {
 };
 
 onMounted(() => {
-  WebFont.load({
-    google: {
-      families: ["Roboto"]
-    }
-  });
-
   fabricCanvas = initializeFabric(
     canvas.value,
     mainWidth.value,
