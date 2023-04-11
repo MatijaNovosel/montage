@@ -111,8 +111,8 @@
       <div class="w-4/12">Duration</div>
       <v-text-field
         dark
+        density="compact"
         suffix="s"
-        dense
         placeholder="Duration"
         v-model="state.duration"
       />

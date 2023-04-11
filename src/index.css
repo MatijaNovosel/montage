@@ -16,6 +16,10 @@
   --timeline-height-full: 300px;
 }
 
+html {
+  overflow: hidden !important;
+}
+
 * {
   font-family: "Roboto", sans-serif;
 }
