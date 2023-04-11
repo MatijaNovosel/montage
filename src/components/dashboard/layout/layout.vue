@@ -109,9 +109,9 @@
     </div>
     <div class="flex items-center w-full mt-3">
       <div class="w-4/12">Duration</div>
-      <text-input
+      <v-text-field
+        dark
         suffix="s"
-        class="w-8/12"
         dense
         placeholder="Duration"
         v-model="state.duration"

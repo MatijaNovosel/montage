@@ -34,9 +34,21 @@ WebFont.load({
   }
 });
 
+// Vuetify
+import { createVuetify } from "vuetify";
+import * as components from "vuetify/components";
+import * as directives from "vuetify/directives";
+import "vuetify/styles";
+
+const vuetify = createVuetify({
+  components,
+  directives
+});
+
 app.use(router);
 app.use(i18n);
 app.use(pinia);
+app.use(vuetify);
 app.use(FloatingVue, {
   themes: {
     "info-tooltip": {
