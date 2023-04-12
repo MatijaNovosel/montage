@@ -83,9 +83,11 @@
             class="pl-4 cursor-pointer layer-item flex items-center"
             v-for="(layer, i) of state.layers"
             :class="{
-              'bg-slate-800 hover:bg-slate-700': i % 2,
-              'bg-slate-900 hover:bg-slate-800': !(i % 2),
-              'bg-indigo-500 hover:bg-indigo-400': activeObjectId === layer.id
+              'bg-indigo-500 hover:bg-indigo-400': activeObjectId === layer.id,
+              'bg-slate-800 hover:bg-slate-700':
+                i % 2 && activeObjectId !== layer.id,
+              'bg-slate-900 hover:bg-slate-800':
+                !(i % 2) && activeObjectId !== layer.id
             }"
             :key="layer.id"
             @click="setActiveObject(layer.id)"

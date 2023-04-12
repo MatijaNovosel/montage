@@ -4,87 +4,95 @@
   >
     <div class="mb-3 text-slate-400 select-none">Vertical alignment</div>
     <div class="flex justify-center items-center">
-      <btn
-        @click="$emit('align', ALIGN_OPTIONS.TOP)"
+      <v-btn
+        @click="emit('align', ALIGN_OPTIONS.TOP)"
         v-tooltip="'Align top'"
-        square
-        background-color="indigo-500"
+        icon
+        size="40"
+        theme="dark"
         :disabled="!activeObject"
       >
-        <img src="/align/align-top.svg" />
-      </btn>
-      <btn
-        @click="$emit('align', ALIGN_OPTIONS.CENTER_V)"
+        <v-icon size="20" icon="mdi-format-vertical-align-top" />
+      </v-btn>
+      <v-btn
+        @click="emit('align', ALIGN_OPTIONS.CENTER_V)"
         v-tooltip="'Align center'"
-        square
-        class="mx-2 py-2"
-        background-color="indigo-500"
+        class="mx-2"
+        icon
+        size="40"
+        theme="dark"
         :disabled="!activeObject"
       >
-        <img class="h-full w-full" src="/align/align-center-v.svg" />
-      </btn>
-      <btn
-        @click="$emit('align', ALIGN_OPTIONS.BOTTOM)"
+        <v-icon size="20" icon="mdi-format-vertical-align-center" />
+      </v-btn>
+      <v-btn
+        @click="emit('align', ALIGN_OPTIONS.BOTTOM)"
         v-tooltip="'Align bottom'"
-        square
-        background-color="indigo-500"
+        icon
+        size="40"
+        theme="dark"
         :disabled="!activeObject"
       >
-        <img src="/align/align-bottom.svg" />
-      </btn>
+        <v-icon size="20" icon="mdi-format-vertical-align-bottom" />
+      </v-btn>
     </div>
     <div class="mt-3 text-slate-400 select-none">Horizontal alignment</div>
     <div class="flex justify-center items-center mt-3">
-      <btn
-        @click="$emit('align', ALIGN_OPTIONS.LEFT)"
+      <v-btn
+        @click="emit('align', ALIGN_OPTIONS.LEFT)"
         v-tooltip="'Align left'"
-        square
-        background-color="indigo-500"
+        icon
+        size="40"
+        theme="dark"
         :disabled="!activeObject"
       >
-        <img src="/align/align-left.svg" />
-      </btn>
-      <btn
-        @click="$emit('align', ALIGN_OPTIONS.CENTER_H)"
+        <v-icon size="20" icon="mdi-format-horizontal-align-left" />
+      </v-btn>
+      <v-btn
+        @click="emit('align', ALIGN_OPTIONS.CENTER_H)"
         v-tooltip="'Align center'"
-        square
-        background-color="indigo-500"
-        class="mx-2 py-2"
+        class="mx-2"
+        icon
+        size="40"
+        theme="dark"
         :disabled="!activeObject"
       >
-        <img src="/align/align-center-h.svg" />
-      </btn>
-      <btn
-        @click="$emit('align', ALIGN_OPTIONS.RIGHT)"
+        <v-icon size="20" icon="mdi-format-horizontal-align-center" />
+      </v-btn>
+      <v-btn
+        @click="emit('align', ALIGN_OPTIONS.RIGHT)"
         v-tooltip="'Align right'"
-        square
-        background-color="indigo-500"
+        icon
+        size="40"
+        theme="dark"
         :disabled="!activeObject"
       >
-        <img src="/align/align-right.svg" />
-      </btn>
+        <v-icon size="20" icon="mdi-format-horizontal-align-right" />
+      </v-btn>
     </div>
     <div class="mt-3 text-slate-400 select-none">Arrangement</div>
     <div class="flex justify-center items-center mt-3">
-      <btn
-        @click="$emit('bring-forward')"
+      <v-btn
+        @click="emit('bring-forward')"
         v-tooltip="'Bring forward'"
-        square
-        background-color="indigo-500"
-        class="mx-2 py-2"
+        icon
+        size="40"
+        theme="dark"
         :disabled="!activeObject"
+        class="mr-2"
       >
-        <img src="/arrangement/bring-forwards.svg" />
-      </btn>
-      <btn
-        @click="$emit('send-backward')"
+        <v-icon size="20" icon="mdi-arrange-bring-forward" />
+      </v-btn>
+      <v-btn
+        @click="emit('send-backward')"
         v-tooltip="'Send backwards'"
-        square
-        background-color="indigo-500"
+        icon
+        size="40"
+        theme="dark"
         :disabled="!activeObject"
       >
-        <img src="/arrangement/send-backwards.svg" />
-      </btn>
+        <v-icon size="20" icon="mdi-arrange-send-backward" />
+      </v-btn>
     </div>
     <div class="mt-5 text-slate-400 select-none">Canvas settings</div>
     <div class="flex items-center my-3 w-full">
@@ -123,10 +131,14 @@
         v-model="state.duration"
       />
     </div>
-    <div class="flex items-center mt-3 w-full">
-      <div class="w-4/12">Color</div>
-      <color-picker class="w-8/12" v-model="state.color" />
-    </div>
+    <div class="my-5 text-slate-400 select-none">Color</div>
+    <v-color-picker
+      hide-sliders
+      theme="dark"
+      v-model="state.color"
+      mode="hexa"
+      width="100%"
+    />
     <div class="mt-5 text-slate-400 select-none">Font settings</div>
     <div class="flex items-center justify-center mt-5 w-full">
       <div class="w-4/12">Font</div>
@@ -222,7 +234,13 @@ const {
 
 const { createToast } = useToastStore();
 
-defineEmits(["align", "send-forward", "bring-backward"]);
+const emit = defineEmits([
+  "align",
+  "send-forward",
+  "bring-backward",
+  "bring-forward",
+  "send-backward"
+]);
 
 const state: State = reactive({
   color: artboardColor.value,
