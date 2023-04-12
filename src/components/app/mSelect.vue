@@ -21,7 +21,7 @@
         }"
       >
         <div class="flex flex-wrap" v-if="selectedItem !== null">
-          {{ selectedItem.text }}
+          {{ selectedItem.title }}
         </div>
         <span class="text-slate-400" v-else> {{ placeholder }} </span>
       </button>
@@ -35,7 +35,7 @@
           >
             <slot v-if="$slots.text" name="text" :data="option" />
             <span v-else>
-              {{ option.text }}
+              {{ option.title }}
             </span>
           </li>
         </ul>

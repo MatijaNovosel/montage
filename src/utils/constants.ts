@@ -181,19 +181,19 @@ export const ALIGN_OPTIONS: Record<string, number> = {
 
 export const TIME_OPTIONS: SelectItem<number>[] = [
   {
-    text: "0.5x",
+    title: "0.5x",
     value: 1
   },
   {
-    text: "1x",
+    title: "1x",
     value: 2
   },
   {
-    text: "1.5x",
+    title: "1.5x",
     value: 3
   },
   {
-    text: "2x",
+    title: "2x",
     value: 4
   }
 ];

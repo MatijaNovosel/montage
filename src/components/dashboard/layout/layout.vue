@@ -89,28 +89,34 @@
     <div class="mt-5 text-slate-400 select-none">Canvas settings</div>
     <div class="flex items-center my-3 w-full">
       <div class="w-4/12">Width</div>
-      <text-input
+      <v-text-field
         suffix="px"
-        class="w-8/12"
         v-model.number="state.width"
-        dense
+        theme="dark"
+        variant="solo"
         placeholder="Width"
+        hide-details
+        density="compact"
       />
     </div>
     <div class="flex items-center w-full">
       <div class="w-4/12">Height</div>
-      <text-input
+      <v-text-field
         suffix="px"
-        class="w-8/12"
+        theme="dark"
+        variant="solo"
+        hide-details
+        density="compact"
         v-model.number="state.height"
-        dense
         placeholder="Height"
       />
     </div>
     <div class="flex items-center w-full mt-3">
       <div class="w-4/12">Duration</div>
       <v-text-field
-        dark
+        theme="dark"
+        variant="solo"
+        hide-details
         density="compact"
         suffix="s"
         placeholder="Duration"
@@ -124,47 +130,54 @@
     <div class="mt-5 text-slate-400 select-none">Font settings</div>
     <div class="flex items-center justify-center mt-5 w-full">
       <div class="w-4/12">Font</div>
-      <m-select class="w-8/12" placeholder="Font" :options="fontOptions">
-        <template #text="{ data }: { data: SelectItem<string> }">
-          <span :stlye="{ fontFamily: data.value }">
-            {{ data.value }}
-          </span>
-        </template>
-      </m-select>
+      <v-select
+        hide-details
+        density="compact"
+        placeholder="Font"
+        theme="dark"
+        variant="solo"
+        :items="fontOptions"
+      />
     </div>
     <template v-if="activeObject">
       <div class="mt-5 text-slate-400 select-none">Active object settings</div>
       <div class="flex items-center my-3 w-full">
         <div class="w-4/12">Width</div>
-        <text-input
+        <v-text-field
           v-model="activeObjectWidth"
           readonly
           suffix="px"
-          class="w-8/12"
-          dense
           placeholder="Width"
+          theme="dark"
+          variant="solo"
+          hide-details
+          density="compact"
         />
       </div>
       <div class="flex items-center w-full">
         <div class="w-4/12">Height</div>
-        <text-input
+        <v-text-field
           v-model="activeObjectHeight"
           readonly
           suffix="px"
-          class="w-8/12"
-          dense
-          placeholder="Height"
+          placeholder="Width"
+          theme="dark"
+          variant="solo"
+          hide-details
+          density="compact"
         />
       </div>
       <div class="flex items-center my-3 w-full">
         <div class="w-4/12">Rotation</div>
-        <text-input
+        <v-text-field
           v-model="activeObjectRotation"
           readonly
-          suffix="○"
-          class="w-8/12"
           dense
           placeholder="Rotation"
+          theme="dark"
+          variant="solo"
+          hide-details
+          density="compact"
         />
       </div>
       <div class="flex items-center w-full">
@@ -222,7 +235,7 @@ const state: State = reactive({
 
 const fontOptions = computed(() =>
   state.fonts.map<SelectItem<string>>((f) => ({
-    text: f.family,
+    title: f.family,
     value: f.family
   }))
 );

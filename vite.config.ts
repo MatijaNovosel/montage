@@ -1,13 +1,22 @@
 import vue from "@vitejs/plugin-vue";
 import { fileURLToPath } from "url";
 import { defineConfig } from "vite";
+import vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
 
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [
+    vue({
+      template: { transformAssetUrls }
+    }),
+    vuetify({
+      autoImport: true
+    })
+  ],
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url))
-    }
+    },
+    extensions: [".js", ".json", ".jsx", ".mjs", ".ts", ".tsx", ".vue"]
   },
   clearScreen: false,
   server: {
