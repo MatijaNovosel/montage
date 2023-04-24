@@ -9,7 +9,6 @@
         v-tooltip="'Align top'"
         icon
         size="40"
-        theme="dark"
         :disabled="!activeObject"
       >
         <v-icon size="20" icon="mdi-format-vertical-align-top" />
@@ -20,7 +19,6 @@
         class="mx-2"
         icon
         size="40"
-        theme="dark"
         :disabled="!activeObject"
       >
         <v-icon size="20" icon="mdi-format-vertical-align-center" />
@@ -30,7 +28,6 @@
         v-tooltip="'Align bottom'"
         icon
         size="40"
-        theme="dark"
         :disabled="!activeObject"
       >
         <v-icon size="20" icon="mdi-format-vertical-align-bottom" />
@@ -43,7 +40,6 @@
         v-tooltip="'Align left'"
         icon
         size="40"
-        theme="dark"
         :disabled="!activeObject"
       >
         <v-icon size="20" icon="mdi-format-horizontal-align-left" />
@@ -54,7 +50,6 @@
         class="mx-2"
         icon
         size="40"
-        theme="dark"
         :disabled="!activeObject"
       >
         <v-icon size="20" icon="mdi-format-horizontal-align-center" />
@@ -64,7 +59,6 @@
         v-tooltip="'Align right'"
         icon
         size="40"
-        theme="dark"
         :disabled="!activeObject"
       >
         <v-icon size="20" icon="mdi-format-horizontal-align-right" />
@@ -77,7 +71,6 @@
         v-tooltip="'Bring forward'"
         icon
         size="40"
-        theme="dark"
         :disabled="!activeObject"
         class="mr-2"
       >
@@ -88,7 +81,6 @@
         v-tooltip="'Send backwards'"
         icon
         size="40"
-        theme="dark"
         :disabled="!activeObject"
       >
         <v-icon size="20" icon="mdi-arrange-send-backward" />
@@ -100,7 +92,6 @@
       <v-text-field
         suffix="px"
         v-model.number="state.width"
-        theme="dark"
         variant="solo"
         placeholder="Width"
         hide-details
@@ -111,7 +102,6 @@
       <div class="w-4/12">Height</div>
       <v-text-field
         suffix="px"
-        theme="dark"
         variant="solo"
         hide-details
         density="compact"
@@ -122,7 +112,6 @@
     <div class="flex items-center w-full mt-3">
       <div class="w-4/12">Duration</div>
       <v-text-field
-        theme="dark"
         variant="solo"
         hide-details
         density="compact"
@@ -134,7 +123,6 @@
     <div class="my-5 text-slate-400 select-none">Color</div>
     <v-color-picker
       hide-sliders
-      theme="dark"
       v-model="state.color"
       mode="hexa"
       width="100%"
@@ -146,7 +134,6 @@
         hide-details
         density="compact"
         placeholder="Font"
-        theme="dark"
         variant="solo"
         :items="fontOptions"
       />
@@ -160,7 +147,6 @@
           readonly
           suffix="px"
           placeholder="Width"
-          theme="dark"
           variant="solo"
           hide-details
           density="compact"
@@ -173,7 +159,6 @@
           readonly
           suffix="px"
           placeholder="Width"
-          theme="dark"
           variant="solo"
           hide-details
           density="compact"
@@ -186,7 +171,6 @@
           readonly
           dense
           placeholder="Rotation"
-          theme="dark"
           variant="solo"
           hide-details
           density="compact"
@@ -194,7 +178,7 @@
       </div>
       <div class="flex items-center w-full">
         <div class="w-4/12">Opacity</div>
-        <slider v-model.number="state.activeObjectOpacity" class="w-8/12" />
+        <v-slider v-model.number="state.activeObjectOpacity" class="w-8/12" />
       </div>
     </template>
   </div>
@@ -270,9 +254,7 @@ watch(
 
 watch(
   () => state.activeObjectOpacity,
-  (val) => {
-    dashboardStore.setActiveObjectOpacity(val);
-  }
+  (val) => dashboardStore.setActiveObjectOpacity(val)
 );
 
 onMounted(async () => {

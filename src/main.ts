@@ -4,11 +4,6 @@ import { createApp } from "vue";
 import { createI18n } from "vue-i18n";
 import WebFont from "webfontloader";
 import App from "./App.vue";
-import btn from "./components/app/btn.vue";
-import colorPicker from "./components/app/colorPicker.vue";
-import mSelect from "./components/app/mSelect.vue";
-import slider from "./components/app/slider.vue";
-import textInput from "./components/app/textInput.vue";
 import en from "./i18n/en";
 import hr from "./i18n/hr";
 import router from "./router";
@@ -44,6 +39,9 @@ import "vuetify/styles";
 const vuetify = createVuetify({
   components,
   directives,
+  theme: {
+    defaultTheme: "dark"
+  },
   icons: {
     defaultSet: "mdi",
     aliases,
@@ -65,12 +63,5 @@ app.use(FloatingVue, {
     }
   }
 });
-
-// Global components
-app.component("m-select", mSelect);
-app.component("text-input", textInput);
-app.component("slider", slider);
-app.component("color-picker", colorPicker);
-app.component("btn", btn);
 
 app.mount("#app");

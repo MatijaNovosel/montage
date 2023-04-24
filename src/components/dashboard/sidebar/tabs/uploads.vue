@@ -1,7 +1,8 @@
 <template>
   <div class="flex flex-col justify-center py-5">
-    <div class="flex justify-center mt-2 mb-6">
-      <btn @click="open" background-color="#4BB543"> 📁 Add files </btn>
+    <div class="flex flex-col justify-center mt-2 mb-6">
+      <v-btn @click="open" background-color="#4BB543"> 📁 Add files </v-btn>
+      <div class="mt-5">No files found, try adding some.</div>
     </div>
   </div>
 </template>

@@ -25,13 +25,13 @@
       </div>
       <div class="top-right flex flex-col">
         <div class="flex">
-          <btn class="mr-2" @click="undo" background-color="#475569">
+          <v-btn class="mr-2" @click="undo" background-color="#475569">
             <img class="mr-2" src="/undo.svg" /> Undo
-          </btn>
-          <btn>
+          </v-btn>
+          <v-btn>
             <img class="scale-x-n1 mr-2" src="/undo.svg" />
             Redo
-          </btn>
+          </v-btn>
         </div>
         <div
           class="mt-3 flex justify-center bg-slate-800 py-1 rounded-md select-none"
@@ -95,7 +95,7 @@
             <span class="mr-3">
               {{ LAYER_TYPE_ICON[layer.type] }}
             </span>
-            <span class="text-xs">
+            <span class="bg-black px-2 py-1 rounded-md text-xs">
               {{ layer.id }}
             </span>
           </div>
@@ -115,11 +115,7 @@
           :style="{
             backgroundColor: layer.color
           }"
-        >
-          <span class="bg-black px-2 py-1 rounded-md">
-            {{ layer.id }}
-          </span>
-        </div>
+        />
       </div>
     </div>
   </div>
@@ -129,14 +125,20 @@
   >
     <div class="flex justify-center items-center w-3/12">
       <span> ◻️ </span>
-      <slider class="mx-3 w-7/12" v-model="state.timelineScale" />
+      <v-slider
+        hide-details
+        class="mx-3 w-7/12"
+        density="compact"
+        v-model="state.timelineScale"
+      />
       <span> ⬜ </span>
-      <m-select
+      <v-select
         class="ml-3 w-5/12"
-        background-color="slate-900"
-        placement="top-start"
         placeholder="Speed"
-        :options="TIME_OPTIONS"
+        density="compact"
+        hide-details
+        variant="solo"
+        :items="TIME_OPTIONS"
         v-model="playbackSpeed"
       />
     </div>
@@ -146,7 +148,7 @@
       <img class="cursor-pointer" src="/timeline/ff.svg" />
     </div>
     <div class="flex justify-end items-center w-3/12">
-      <btn @click="$export" background-color="#2171b3"> 💾 Export </btn>
+      <v-btn @click="$export" background-color="#2171b3"> 💾 Export </v-btn>
     </div>
   </div>
 </template>
@@ -197,6 +199,7 @@ interface State {
   zoomLevel: string;
   layers: Layer[];
   currentTime: string;
+  playbackSpeed: SelectItem<number>;
 }
 
 const dashboardStore = useDashboardStore();
@@ -210,7 +213,8 @@ const state: State = reactive({
   timelineScale: 0,
   zoomLevel: "100%",
   layers: [],
-  currentTime: "00:00:00"
+  currentTime: "00:00:00",
+  playbackSpeed: TIME_OPTIONS[1]
 });
 
 const playbackSpeed = ref<SelectItem<number> | null>(TIME_OPTIONS[1]);

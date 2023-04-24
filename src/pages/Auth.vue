@@ -19,10 +19,10 @@
           type="text"
           class="border rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full"
         />
-        <btn text="Sign in" />
+        <v-btn text="Sign in" />
       </div>
       <router-link :to="{ name: ROUTE_NAMES.DASHBOARD }">
-        <btn class="mt-5" text="Go to Dashboard" />
+        <v-btn class="mt-5" text="Go to Dashboard" />
       </router-link>
     </div>
   </div>

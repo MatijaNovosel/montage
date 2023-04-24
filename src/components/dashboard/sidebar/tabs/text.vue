@@ -1,7 +1,7 @@
 <template>
   <div class="flex text-left flex-col gap-y-3 py-5">
     <div class="text-slate-500">Basic text</div>
-    <btn
+    <v-btn
       id="heading-text"
       @click="
         emit({
@@ -11,8 +11,8 @@
       "
     >
       Add heading
-    </btn>
-    <btn
+    </v-btn>
+    <v-btn
       id="subheading-text"
       @click="
         emit({
@@ -22,8 +22,8 @@
       "
     >
       Add subheading
-    </btn>
-    <btn
+    </v-btn>
+    <v-btn
       id="body-text"
       @click="
         emit({
@@ -33,9 +33,9 @@
       "
     >
       Add body text
-    </btn>
+    </v-btn>
     <div class="text-slate-500">Sans Serif</div>
-    <btn
+    <v-btn
       v-for="f in TEXT_ITEMS.sansSerif"
       :key="f"
       id="item-text"
@@ -50,9 +50,9 @@
       "
     >
       {{ f }}
-    </btn>
+    </v-btn>
     <div class="text-slate-500">Serif</div>
-    <btn
+    <v-btn
       v-for="f in TEXT_ITEMS.serif"
       :key="f"
       id="item-text"
@@ -67,9 +67,9 @@
       "
     >
       {{ f }}
-    </btn>
+    </v-btn>
     <div class="text-slate-500">Monospace</div>
-    <btn
+    <v-btn
       v-for="f in TEXT_ITEMS.monospace"
       :key="f"
       id="item-text"
@@ -84,9 +84,9 @@
       "
     >
       {{ f }}
-    </btn>
+    </v-btn>
     <div class="text-slate-500">Handwriting</div>
-    <btn
+    <v-btn
       v-for="f in TEXT_ITEMS.handwriting"
       :key="f"
       id="item-text"
@@ -101,9 +101,9 @@
       "
     >
       {{ f }}
-    </btn>
+    </v-btn>
     <div class="text-slate-500">Display</div>
-    <btn
+    <v-btn
       v-for="f in TEXT_ITEMS.display"
       :key="f"
       id="item-text"
@@ -118,7 +118,7 @@
       "
     >
       {{ f }}
-    </btn>
+    </v-btn>
   </div>
 </template>
 

@@ -25,7 +25,13 @@
           {{ TAB_ITEMS[activeTab].name.toUpperCase() }}
         </div>
         <div class="mt-3 px-4">
-          <text-input placeholder="Search" dense />
+          <v-text-field
+            hide-details
+            density="compact"
+            placeholder="Search"
+            variant="solo"
+            dense
+          />
         </div>
       </div>
       <div class="overflow-auto px-8">
