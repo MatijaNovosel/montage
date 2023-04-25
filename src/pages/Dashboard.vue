@@ -242,63 +242,6 @@ const $export = () => {
   createToast("💾 Exported!", "#2171b3");
 };
 
-const newVideo = (file: HTMLVideoElement, source: string, duration: number) => {
-  const newVideo = new fabric.Image(file, {
-    left: artBoardLeft.value + artboardWidth.value / 2,
-    top: artBoardTop.value + artboardHeight.value / 2,
-    width: file.width,
-    height: file.height,
-    originX: "center",
-    originY: "center",
-    backgroundColor: "rgba(255,255,255,0)",
-    stroke: "#000",
-    strokeUniform: true,
-    paintFirst: "stroke",
-    strokeWidth: 0,
-    //@ts-ignore
-    source,
-    duration: duration * 1000,
-    assetType: "video",
-    id: `video_${state.layers.length}`,
-    objectCaching: false,
-    inGroup: false
-  });
-  //@ts-ignore
-  newVideo.saveElem = newVideo.getElement();
-  fabricCanvas?.add(newVideo);
-  if ((newVideo.get("width") as number) > artboardWidth.value) {
-    newVideo.scaleToWidth(artboardWidth.value);
-  }
-  newVideo.scaleToWidth(150);
-  fabricCanvas?.renderAll();
-  fabricCanvas?.setActiveObject(newVideo);
-  fabricCanvas?.bringToFront(newVideo);
-  fabricCanvas?.renderAll();
-};
-
-const loadVideo = (src: string, x: number, y: number) => {
-  const vidObj = document.createElement("video");
-  const vidSrc = document.createElement("source");
-  vidSrc.src = src;
-  vidObj.crossOrigin = "anonymous";
-  vidObj.appendChild(vidSrc);
-  vidObj.addEventListener("loadeddata", function () {
-    vidObj.width = this.videoWidth;
-    vidObj.height = this.videoHeight;
-    vidObj.currentTime = 0;
-    vidObj.muted = false;
-    const waitLoad = () => {
-      if (vidObj.readyState >= 3) {
-        newVideo(vidObj, src, vidObj.duration);
-      } else {
-        setTimeout(waitLoad, 100);
-      }
-    };
-    setTimeout(waitLoad, 100);
-  });
-  vidObj.currentTime = 0;
-};
-
 const calculateTextWidth = (text: string, font: string) => {
   const ctx = fabricCanvas?.getContext();
   ctx!.font = font;
@@ -538,8 +481,28 @@ const newImage = async (source: File | string) => {
   const id = randInt(1, 9999).toString();
   if (typeof source !== "string") source = await readFile(source);
   fabric.Image.fromURL(source, (image) => {
-    image.set("top", mainHeight.value / 2 - (image.height as number) / 2);
-    image.set("left", mainWidth.value / 2 - (image.width as number) / 2);
+    if (
+      (image.get("width") as number) > artboardWidth.value ||
+      (image.get("height") as number) > artboardHeight.value
+    ) {
+      image.scaleToWidth(artboardWidth.value);
+      image.scaleToHeight(artboardHeight.value);
+      image.set(
+        "top",
+        artBoardTop.value +
+          artboardHeight.value / 2 -
+          image.getScaledHeight() / 2
+      );
+      image.set(
+        "left",
+        artBoardLeft.value +
+          artboardWidth.value / 2 -
+          image.getScaledWidth() / 2
+      );
+    } else {
+      image.set("top", artboardHeight.value / 2 - (image.height as number) / 2);
+      image.set("left", artboardWidth.value / 2 - (image.width as number) / 2);
+    }
     //@ts-ignore
     image.set("id", `image_${id}`);
     fabricCanvas?.add(image);
@@ -553,6 +516,63 @@ const newImage = async (source: File | string) => {
       color: randomColorHex()
     });
   });
+};
+
+const newVideo = (file: HTMLVideoElement, source: string, duration: number) => {
+  const newVideo = new fabric.Image(file, {
+    left: artBoardLeft.value + artboardWidth.value / 2,
+    top: artBoardTop.value + artboardHeight.value / 2,
+    width: file.width,
+    height: file.height,
+    originX: "center",
+    originY: "center",
+    backgroundColor: "rgba(255,255,255,0)",
+    stroke: "#000",
+    strokeUniform: true,
+    paintFirst: "stroke",
+    strokeWidth: 0,
+    //@ts-ignore
+    source,
+    duration: duration * 1000,
+    assetType: "video",
+    id: `video_${state.layers.length}`,
+    objectCaching: false,
+    inGroup: false
+  });
+  //@ts-ignore
+  newVideo.saveElem = newVideo.getElement();
+  fabricCanvas?.add(newVideo);
+  if ((newVideo.get("width") as number) > artboardWidth.value) {
+    newVideo.scaleToWidth(artboardWidth.value);
+  }
+  newVideo.scaleToWidth(150);
+  fabricCanvas?.renderAll();
+  fabricCanvas?.setActiveObject(newVideo);
+  fabricCanvas?.bringToFront(newVideo);
+  fabricCanvas?.renderAll();
+};
+
+const loadVideo = (src: string, x: number, y: number) => {
+  const vidObj = document.createElement("video");
+  const vidSrc = document.createElement("source");
+  vidSrc.src = src;
+  vidObj.crossOrigin = "anonymous";
+  vidObj.appendChild(vidSrc);
+  vidObj.addEventListener("loadeddata", function () {
+    vidObj.width = this.videoWidth;
+    vidObj.height = this.videoHeight;
+    vidObj.currentTime = 0;
+    vidObj.muted = false;
+    const waitLoad = () => {
+      if (vidObj.readyState >= 3) {
+        newVideo(vidObj, src, vidObj.duration);
+      } else {
+        setTimeout(waitLoad, 100);
+      }
+    };
+    setTimeout(waitLoad, 100);
+  });
+  vidObj.currentTime = 0;
 };
 
 const addAsset = (event: AssetEvent) => {
