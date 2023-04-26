@@ -25,11 +25,16 @@
       </div>
       <div class="top-right flex flex-col">
         <div class="flex">
-          <v-btn class="mr-2" @click="undo" background-color="#475569">
-            <img class="mr-2" src="/undo.svg" /> Undo
+          <v-btn class="mr-2" @click="undo">
+            <template #prepend>
+              <v-icon> mdi-undo </v-icon>
+            </template>
+            Undo
           </v-btn>
           <v-btn>
-            <img class="scale-x-n1 mr-2" src="/undo.svg" />
+            <template #prepend>
+              <v-icon> mdi-refresh </v-icon>
+            </template>
             Redo
           </v-btn>
         </div>
@@ -143,9 +148,9 @@
       />
     </div>
     <div class="flex justify-center items-center w-6/12">
-      <img class="cursor-pointer scale-x-n1" src="/timeline/ff.svg" />
-      <img class="mx-5 cursor-pointer" src="/timeline/play.svg" />
-      <img class="cursor-pointer" src="/timeline/ff.svg" />
+      <v-btn icon="mdi-skip-forward" class="scale-x-n1" variant="text" />
+      <v-btn icon="mdi-play" variant="text" />
+      <v-btn icon="mdi-skip-forward" variant="text" />
     </div>
     <div class="flex justify-end items-center w-3/12">
       <v-btn @click="$export" background-color="#2171b3"> 💾 Export </v-btn>

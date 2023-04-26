@@ -88,32 +88,32 @@ export const TAB_ITEMS: Record<number, TabItem> = {
   [TABS.UPLOADS]: {
     value: TABS.UPLOADS,
     name: "Uploads",
-    image: "uploads"
+    icon: "cloud-upload"
   },
   [TABS.OBJECTS]: {
     value: TABS.OBJECTS,
     name: "Objects",
-    image: "shape"
+    icon: "circle-multiple"
   },
   [TABS.IMAGES]: {
     value: TABS.IMAGES,
     name: "Images",
-    image: "image"
+    icon: "image"
   },
   [TABS.TEXT]: {
     value: TABS.TEXT,
     name: "Text",
-    image: "text"
+    icon: "format-text"
   },
   [TABS.VIDEOS]: {
     value: TABS.VIDEOS,
     name: "Videos",
-    image: "video"
+    icon: "video"
   },
   [TABS.AUDIO]: {
     value: TABS.AUDIO,
     name: "Audio",
-    image: "audio"
+    icon: "music-note"
   }
 };
 

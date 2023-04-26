@@ -1,7 +1,7 @@
 export interface TabItem {
   value: number;
   name: string;
-  image: string;
+  icon: string;
 }
 
 export interface SelectItem<T> {
