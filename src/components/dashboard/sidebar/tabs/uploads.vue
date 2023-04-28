@@ -9,26 +9,38 @@
 
 <script lang="ts" setup>
 import { AssetEvent } from "@/models/common";
-import { ASSET_TYPE } from "@/utils/constants";
+import { useToastStore } from "@/store/toast";
+import { ASSET_TYPE, FILE_SIZE_LIMIT } from "@/utils/constants";
 import { useEventBus, useFileDialog } from "@vueuse/core";
 import { watch } from "vue";
+// @ts-ignore-line
+import colors from "vuetify/lib/util/colors";
 
 const { emit } = useEventBus<AssetEvent>("asset");
+const { createToast } = useToastStore();
 
 const { files, open, reset } = useFileDialog({
   multiple: false,
-  accept: "image/png, image/jpeg"
+  accept: "image/png, image/jpeg, video/mp4"
 });
 
 watch(files, (val) => {
   if (val) {
     const file = val[0];
-    emit({
-      type: ASSET_TYPE.UPLOAD,
-      value: "upload",
-      file
-    });
-    reset();
+    try {
+      if (file.size > FILE_SIZE_LIMIT) {
+        throw new Error("File is too big!");
+      }
+      emit({
+        type: ASSET_TYPE.UPLOAD,
+        value: "upload",
+        file
+      });
+    } catch (e: any) {
+      createToast(e, colors.red.darken1);
+    } finally {
+      reset();
+    }
   }
 });
 </script>

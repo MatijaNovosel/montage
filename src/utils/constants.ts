@@ -217,3 +217,5 @@ export const LAYER_TYPE_ICON: Record<string, string> = {
   [ASSET_TYPE.IMAGE]: "🖼️",
   [ASSET_TYPE.TEXT]: "✏️"
 };
+
+export const FILE_SIZE_LIMIT = 4194304;

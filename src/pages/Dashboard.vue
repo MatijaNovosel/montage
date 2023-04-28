@@ -164,7 +164,6 @@ import Sidebar from "@/components/dashboard/sidebar/sidebar.vue";
 import { AssetEvent, Layer, SelectItem } from "@/models/common";
 import { useDashboardStore } from "@/store/dashboard";
 import { useToastStore } from "@/store/toast";
-import { COLORS } from "@/utils/colors";
 import {
   ALIGN_OPTIONS,
   ASSET_TYPE,
@@ -198,6 +197,8 @@ import {
   ref,
   watch
 } from "vue";
+// @ts-ignore-line
+import colors from "vuetify/lib/util/colors";
 
 interface State {
   timelineScale: number;
@@ -240,7 +241,7 @@ const { width: mainWidth, height: mainHeight } = useElementSize(main);
 const { memory } = useMemory();
 
 const undo = () => {
-  createToast("🚨 Undo", COLORS.ERROR);
+  createToast("🚨 Undo", colors.red.darken1);
 };
 
 const $export = () => {
@@ -356,7 +357,7 @@ const initLines = () => {
       artboardHeight.value + artBoardTop.value
     ],
     {
-      stroke: COLORS.SELECTION,
+      stroke: colors.blue.darken1,
       opacity: 0,
       selectable: false,
       evented: false,
@@ -373,7 +374,7 @@ const initLines = () => {
       fabricCanvas!.getHeight() / 2
     ],
     {
-      stroke: COLORS.SELECTION,
+      stroke: colors.blue.darken1,
       opacity: 0,
       selectable: false,
       evented: false,
@@ -704,8 +705,8 @@ onMounted(() => {
     ry: 0,
     hasControls: true,
     transparentCorners: false,
-    borderColor: COLORS.SELECTION,
-    cornerColor: COLORS.SELECTION
+    borderColor: colors.blue.darken1,
+    cornerColor: colors.blue.darken1
   });
 
   centerCircle = new fabric.Circle({
@@ -764,7 +765,7 @@ onMounted(() => {
 
   fabricCanvas.renderAll();
 
-  createToast("✅ App successfully started!", COLORS.SUCCESS);
+  createToast("✅ App successfully started!", colors.green.darken1);
 });
 
 onBeforeUnmount(() => {
@@ -810,7 +811,7 @@ onBeforeUnmount(() => {
 }
 
 .seeker::after {
-  background: url(/controls/seeker.svg);
+  background: url(/seeker.svg);
   display: block;
   content: "";
   position: absolute;
