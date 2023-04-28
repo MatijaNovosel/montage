@@ -149,7 +149,11 @@
     </div>
     <div class="flex justify-center items-center w-6/12">
       <v-btn icon="mdi-skip-forward" class="scale-x-n1" variant="text" />
-      <v-btn icon="mdi-play" variant="text" />
+      <v-btn
+        :icon="state.paused ? 'mdi-play' : 'mdi-pause'"
+        variant="text"
+        @click="togglePlay"
+      />
       <v-btn icon="mdi-skip-forward" variant="text" />
     </div>
     <div class="flex justify-end items-center w-3/12">
@@ -206,6 +210,7 @@ interface State {
   layers: Layer[];
   currentTime: string;
   playbackSpeed: SelectItem<number>;
+  paused: boolean;
 }
 
 const dashboardStore = useDashboardStore();
@@ -220,7 +225,8 @@ const state: State = reactive({
   zoomLevel: "100%",
   layers: [],
   currentTime: "00:00:00",
-  playbackSpeed: TIME_OPTIONS[1]
+  playbackSpeed: TIME_OPTIONS[1],
+  paused: true
 });
 
 const playbackSpeed = ref<SelectItem<number> | null>(TIME_OPTIONS[1]);
@@ -245,7 +251,36 @@ const undo = () => {
 };
 
 const $export = () => {
-  createToast("💾 Exported!", "#2171b3");
+  createToast("💾 Exported!", colors.blue.darken1);
+};
+
+fabric.util.requestAnimFrame(function render() {
+  fabricCanvas?.renderAll();
+  fabric.util.requestAnimFrame(render);
+});
+
+const playVideos = async (time?: string) => {
+  state.layers
+    .filter((l) => l.type === ASSET_TYPE.VIDEO)
+    .forEach((l) => {
+      // @ts-ignore
+      const element = l.object.getElement();
+      if (element.paused === true) {
+        element.play();
+      } else {
+        element.pause();
+      }
+      fabricCanvas?.renderAll();
+    });
+};
+
+const animate = (time?: string) => {
+  playVideos();
+};
+
+const togglePlay = () => {
+  state.paused = !state.paused;
+  animate();
 };
 
 const calculateTextWidth = (text: string, font: string) => {
