@@ -219,4 +219,4 @@ export const LAYER_TYPE_ICON: Record<string, string> = {
   [ASSET_TYPE.VIDEO]: "🎥"
 };
 
-export const FILE_SIZE_LIMIT = 4194304;
+export const FILE_SIZE_LIMIT = 10485760; // 10 MB
