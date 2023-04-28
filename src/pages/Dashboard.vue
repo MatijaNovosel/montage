@@ -476,8 +476,7 @@ const newSvg = (path: string) => {
 onKeyDown("Delete", () => {
   fabricCanvas?.getActiveObjects().forEach((obj) => {
     //@ts-ignore
-    const id: string = obj.id;
-    state.layers = state.layers.filter((l) => l.id !== id);
+    state.layers = state.layers.filter((l) => l.id !== obj.id);
     fabricCanvas?.remove(obj);
   });
   fabricCanvas?.discardActiveObject().renderAll();
@@ -525,6 +524,7 @@ const newImage = async (source: File | string) => {
 };
 
 const newVideo = (file: HTMLVideoElement, source: string, duration: number) => {
+  const id = randInt(1, 9999).toString();
   const newVideo = new fabric.Image(file, {
     left: artBoardLeft.value + artboardWidth.value / 2,
     top: artBoardTop.value + artboardHeight.value / 2,
@@ -556,9 +556,17 @@ const newVideo = (file: HTMLVideoElement, source: string, duration: number) => {
   fabricCanvas?.setActiveObject(newVideo);
   fabricCanvas?.bringToFront(newVideo);
   fabricCanvas?.renderAll();
+  //@ts-ignore
+  newVideo.set("id", `video_${id}`);
+  state.layers.push({
+    id: `video_${id}`,
+    object: newVideo,
+    type: ASSET_TYPE.VIDEO,
+    color: randomColorHex()
+  });
 };
 
-const loadVideo = (src: string, x: number, y: number) => {
+const loadVideo = (src: string) => {
   const vidObj = document.createElement("video");
   const vidSrc = document.createElement("source");
   vidSrc.src = src;
@@ -581,7 +589,7 @@ const loadVideo = (src: string, x: number, y: number) => {
   vidObj.currentTime = 0;
 };
 
-const addAsset = (event: AssetEvent) => {
+const addAsset = async (event: AssetEvent) => {
   switch (event.type) {
     case ASSET_TYPE.EMOJI:
       newSvg(`/emojis/${event.value}.svg`);
@@ -598,6 +606,10 @@ const addAsset = (event: AssetEvent) => {
           case "png":
           case "jpg":
             newImage(event.file);
+            break;
+          case "mp4":
+            const src = await readFile(event.file);
+            loadVideo(src);
             break;
         }
       }

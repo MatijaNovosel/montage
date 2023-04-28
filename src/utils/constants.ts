@@ -215,7 +215,8 @@ export const ASSET_TYPE: Record<string, string> = {
 
 export const LAYER_TYPE_ICON: Record<string, string> = {
   [ASSET_TYPE.IMAGE]: "🖼️",
-  [ASSET_TYPE.TEXT]: "✏️"
+  [ASSET_TYPE.TEXT]: "✏️",
+  [ASSET_TYPE.VIDEO]: "🎥"
 };
 
 export const FILE_SIZE_LIMIT = 4194304;
