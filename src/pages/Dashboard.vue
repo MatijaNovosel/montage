@@ -713,7 +713,11 @@ const seekbarStyle = computed(() => ({
 
 const seek = (e: MouseEvent) => {
   // @ts-ignore
-  state.seekbarOffset = e.layerX;
+  const offset: number = e.layerX;
+  console.log(offset);
+  if (offset > 1) {
+    state.seekbarOffset = offset;
+  }
 };
 
 const followCursor = (e: MouseEvent) => {
