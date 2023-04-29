@@ -714,8 +714,7 @@ const seekbarStyle = computed(() => ({
 const seek = (e: MouseEvent) => {
   // @ts-ignore
   const offset: number = e.layerX;
-  console.log(offset);
-  if (offset > 1) {
+  if (offset > 1 && !!state.layers.length) {
     state.seekbarOffset = offset;
     state.currentTime = offset;
   }
