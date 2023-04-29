@@ -47,7 +47,7 @@
       <div
         class="bottom bg-black bg-opacity-50 px-4 py-2 rounded-lg z-10 text-2xl"
       >
-        {{ renderTime }}
+        {{ renderedTime }}
       </div>
       <main ref="main" class="h-full w-full">
         <canvas class="block" ref="canvas" />
@@ -258,7 +258,7 @@ const artBoardLeft = computed(() => artBoard?.get("left") as number);
 const artBoardTop = computed(() => artBoard?.get("top") as number);
 
 // Render current time in the playback area
-const renderTime = computed(() => {
+const renderedTime = computed(() => {
   const minutes = Math.floor(state.currentTime / 1000 / 60);
   const seconds = parseFloat(
     (state.currentTime / 1000 - minutes * 60).toFixed(2)
@@ -717,6 +717,7 @@ const seek = (e: MouseEvent) => {
   console.log(offset);
   if (offset > 1) {
     state.seekbarOffset = offset;
+    state.currentTime = offset;
   }
 };
 
