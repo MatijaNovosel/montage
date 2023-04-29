@@ -47,7 +47,7 @@
       <div
         class="bottom bg-black bg-opacity-50 px-4 py-2 rounded-lg z-10 text-2xl"
       >
-        {{ state.currentTime }}
+        {{ renderTime }}
       </div>
       <main ref="main" class="h-full w-full">
         <canvas class="block" ref="canvas" />
@@ -69,7 +69,6 @@
       LAYERS
     </div>
     <div class="w-8/12 flex items-center justify-between px-5 py-3 relative">
-      <div class="seeker" />
       <div
         class="flex flex-col pt-4 text-slate-400"
         :key="i"
@@ -108,7 +107,14 @@
         <div class="p-5" v-else>No layers added.</div>
       </div>
     </div>
-    <div class="w-8/12 h-full relative">
+    <div
+      class="w-8/12 h-full relative seek-area"
+      @mousemove="followCursor"
+      @mouseleave="hideSeekbar"
+      @click="seek"
+    >
+      <div id="seek-hover" :style="seekHoverStyle" />
+      <div id="seekbar" :style="seekbarStyle" />
       <div
         class="flex flex-col layers-ctr overflow-auto"
         v-if="state.layers.length"
@@ -208,9 +214,13 @@ interface State {
   timelineScale: number;
   zoomLevel: string;
   layers: Layer[];
-  currentTime: string;
   playbackSpeed: SelectItem<number>;
   paused: boolean;
+  currentTime: number;
+  duration: number;
+  seekHoverOffset: number;
+  seekbarOffset: number;
+  seeking: boolean;
 }
 
 const dashboardStore = useDashboardStore();
@@ -224,9 +234,13 @@ const state: State = reactive({
   timelineScale: 0,
   zoomLevel: "100%",
   layers: [],
-  currentTime: "00:00:00",
   playbackSpeed: TIME_OPTIONS[1],
-  paused: true
+  paused: true,
+  currentTime: 0,
+  duration: 30_000,
+  seeking: false,
+  seekHoverOffset: 0,
+  seekbarOffset: 0
 });
 
 const playbackSpeed = ref<SelectItem<number> | null>(TIME_OPTIONS[1]);
@@ -243,6 +257,21 @@ let centerCircle: fabric.Circle | null = null;
 const artBoardLeft = computed(() => artBoard?.get("left") as number);
 const artBoardTop = computed(() => artBoard?.get("top") as number);
 
+// Render current time in the playback area
+const renderTime = computed(() => {
+  const minutes = Math.floor(state.currentTime / 1000 / 60);
+  const seconds = parseFloat(
+    (state.currentTime / 1000 - minutes * 60).toFixed(2)
+  );
+  return (
+    ("0" + minutes).slice(-2) +
+    ":" +
+    ("0" + Math.floor(seconds)).slice(-2) +
+    ":" +
+    ("0" + Math.floor((seconds % 1) * 100)).slice(-2)
+  );
+});
+
 const { width: mainWidth, height: mainHeight } = useElementSize(main);
 const { memory } = useMemory();
 
@@ -254,6 +283,7 @@ const $export = () => {
   createToast("💾 Exported!", colors.blue.darken1);
 };
 
+// NOTE: Videos will not animate properly if this is not used
 fabric.util.requestAnimFrame(function render() {
   fabricCanvas?.renderAll();
   fabric.util.requestAnimFrame(render);
@@ -668,6 +698,33 @@ const addAsset = async (event: AssetEvent) => {
   }
 };
 
+const hideSeekbar = () => {
+  state.seeking = false;
+};
+
+const seekHoverStyle = computed(() => ({
+  opacity: state.seeking ? 0.3 : 0,
+  left: `${state.seekHoverOffset}px`
+}));
+
+const seekbarStyle = computed(() => ({
+  left: `${state.seekbarOffset}px`
+}));
+
+const seek = (e: MouseEvent) => {
+  // @ts-ignore
+  state.seekbarOffset = e.layerX;
+};
+
+const followCursor = (e: MouseEvent) => {
+  state.seeking = true;
+  // @ts-ignore
+  const offset: number = e.layerX;
+  if (offset > 1) {
+    state.seekHoverOffset = offset;
+  }
+};
+
 const unsubscribe = bus.on(addAsset);
 
 const wheelScrollEvent = useEventListener(main, "wheel", (e: WheelEvent) => {
@@ -853,20 +910,47 @@ onBeforeUnmount(() => {
   position: absolute;
 }
 
-.seeker {
+#seek-hover {
+  height: 100%;
+  background-color: #fff;
+  width: 3px;
+  opacity: 0.3;
+  pointer-events: none;
+  top: 0px;
+  z-index: 99999999;
   position: absolute;
+  border-radius: 5px;
 }
 
-.seeker::after {
+#seekbar {
+  height: 100%;
+  width: 2px;
+  background-color: #fff;
+  position: absolute;
+  z-index: 99999999;
+  pointer-events: all;
+  top: 0px;
+}
+
+#seekbar:hover {
+  outline: 3px solid rgba(255, 255, 255, 0.1);
+  box-sizing: border-box;
+}
+
+#seekbar:after {
   background: url(/seeker.svg);
   display: block;
   content: "";
   position: absolute;
   width: 13px;
   height: 18px;
-  margin-left: 2px;
-  margin-top: 15px;
+  margin-left: -6px;
+  margin-top: -10px;
   z-index: 9;
   box-sizing: border-box;
+}
+
+.seek-area {
+  cursor: pointer;
 }
 </style>
