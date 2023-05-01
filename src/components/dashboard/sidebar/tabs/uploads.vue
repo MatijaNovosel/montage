@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col justify-center py-5">
     <div class="flex flex-col justify-center mt-2 mb-6">
-      <v-btn @click="open" background-color="#4BB543"> 📁 Add files </v-btn>
+      <v-btn @click="open" color="green"> 📁 Add files </v-btn>
       <div class="mt-5">No files found, try adding some.</div>
     </div>
   </div>
@@ -10,7 +10,7 @@
 <script lang="ts" setup>
 import { AssetEvent } from "@/models/common";
 import { useToastStore } from "@/store/toast";
-import { ASSET_TYPE, FILE_SIZE_LIMIT } from "@/utils/constants";
+import { FILE_SIZE_LIMIT, LAYER_TYPE } from "@/utils/constants";
 import { useEventBus, useFileDialog } from "@vueuse/core";
 import { watch } from "vue";
 // @ts-ignore-line
@@ -32,7 +32,7 @@ watch(files, (val) => {
         throw new Error("File is too big!");
       }
       emit({
-        type: ASSET_TYPE.UPLOAD,
+        type: LAYER_TYPE.UPLOAD,
         value: "upload",
         file
       });

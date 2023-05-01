@@ -72,12 +72,12 @@
       <span
         class="text-slate-400 text-right"
         :key="i"
-        v-for="(n, i) in 10"
+        v-for="(n, i) in state.duration / 1000"
         :style="{
           width: '100px'
         }"
       >
-        {{ formatTime(n) }}
+        {{ n }}s
       </span>
     </div>
   </div>
@@ -86,7 +86,7 @@
       <div class="flex flex-col overflow-auto layers-ctr">
         <template v-if="state.layers.length">
           <div
-            class="pl-4 cursor-pointer layer-item flex items-center"
+            class="pl-4 cursor-pointer layer-item flex items-center border-b-2 border-slate-800"
             v-for="(layer, i) of state.layers"
             :class="{
               'bg-indigo-500 hover:bg-indigo-400': activeObjectId === layer.id,
@@ -115,8 +115,19 @@
       @mouseleave="hideSeekbar"
       @click="seek"
     >
-      <div id="seek-hover" :style="seekHoverStyle" />
-      <div id="seekbar" :style="seekbarStyle" />
+      <div
+        id="seek-hover"
+        :style="{
+          opacity: state.seeking ? 0.3 : 0,
+          left: `${state.seekHoverOffset}px`
+        }"
+      />
+      <div
+        id="seekbar"
+        :style="{
+          left: `${state.seekbarOffset}px`
+        }"
+      />
       <div
         class="flex flex-col layers-ctr overflow-auto"
         v-if="state.layers.length"
@@ -124,11 +135,13 @@
         <div
           v-for="layer of state.layers"
           :key="layer.id"
-          class="layer-item pl-4 flex items-center text-xs font-bold"
+          class="layer-item pl-4 flex items-center text-xs font-bold border-b-2 border-slate-800"
+          :class="{
+            [`bg-${LAYER_TYPE_COLOR[layer.type]}`]: true
+          }"
           :style="{
-            backgroundColor: layer.color,
             // @ts-ignore
-            width: layer.type === ASSET_TYPE.VIDEO ? `${layer.object!.getElement().duration * 100}px` : undefined
+            width: layer.type === LAYER_TYPE.VIDEO ? `${layer.object!.getElement().duration * 100}px` : undefined
           }"
         />
       </div>
@@ -159,20 +172,27 @@
     </div>
     <div class="flex justify-center items-center w-6/12">
       <v-btn
+        :disabled="!state.layers.length"
         icon="mdi-skip-forward"
         class="scale-x-n1"
         variant="text"
         @click="seekToStart"
       />
       <v-btn
+        :disabled="!state.layers.length"
         :icon="state.paused ? 'mdi-play' : 'mdi-pause'"
         variant="text"
         @click="togglePlay"
       />
-      <v-btn icon="mdi-skip-forward" variant="text" @click="seekToEnd" />
+      <v-btn
+        :disabled="!state.layers.length"
+        icon="mdi-skip-forward"
+        variant="text"
+        @click="seekToEnd"
+      />
     </div>
     <div class="flex justify-end items-center w-3/12">
-      <v-btn @click="$export" background-color="#2171b3"> 💾 Export </v-btn>
+      <v-btn @click="$export" color="blue"> 💾 Export </v-btn>
     </div>
   </div>
 </template>
@@ -185,7 +205,8 @@ import { useDashboardStore } from "@/store/dashboard";
 import { useToastStore } from "@/store/toast";
 import {
   ALIGN_OPTIONS,
-  ASSET_TYPE,
+  LAYER_TYPE,
+  LAYER_TYPE_COLOR,
   LAYER_TYPE_ICON,
   TIME_OPTIONS
 } from "@/utils/constants";
@@ -210,7 +231,7 @@ import {
   useMemory
 } from "@vueuse/core";
 import { fabric } from "fabric";
-import { randInt, randomColorHex } from "matija-utils";
+import { randInt } from "matija-utils";
 import { storeToRefs } from "pinia";
 import {
   computed,
@@ -230,7 +251,9 @@ interface State {
   layers: Layer[];
   playbackSpeed: SelectItem<number>;
   paused: boolean;
+  // NOTE: Miliseconds
   currentTime: number;
+  // NOTE: Miliseconds
   duration: number;
   seekHoverOffset: number;
   seekbarOffset: number;
@@ -252,8 +275,10 @@ const state: State = reactive({
   layers: [],
   playbackSpeed: TIME_OPTIONS[1],
   paused: true,
+  // NOTE: Miliseconds
   currentTime: 0,
-  duration: 10,
+  // NOTE: Miliseconds
+  duration: 10_000,
   seeking: false,
   seekHoverOffset: 0,
   seekbarOffset: 0
@@ -292,7 +317,7 @@ fabric.util.requestAnimFrame(function render() {
 
 const playVideos = async () => {
   state.layers
-    .filter((l) => l.type === ASSET_TYPE.VIDEO)
+    .filter((l) => l.type === LAYER_TYPE.VIDEO)
     .forEach((l) => {
       // @ts-ignore
       const element = l.object.getElement();
@@ -303,7 +328,7 @@ const playVideos = async () => {
 
 const pauseVideos = async () => {
   state.layers
-    .filter((l) => l.type === ASSET_TYPE.VIDEO)
+    .filter((l) => l.type === LAYER_TYPE.VIDEO)
     .forEach((l) => {
       // @ts-ignore
       const element = l.object.getElement();
@@ -313,21 +338,23 @@ const pauseVideos = async () => {
 };
 
 const togglePlay = () => {
-  if (state.paused) {
-    state.playInterval = setInterval(() => {
-      if (state.currentTime + 1 > state.duration) {
-        seekToStart();
-        togglePlay();
-        return;
-      }
-      state.currentTime += 1;
-    }, 1000);
-    playVideos();
-  } else {
-    if (state.playInterval) clearInterval(state.playInterval);
-    pauseVideos();
+  if (!!state.layers.length) {
+    if (state.paused) {
+      state.playInterval = setInterval(() => {
+        if (state.currentTime + 1 > state.duration) {
+          seekToStart();
+          togglePlay();
+          return;
+        }
+        state.currentTime += 10;
+      }, 10);
+      playVideos();
+    } else {
+      if (state.playInterval) clearInterval(state.playInterval);
+      pauseVideos();
+    }
+    state.paused = !state.paused;
   }
-  state.paused = !state.paused;
 };
 
 const calculateTextWidth = (text: string, font: string) => {
@@ -379,8 +406,10 @@ const newTextbox = (
   state.layers.push({
     id: `text_${id}`,
     object: newText,
-    type: ASSET_TYPE.TEXT,
-    color: randomColorHex()
+    type: LAYER_TYPE.TEXT,
+    endTrim: 0,
+    offset: 0,
+    startTrim: 0
   });
 };
 
@@ -549,8 +578,10 @@ const newSvg = (path: string) => {
     state.layers.push({
       id: `image_${id}`,
       object: svgData,
-      type: ASSET_TYPE.IMAGE,
-      color: randomColorHex()
+      type: LAYER_TYPE.IMAGE,
+      endTrim: 0,
+      offset: 0,
+      startTrim: 0
     });
   });
 };
@@ -599,8 +630,10 @@ const newImage = async (source: File | string) => {
     state.layers.push({
       id: `image_${id}`,
       object: image,
-      type: ASSET_TYPE.IMAGE,
-      color: randomColorHex()
+      type: LAYER_TYPE.IMAGE,
+      endTrim: 0,
+      offset: 0,
+      startTrim: 0
     });
   });
 };
@@ -643,8 +676,10 @@ const newVideo = (file: HTMLVideoElement, source: string, duration: number) => {
   state.layers.push({
     id: `video_${id}`,
     object: newVideo,
-    type: ASSET_TYPE.VIDEO,
-    color: randomColorHex()
+    type: LAYER_TYPE.VIDEO,
+    endTrim: 0,
+    offset: 0,
+    startTrim: 0
   });
 };
 
@@ -673,16 +708,19 @@ const loadVideo = (src: string) => {
 
 const addAsset = async (event: AssetEvent) => {
   switch (event.type) {
-    case ASSET_TYPE.EMOJI:
+    case LAYER_TYPE.EMOJI:
       newSvg(`/emojis/${event.value}.svg`);
       break;
-    case ASSET_TYPE.SHAPE:
+    case LAYER_TYPE.VIDEO:
+      loadVideo(`/videos/${event.value}.mp4`);
+      break;
+    case LAYER_TYPE.SHAPE:
       newSvg(`/shapes/${event.value}.svg`);
       break;
-    case ASSET_TYPE.IMAGE:
+    case LAYER_TYPE.IMAGE:
       newImage(`/images/${event.value}.jpg`);
       break;
-    case ASSET_TYPE.UPLOAD:
+    case LAYER_TYPE.UPLOAD:
       if (event.file) {
         switch (getFileExtension(event.file.name)) {
           case "png":
@@ -696,7 +734,7 @@ const addAsset = async (event: AssetEvent) => {
         }
       }
       break;
-    case ASSET_TYPE.TEXT:
+    case LAYER_TYPE.TEXT:
       switch (event.value) {
         case "heading":
           newTextbox(50, 700, "Heading", "Roboto");
@@ -719,24 +757,18 @@ const hideSeekbar = () => {
   state.seeking = false;
 };
 
-const seekHoverStyle = computed(() => ({
-  opacity: state.seeking ? 0.3 : 0,
-  left: `${state.seekHoverOffset}px`
-}));
-
-const seekbarStyle = computed(() => ({
-  left: `${state.seekbarOffset}px`
-}));
-
 const seekToStart = () => {
   state.currentTime = 0;
+  videoObjects.value.forEach((v) => {
+    v.currentTime = 0;
+  });
 };
 
 const seekToEnd = () => {};
 
 const videoObjects = computed(() => {
   return state.layers
-    .filter((l) => l.type === ASSET_TYPE.VIDEO)
+    .filter((l) => l.type === LAYER_TYPE.VIDEO)
     .map((l) => {
       // @ts-ignore
       return l.object.getElement();
@@ -746,10 +778,12 @@ const videoObjects = computed(() => {
 const seek = (e: MouseEvent) => {
   // @ts-ignore
   const offset: number = e.layerX;
+  console.log(offset);
   if (offset > 1 && !!state.layers.length) {
-    state.currentTime = offset / 100;
+    // 100px = 1s
+    state.currentTime = offset * 10;
     videoObjects.value.forEach((v) => {
-      v.currentTime = state.currentTime;
+      v.currentTime = offset / 100;
     });
   }
 };
@@ -790,6 +824,19 @@ const sendActiveObjectBackward = () => {
   sendBackwards(fabricCanvas?.getActiveObject());
 };
 
+const updateActiveObjectDimensions = () => {
+  const activeObject = fabricCanvas?.getActiveObject();
+  if (activeObject) {
+    const width = activeObject.get("width") as number;
+    const height = activeObject.get("height") as number;
+    const scaleX = activeObject.get("scaleX") as number;
+    const scaleY = activeObject.get("scaleY") as number;
+    dashboardStore.setActiveObject(activeObject);
+    dashboardStore.setActiveObjectHeight(width * scaleX);
+    dashboardStore.setActiveObjectWidth(height * scaleY);
+  }
+};
+
 watch([mainWidth, mainHeight], async ([width, height]) => {
   await nextTick(() => {
     fabricCanvas?.setHeight(height);
@@ -816,18 +863,13 @@ watch([artboardHeight, artboardWidth], ([heightA, widthA]) => {
   fabricCanvas?.renderAll();
 });
 
-const updateActiveObjectDimensions = () => {
-  const activeObject = fabricCanvas?.getActiveObject();
-  if (activeObject) {
-    const width = activeObject.get("width") as number;
-    const height = activeObject.get("height") as number;
-    const scaleX = activeObject.get("scaleX") as number;
-    const scaleY = activeObject.get("scaleY") as number;
-    dashboardStore.setActiveObject(activeObject);
-    dashboardStore.setActiveObjectHeight(width * scaleX);
-    dashboardStore.setActiveObjectWidth(height * scaleY);
+watch(
+  () => state.currentTime,
+  (val) => {
+    console.log(state.currentTime);
+    state.seekbarOffset = val / 10;
   }
-};
+);
 
 onMounted(() => {
   fabricCanvas = initializeFabric(
@@ -909,13 +951,6 @@ onMounted(() => {
 
   createToast("✅ App successfully started!", colors.green.darken1);
 });
-
-watch(
-  () => state.currentTime,
-  (val) => {
-    state.seekbarOffset = val * 100;
-  }
-);
 
 onBeforeUnmount(() => {
   wheelScrollEvent();

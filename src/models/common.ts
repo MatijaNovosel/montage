@@ -13,7 +13,9 @@ export interface Layer {
   object: fabric.Object | null;
   id: string;
   type: string;
-  color?: string;
+  startTrim: number;
+  endTrim: number;
+  offset: number;
 }
 
 export interface AssetEvent {

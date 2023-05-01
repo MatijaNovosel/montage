@@ -14,6 +14,9 @@ export const useDashboardStore = defineStore("dashboard", () => {
   const activeObjectRotation = ref("0");
   const activeObjectOpacity = ref(0);
 
+  // Video specific
+  const videoDuration = ref(0);
+
   const activeObject = ref<fabric.Object | null | undefined>(null);
 
   const activeObjectId = computed(() => {
@@ -48,6 +51,10 @@ export const useDashboardStore = defineStore("dashboard", () => {
       case TABS.IMAGES:
         return defineAsyncComponent(
           () => import("../components/dashboard/sidebar/tabs/images.vue")
+        );
+      case TABS.SETTINGS:
+        return defineAsyncComponent(
+          () => import("../components/dashboard/sidebar/tabs/settings.vue")
         );
       default:
         return defineAsyncComponent(
@@ -90,6 +97,10 @@ export const useDashboardStore = defineStore("dashboard", () => {
     activeObject.value?.set("opacity", opacity);
   };
 
+  const setVideoDuration = (duration: number) => {
+    videoDuration.value = duration;
+  };
+
   return {
     activeTab,
     setActiveTab,
@@ -109,6 +120,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
     activeObjectRotation,
     setActiveObjectRotation,
     activeObjectOpacity,
-    setActiveObjectOpacity
+    setActiveObjectOpacity,
+    setVideoDuration
   };
 });

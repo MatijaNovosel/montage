@@ -5,7 +5,7 @@
       id="heading-text"
       @click="
         emit({
-          type: ASSET_TYPE.TEXT,
+          type: LAYER_TYPE.TEXT,
           value: 'heading'
         })
       "
@@ -16,7 +16,7 @@
       id="subheading-text"
       @click="
         emit({
-          type: ASSET_TYPE.TEXT,
+          type: LAYER_TYPE.TEXT,
           value: 'subheading'
         })
       "
@@ -27,7 +27,7 @@
       id="body-text"
       @click="
         emit({
-          type: ASSET_TYPE.TEXT,
+          type: LAYER_TYPE.TEXT,
           value: 'body'
         })
       "
@@ -44,7 +44,7 @@
       }"
       @click="
         emit({
-          type: ASSET_TYPE.TEXT,
+          type: LAYER_TYPE.TEXT,
           value: f
         })
       "
@@ -61,7 +61,7 @@
       }"
       @click="
         emit({
-          type: ASSET_TYPE.TEXT,
+          type: LAYER_TYPE.TEXT,
           value: f
         })
       "
@@ -78,7 +78,7 @@
       }"
       @click="
         emit({
-          type: ASSET_TYPE.TEXT,
+          type: LAYER_TYPE.TEXT,
           value: f
         })
       "
@@ -95,7 +95,7 @@
       }"
       @click="
         emit({
-          type: ASSET_TYPE.TEXT,
+          type: LAYER_TYPE.TEXT,
           value: f
         })
       "
@@ -112,7 +112,7 @@
       }"
       @click="
         emit({
-          type: ASSET_TYPE.TEXT,
+          type: LAYER_TYPE.TEXT,
           value: f
         })
       "
@@ -124,7 +124,7 @@
 
 <script lang="ts" setup>
 import { AssetEvent } from "@/models/common";
-import { ASSET_TYPE } from "@/utils/constants";
+import { LAYER_TYPE } from "@/utils/constants";
 import { useEventBus } from "@vueuse/core";
 import { onMounted } from "vue";
 import WebFont from "webfontloader";

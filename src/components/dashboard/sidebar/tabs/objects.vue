@@ -7,7 +7,7 @@
       class="bg-slate-700 rounded-md p-2 cursor-pointer hover:bg-slate-800 select-none grid-item flex justify-center"
       @click="
         emit({
-          type: ASSET_TYPE.EMOJI,
+          type: LAYER_TYPE.EMOJI,
           value: emoji
         })
       "
@@ -23,7 +23,7 @@
       class="bg-slate-700 rounded-md p-2 cursor-pointer hover:bg-slate-800 select-none grid-item flex justify-center"
       @click="
         emit({
-          type: ASSET_TYPE.SHAPE,
+          type: LAYER_TYPE.SHAPE,
           value: shape
         })
       "
@@ -35,7 +35,7 @@
 
 <script lang="ts" setup>
 import { AssetEvent } from "@/models/common";
-import { ASSET_TYPE, EMOJIS, SHAPES } from "@/utils/constants";
+import { EMOJIS, LAYER_TYPE, SHAPES } from "@/utils/constants";
 import { useEventBus } from "@vueuse/core";
 
 const { emit } = useEventBus<AssetEvent>("asset");

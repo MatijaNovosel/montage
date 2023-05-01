@@ -81,7 +81,8 @@ export const TABS = {
   IMAGES: 3,
   TEXT: 4,
   VIDEOS: 5,
-  AUDIO: 6
+  AUDIO: 6,
+  SETTINGS: 7
 };
 
 export const TAB_ITEMS: Record<number, TabItem> = {
@@ -114,6 +115,11 @@ export const TAB_ITEMS: Record<number, TabItem> = {
     value: TABS.AUDIO,
     name: "Audio",
     icon: "music-note"
+  },
+  [TABS.SETTINGS]: {
+    value: TABS.SETTINGS,
+    name: "Settings",
+    icon: "cogs"
   }
 };
 
@@ -168,6 +174,8 @@ export const AUDIO = [
 
 export const IMAGES = ["drunkDriving", "redPill", "pizzaHat"];
 
+export const VIDEOS = ["cats"];
+
 export const SIZES = ["b", "kB", "MB", "GB", "TB"];
 
 export const ALIGN_OPTIONS: Record<string, number> = {
@@ -204,7 +212,7 @@ export const SNAP_CHECK_DIRECTION: Record<string, number> = {
   TOP: 3
 };
 
-export const ASSET_TYPE: Record<string, string> = {
+export const LAYER_TYPE: Record<string, string> = {
   IMAGE: "image",
   TEXT: "text",
   EMOJI: "emoji",
@@ -214,9 +222,15 @@ export const ASSET_TYPE: Record<string, string> = {
 };
 
 export const LAYER_TYPE_ICON: Record<string, string> = {
-  [ASSET_TYPE.IMAGE]: "🖼️",
-  [ASSET_TYPE.TEXT]: "✏️",
-  [ASSET_TYPE.VIDEO]: "🎥"
+  [LAYER_TYPE.IMAGE]: "🖼️",
+  [LAYER_TYPE.TEXT]: "✏️",
+  [LAYER_TYPE.VIDEO]: "🎥"
+};
+
+export const LAYER_TYPE_COLOR: Record<string, string> = {
+  [LAYER_TYPE.IMAGE]: "blue",
+  [LAYER_TYPE.TEXT]: "pink",
+  [LAYER_TYPE.VIDEO]: "orange"
 };
 
 export const FILE_SIZE_LIMIT = 10_485_760; // 10 MB

@@ -8,7 +8,7 @@
       class="cursor-pointer grid-item rounded-md"
       @click="
         emit({
-          type: ASSET_TYPE.IMAGE,
+          type: LAYER_TYPE.IMAGE,
           value: image
         })
       "
@@ -22,7 +22,7 @@
 
 <script lang="ts" setup>
 import { AssetEvent } from "@/models/common";
-import { ASSET_TYPE, IMAGES } from "@/utils/constants";
+import { IMAGES, LAYER_TYPE } from "@/utils/constants";
 import { useEventBus } from "@vueuse/core";
 
 const { emit } = useEventBus<AssetEvent>("asset");
