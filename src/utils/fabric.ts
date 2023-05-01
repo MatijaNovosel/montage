@@ -302,3 +302,12 @@ export const initializeFabric = (
 
   return fCanvas;
 };
+
+export const calculateTextWidth = (
+  canvasContext: CanvasRenderingContext2D,
+  text: string,
+  font: string
+) => {
+  canvasContext.font = font;
+  return canvasContext.measureText(text).width + 10;
+};

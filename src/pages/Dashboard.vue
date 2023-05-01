@@ -54,8 +54,8 @@
       </main>
     </div>
     <layout
-      @bring-forward="bringActiveObjectForward"
-      @send-backward="sendActiveObjectBackward"
+      @bring-forward="bringForward(fabricCanvas?.getActiveObject())"
+      @send-backward="sendBackwards(fabricCanvas?.getActiveObject())"
       @align="alignActiveObject"
       class="w-2/12"
     />
@@ -212,6 +212,7 @@ import {
 } from "@/utils/constants";
 import {
   bringForward,
+  calculateTextWidth,
   centerLines,
   getObjectById,
   initializeFabric,
@@ -301,6 +302,17 @@ const artBoardTop = computed(() => artBoard?.get("top") as number);
 const { width: mainWidth, height: mainHeight } = useElementSize(main);
 const { memory } = useMemory();
 
+// Computed properties
+const videoObjects = computed(() => {
+  return state.layers
+    .filter((l) => l.type === LAYER_TYPE.VIDEO)
+    .map((l) => {
+      // @ts-ignore
+      return l.object.getElement() as HTMLMediaElement;
+    });
+});
+
+// Functions
 const undo = () => {
   createToast("🚨 Undo", colors.red.darken1);
 };
@@ -316,25 +328,17 @@ fabric.util.requestAnimFrame(function render() {
 });
 
 const playVideos = async () => {
-  state.layers
-    .filter((l) => l.type === LAYER_TYPE.VIDEO)
-    .forEach((l) => {
-      // @ts-ignore
-      const element = l.object.getElement();
-      element.play();
-      fabricCanvas?.renderAll();
-    });
+  videoObjects.value.forEach((v) => {
+    v.play();
+    fabricCanvas?.renderAll();
+  });
 };
 
 const pauseVideos = async () => {
-  state.layers
-    .filter((l) => l.type === LAYER_TYPE.VIDEO)
-    .forEach((l) => {
-      // @ts-ignore
-      const element = l.object.getElement();
-      element.pause();
-      fabricCanvas?.renderAll();
-    });
+  videoObjects.value.forEach((v) => {
+    v.pause();
+    fabricCanvas?.renderAll();
+  });
 };
 
 const togglePlay = () => {
@@ -355,12 +359,6 @@ const togglePlay = () => {
     }
     state.paused = !state.paused;
   }
-};
-
-const calculateTextWidth = (text: string, font: string) => {
-  const ctx = fabricCanvas?.getContext();
-  ctx!.font = font;
-  return ctx!.measureText(text).width + 10;
 };
 
 const newTextbox = (
@@ -391,7 +389,11 @@ const newTextbox = (
     //@ts-ignore
     inGroup: false,
     cursorDelay: 250,
-    width: calculateTextWidth(text, `${fontWeight} ${fontSize}px Roboto`),
+    width: calculateTextWidth(
+      fabricCanvas!.getContext(),
+      text,
+      `${fontWeight} ${fontSize}px Roboto`
+    ),
     id: `text_${id}`
   });
   fabricCanvas?.add(newText);
@@ -586,15 +588,6 @@ const newSvg = (path: string) => {
   });
 };
 
-onKeyDown("Delete", () => {
-  fabricCanvas?.getActiveObjects().forEach((obj) => {
-    //@ts-ignore
-    state.layers = state.layers.filter((l) => l.id !== obj.id);
-    fabricCanvas?.remove(obj);
-  });
-  fabricCanvas?.discardActiveObject().renderAll();
-});
-
 const newImage = async (source: File | string) => {
   const id = randInt(1, 9999).toString();
   if (typeof source !== "string") source = await readFile(source);
@@ -753,6 +746,8 @@ const addAsset = async (event: AssetEvent) => {
   }
 };
 
+const unsubscribe = bus.on(addAsset);
+
 const hideSeekbar = () => {
   state.seeking = false;
 };
@@ -765,15 +760,6 @@ const seekToStart = () => {
 };
 
 const seekToEnd = () => {};
-
-const videoObjects = computed(() => {
-  return state.layers
-    .filter((l) => l.type === LAYER_TYPE.VIDEO)
-    .map((l) => {
-      // @ts-ignore
-      return l.object.getElement();
-    });
-});
 
 const seek = (e: MouseEvent) => {
   // @ts-ignore
@@ -797,33 +783,6 @@ const followCursor = (e: MouseEvent) => {
   }
 };
 
-const unsubscribe = bus.on(addAsset);
-
-const wheelScrollEvent = useEventListener(main, "wheel", (e: WheelEvent) => {
-  const scrollingUp = Math.sign(e.deltaY) < 0; // Down = 1, Up = -1
-  let zoom = fabricCanvas!.getZoom() + (scrollingUp ? 0.1 : -0.1);
-  if (zoom < 0.1) zoom = 0.1;
-  fabricCanvas?.setZoom(1);
-  fabricCanvas?.renderAll();
-  fabricCanvas?.absolutePan({
-    x:
-      artBoardLeft.value + artboardWidth.value / 2 - mainWidth.value / zoom / 2,
-    y:
-      artBoardTop.value + artboardHeight.value / 2 - mainHeight.value / zoom / 2
-  });
-  fabricCanvas?.setZoom(zoom);
-  fabricCanvas?.renderAll();
-  state.zoomLevel = `${(fabricCanvas!.getZoom() * 100).toFixed(0)}%`;
-});
-
-const bringActiveObjectForward = () => {
-  bringForward(fabricCanvas?.getActiveObject());
-};
-
-const sendActiveObjectBackward = () => {
-  sendBackwards(fabricCanvas?.getActiveObject());
-};
-
 const updateActiveObjectDimensions = () => {
   const activeObject = fabricCanvas?.getActiveObject();
   if (activeObject) {
@@ -837,6 +796,7 @@ const updateActiveObjectDimensions = () => {
   }
 };
 
+// Watchers
 watch([mainWidth, mainHeight], async ([width, height]) => {
   await nextTick(() => {
     fabricCanvas?.setHeight(height);
@@ -871,6 +831,34 @@ watch(
   }
 );
 
+// Listeners
+onKeyDown("Delete", () => {
+  fabricCanvas?.getActiveObjects().forEach((obj) => {
+    //@ts-ignore
+    state.layers = state.layers.filter((l) => l.id !== obj.id);
+    fabricCanvas?.remove(obj);
+  });
+  fabricCanvas?.discardActiveObject().renderAll();
+});
+
+const wheelScrollEvent = useEventListener(main, "wheel", (e: WheelEvent) => {
+  const scrollingUp = Math.sign(e.deltaY) < 0; // Down = 1, Up = -1
+  let zoom = fabricCanvas!.getZoom() + (scrollingUp ? 0.1 : -0.1);
+  if (zoom < 0.1) zoom = 0.1;
+  fabricCanvas?.setZoom(1);
+  fabricCanvas?.renderAll();
+  fabricCanvas?.absolutePan({
+    x:
+      artBoardLeft.value + artboardWidth.value / 2 - mainWidth.value / zoom / 2,
+    y:
+      artBoardTop.value + artboardHeight.value / 2 - mainHeight.value / zoom / 2
+  });
+  fabricCanvas?.setZoom(zoom);
+  fabricCanvas?.renderAll();
+  state.zoomLevel = `${(fabricCanvas!.getZoom() * 100).toFixed(0)}%`;
+});
+
+// Hooks
 onMounted(() => {
   fabricCanvas = initializeFabric(
     canvas.value,
