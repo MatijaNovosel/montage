@@ -2,7 +2,47 @@
   <div
     class="border-l border-slate-700 flex flex-col p-5 items-center overflow-auto"
   >
-    <div class="mb-3 text-slate-400 select-none">Vertical alignment</div>
+    <div class="text-slate-400 select-none">Canvas settings</div>
+    <div class="flex items-center my-3 w-full">
+      <div class="w-4/12">Width</div>
+      <v-text-field
+        suffix="px"
+        v-model.number="state.width"
+        variant="solo"
+        placeholder="Width"
+        hide-details
+        density="compact"
+      />
+    </div>
+    <div class="flex items-center w-full">
+      <div class="w-4/12">Height</div>
+      <v-text-field
+        suffix="px"
+        variant="solo"
+        hide-details
+        density="compact"
+        v-model.number="state.height"
+        placeholder="Height"
+      />
+    </div>
+    <div class="flex items-center w-full my-3">
+      <div class="w-4/12">Duration</div>
+      <v-text-field
+        variant="solo"
+        hide-details
+        density="compact"
+        suffix="s"
+        placeholder="Duration"
+        v-model="state.duration"
+      />
+    </div>
+    <v-color-picker
+      hide-sliders
+      v-model="state.color"
+      mode="hexa"
+      width="100%"
+    />
+    <div class="my-3 text-slate-400 select-none">Vertical alignment</div>
     <div class="flex justify-center items-center">
       <v-btn
         @click="emit('align', ALIGN_OPTIONS.TOP)"
@@ -86,47 +126,6 @@
         <v-icon size="20" icon="mdi-arrange-send-backward" />
       </v-btn>
     </div>
-    <div class="mt-5 text-slate-400 select-none">Canvas settings</div>
-    <div class="flex items-center my-3 w-full">
-      <div class="w-4/12">Width</div>
-      <v-text-field
-        suffix="px"
-        v-model.number="state.width"
-        variant="solo"
-        placeholder="Width"
-        hide-details
-        density="compact"
-      />
-    </div>
-    <div class="flex items-center w-full">
-      <div class="w-4/12">Height</div>
-      <v-text-field
-        suffix="px"
-        variant="solo"
-        hide-details
-        density="compact"
-        v-model.number="state.height"
-        placeholder="Height"
-      />
-    </div>
-    <div class="flex items-center w-full mt-3">
-      <div class="w-4/12">Duration</div>
-      <v-text-field
-        variant="solo"
-        hide-details
-        density="compact"
-        suffix="s"
-        placeholder="Duration"
-        v-model="state.duration"
-      />
-    </div>
-    <div class="my-5 text-slate-400 select-none">Color</div>
-    <v-color-picker
-      hide-sliders
-      v-model="state.color"
-      mode="hexa"
-      width="100%"
-    />
     <div class="mt-5 text-slate-400 select-none">Font settings</div>
     <div class="flex items-center justify-center mt-5 w-full">
       <div class="w-4/12">Font</div>
@@ -178,7 +177,11 @@
       </div>
       <div class="flex items-center w-full">
         <div class="w-4/12">Opacity</div>
-        <v-slider v-model.number="state.activeObjectOpacity" class="w-8/12" />
+        <v-slider
+          hide-details
+          v-model.number="state.activeObjectOpacity"
+          class="w-8/12"
+        />
       </div>
     </template>
   </div>
