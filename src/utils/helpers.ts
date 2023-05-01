@@ -1,24 +1,5 @@
 import { MIME_TYPES, MIME_TYPE_ICONS, SIZES } from "@/utils/constants";
 
-export const secondsToElapsedTime = (secs: number) => {
-  secs = Math.round(secs);
-  const hours = Math.floor(secs / (60 * 60));
-
-  const divisorForMinutes = secs % (60 * 60);
-  const minutes = Math.floor(divisorForMinutes / 60);
-
-  const divisorForSeconds = divisorForMinutes % 60;
-  const seconds = Math.ceil(divisorForSeconds);
-
-  const obj = {
-    h: hours,
-    m: minutes,
-    s: seconds
-  };
-
-  return obj;
-};
-
 export const getFileExtension = (fileName: string) => {
   const ext = /^.+\.([^.]+)$/.exec(fileName);
   return ext == null ? "" : ext[1];

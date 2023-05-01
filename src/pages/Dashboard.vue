@@ -68,7 +68,7 @@
     >
       LAYERS
     </div>
-    <div class="w-8/12 flex items-center px-5 py-3 relative">
+    <div class="w-8/12 flex items-center py-3 relative">
       <span
         class="text-slate-400 text-right"
         :key="i"
@@ -141,7 +141,7 @@
           }"
           :style="{
             // @ts-ignore
-            width: layer.type === LAYER_TYPE.VIDEO ? `${layer.object!.getElement().duration * 100}px` : undefined
+            width: calculateLayerWidth(layer)
           }"
         />
       </div>
@@ -411,7 +411,8 @@ const newTextbox = (
     type: LAYER_TYPE.TEXT,
     endTrim: 0,
     offset: 0,
-    startTrim: 0
+    startTrim: 0,
+    duration: 3
   });
 };
 
@@ -583,7 +584,8 @@ const newSvg = (path: string) => {
       type: LAYER_TYPE.IMAGE,
       endTrim: 0,
       offset: 0,
-      startTrim: 0
+      startTrim: 0,
+      duration: 3
     });
   });
 };
@@ -626,7 +628,8 @@ const newImage = async (source: File | string) => {
       type: LAYER_TYPE.IMAGE,
       endTrim: 0,
       offset: 0,
-      startTrim: 0
+      startTrim: 0,
+      duration: 3
     });
   });
 };
@@ -672,7 +675,8 @@ const newVideo = (file: HTMLVideoElement, source: string, duration: number) => {
     type: LAYER_TYPE.VIDEO,
     endTrim: 0,
     offset: 0,
-    startTrim: 0
+    startTrim: 0,
+    duration: duration
   });
 };
 
@@ -794,6 +798,10 @@ const updateActiveObjectDimensions = () => {
     dashboardStore.setActiveObjectHeight(width * scaleX);
     dashboardStore.setActiveObjectWidth(height * scaleY);
   }
+};
+
+const calculateLayerWidth = (layer: Layer) => {
+  return `${layer.duration * 100}px`;
 };
 
 // Watchers

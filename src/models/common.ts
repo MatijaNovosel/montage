@@ -16,6 +16,7 @@ export interface Layer {
   startTrim: number;
   endTrim: number;
   offset: number;
+  duration: number;
 }
 
 export interface AssetEvent {
