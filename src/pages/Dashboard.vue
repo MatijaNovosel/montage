@@ -47,7 +47,7 @@
       <div
         class="bottom bg-black bg-opacity-50 px-4 py-2 rounded-lg z-10 text-2xl"
       >
-        {{ renderedTime }}
+        {{ formatTime(state.currentTime) }}
       </div>
       <main ref="main" class="h-full w-full">
         <canvas class="block" ref="canvas" />
@@ -68,15 +68,17 @@
     >
       LAYERS
     </div>
-    <div class="w-8/12 flex items-center justify-between px-5 py-3 relative">
-      <div
-        class="flex flex-col pt-4 text-slate-400"
+    <div class="w-8/12 flex items-center px-5 py-3 relative">
+      <span
+        class="text-slate-400 text-right"
         :key="i"
         v-for="(n, i) in 10"
+        :style="{
+          width: '100px'
+        }"
       >
-        <span> {{ n }}s </span>
-        <span class="time-tick pt-5" />
-      </div>
+        {{ formatTime(n) }}
+      </span>
     </div>
   </div>
   <div class="flex bg-slate-900 text-white border-slate-700 layers-ctr">
@@ -124,7 +126,9 @@
           :key="layer.id"
           class="layer-item pl-4 flex items-center text-xs font-bold"
           :style="{
-            backgroundColor: layer.color
+            backgroundColor: layer.color,
+            // @ts-ignore
+            width: layer.type === ASSET_TYPE.VIDEO ? `${layer.object!.getElement().duration * 100}px` : undefined
           }"
         />
       </div>
@@ -154,13 +158,18 @@
       />
     </div>
     <div class="flex justify-center items-center w-6/12">
-      <v-btn icon="mdi-skip-forward" class="scale-x-n1" variant="text" />
+      <v-btn
+        icon="mdi-skip-forward"
+        class="scale-x-n1"
+        variant="text"
+        @click="seekToStart"
+      />
       <v-btn
         :icon="state.paused ? 'mdi-play' : 'mdi-pause'"
         variant="text"
         @click="togglePlay"
       />
-      <v-btn icon="mdi-skip-forward" variant="text" />
+      <v-btn icon="mdi-skip-forward" variant="text" @click="seekToEnd" />
     </div>
     <div class="flex justify-end items-center w-3/12">
       <v-btn @click="$export" background-color="#2171b3"> 💾 Export </v-btn>
@@ -187,7 +196,12 @@ import {
   initializeFabric,
   sendBackwards
 } from "@/utils/fabric";
-import { bytesToMB, getFileExtension, readFile } from "@/utils/helpers";
+import {
+  bytesToMB,
+  formatTime,
+  getFileExtension,
+  readFile
+} from "@/utils/helpers";
 import {
   onKeyDown,
   useElementSize,
@@ -220,6 +234,7 @@ interface State {
   duration: number;
   seekHoverOffset: number;
   seekbarOffset: number;
+  playInterval: ReturnType<typeof setInterval> | null;
   seeking: boolean;
 }
 
@@ -232,12 +247,13 @@ const { artboardColor, artboardHeight, artboardWidth, activeObjectId } =
 
 const state: State = reactive({
   timelineScale: 0,
+  playInterval: null,
   zoomLevel: "100%",
   layers: [],
   playbackSpeed: TIME_OPTIONS[1],
   paused: true,
   currentTime: 0,
-  duration: 30_000,
+  duration: 10,
   seeking: false,
   seekHoverOffset: 0,
   seekbarOffset: 0
@@ -257,21 +273,6 @@ let centerCircle: fabric.Circle | null = null;
 const artBoardLeft = computed(() => artBoard?.get("left") as number);
 const artBoardTop = computed(() => artBoard?.get("top") as number);
 
-// Render current time in the playback area
-const renderedTime = computed(() => {
-  const minutes = Math.floor(state.currentTime / 1000 / 60);
-  const seconds = parseFloat(
-    (state.currentTime / 1000 - minutes * 60).toFixed(2)
-  );
-  return (
-    ("0" + minutes).slice(-2) +
-    ":" +
-    ("0" + Math.floor(seconds)).slice(-2) +
-    ":" +
-    ("0" + Math.floor((seconds % 1) * 100)).slice(-2)
-  );
-});
-
 const { width: mainWidth, height: mainHeight } = useElementSize(main);
 const { memory } = useMemory();
 
@@ -289,28 +290,44 @@ fabric.util.requestAnimFrame(function render() {
   fabric.util.requestAnimFrame(render);
 });
 
-const playVideos = async (time?: string) => {
+const playVideos = async () => {
   state.layers
     .filter((l) => l.type === ASSET_TYPE.VIDEO)
     .forEach((l) => {
       // @ts-ignore
       const element = l.object.getElement();
-      if (element.paused === true) {
-        element.play();
-      } else {
-        element.pause();
-      }
+      element.play();
       fabricCanvas?.renderAll();
     });
 };
 
-const animate = (time?: string) => {
-  playVideos();
+const pauseVideos = async () => {
+  state.layers
+    .filter((l) => l.type === ASSET_TYPE.VIDEO)
+    .forEach((l) => {
+      // @ts-ignore
+      const element = l.object.getElement();
+      element.pause();
+      fabricCanvas?.renderAll();
+    });
 };
 
 const togglePlay = () => {
+  if (state.paused) {
+    state.playInterval = setInterval(() => {
+      if (state.currentTime + 1 > state.duration) {
+        seekToStart();
+        togglePlay();
+        return;
+      }
+      state.currentTime += 1;
+    }, 1000);
+    playVideos();
+  } else {
+    if (state.playInterval) clearInterval(state.playInterval);
+    pauseVideos();
+  }
   state.paused = !state.paused;
-  animate();
 };
 
 const calculateTextWidth = (text: string, font: string) => {
@@ -711,12 +728,29 @@ const seekbarStyle = computed(() => ({
   left: `${state.seekbarOffset}px`
 }));
 
+const seekToStart = () => {
+  state.currentTime = 0;
+};
+
+const seekToEnd = () => {};
+
+const videoObjects = computed(() => {
+  return state.layers
+    .filter((l) => l.type === ASSET_TYPE.VIDEO)
+    .map((l) => {
+      // @ts-ignore
+      return l.object.getElement();
+    });
+});
+
 const seek = (e: MouseEvent) => {
   // @ts-ignore
   const offset: number = e.layerX;
   if (offset > 1 && !!state.layers.length) {
-    state.seekbarOffset = offset;
-    state.currentTime = offset;
+    state.currentTime = offset / 100;
+    videoObjects.value.forEach((v) => {
+      v.currentTime = state.currentTime;
+    });
   }
 };
 
@@ -875,6 +909,13 @@ onMounted(() => {
 
   createToast("✅ App successfully started!", colors.green.darken1);
 });
+
+watch(
+  () => state.currentTime,
+  (val) => {
+    state.seekbarOffset = val * 100;
+  }
+);
 
 onBeforeUnmount(() => {
   wheelScrollEvent();

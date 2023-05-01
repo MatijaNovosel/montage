@@ -51,3 +51,8 @@ export const readFile = (file: File): Promise<string> => {
     fr.readAsDataURL(file);
   });
 };
+
+export const formatTime = (seconds: number) =>
+  new Date(seconds * 1000).toISOString().substring(14, 19);
+
+export const roundToNearestHundred = (n: number) => Math.round(n / 100) * 100;
