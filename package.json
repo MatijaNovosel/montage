@@ -14,6 +14,7 @@
     "@vueuse/core": "^9.10.0",
     "autoprefixer": "^10.4.11",
     "axios": "^1.2.2",
+    "degree-picker": "^0.0.8",
     "eslint": "^8.23.1",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-vue": "^9.4.0",

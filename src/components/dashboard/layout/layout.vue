@@ -2,142 +2,94 @@
   <div
     class="border-l border-slate-700 flex flex-col p-5 items-center overflow-auto"
   >
-    <div class="text-slate-400 select-none">Canvas settings</div>
-    <div class="flex items-center my-3 w-full">
-      <div class="w-4/12">Width</div>
-      <v-text-field
-        suffix="px"
-        v-model.number="state.width"
-        variant="solo"
-        placeholder="Width"
-        hide-details
-        density="compact"
-      />
-    </div>
-    <div class="flex items-center w-full">
-      <div class="w-4/12">Height</div>
-      <v-text-field
-        suffix="px"
-        variant="solo"
-        hide-details
-        density="compact"
-        v-model.number="state.height"
-        placeholder="Height"
-      />
-    </div>
-    <div class="flex items-center w-full my-3">
-      <div class="w-4/12">Duration</div>
-      <v-text-field
-        variant="solo"
-        hide-details
-        density="compact"
-        suffix="s"
-        placeholder="Duration"
-        v-model="state.duration"
-      />
-    </div>
-    <v-color-picker
-      hide-sliders
-      v-model="state.color"
-      mode="hexa"
-      width="100%"
-    />
-    <div class="my-3 text-slate-400 select-none">Vertical alignment</div>
-    <div class="flex justify-center items-center">
-      <v-btn
-        @click="emit('align', ALIGN_OPTIONS.TOP)"
-        v-tooltip="'Align top'"
-        icon
-        size="40"
-        :disabled="!activeObject"
-      >
-        <v-icon size="20" icon="mdi-format-vertical-align-top" />
-      </v-btn>
-      <v-btn
-        @click="emit('align', ALIGN_OPTIONS.CENTER_V)"
-        v-tooltip="'Align center'"
-        class="mx-2"
-        icon
-        size="40"
-        :disabled="!activeObject"
-      >
-        <v-icon size="20" icon="mdi-format-vertical-align-center" />
-      </v-btn>
-      <v-btn
-        @click="emit('align', ALIGN_OPTIONS.BOTTOM)"
-        v-tooltip="'Align bottom'"
-        icon
-        size="40"
-        :disabled="!activeObject"
-      >
-        <v-icon size="20" icon="mdi-format-vertical-align-bottom" />
-      </v-btn>
-    </div>
-    <div class="mt-3 text-slate-400 select-none">Horizontal alignment</div>
-    <div class="flex justify-center items-center mt-3">
-      <v-btn
-        @click="emit('align', ALIGN_OPTIONS.LEFT)"
-        v-tooltip="'Align left'"
-        icon
-        size="40"
-        :disabled="!activeObject"
-      >
-        <v-icon size="20" icon="mdi-format-horizontal-align-left" />
-      </v-btn>
-      <v-btn
-        @click="emit('align', ALIGN_OPTIONS.CENTER_H)"
-        v-tooltip="'Align center'"
-        class="mx-2"
-        icon
-        size="40"
-        :disabled="!activeObject"
-      >
-        <v-icon size="20" icon="mdi-format-horizontal-align-center" />
-      </v-btn>
-      <v-btn
-        @click="emit('align', ALIGN_OPTIONS.RIGHT)"
-        v-tooltip="'Align right'"
-        icon
-        size="40"
-        :disabled="!activeObject"
-      >
-        <v-icon size="20" icon="mdi-format-horizontal-align-right" />
-      </v-btn>
-    </div>
-    <div class="mt-3 text-slate-400 select-none">Arrangement</div>
-    <div class="flex justify-center items-center mt-3">
-      <v-btn
-        @click="emit('bring-forward')"
-        v-tooltip="'Bring forward'"
-        icon
-        size="40"
-        :disabled="!activeObject"
-        class="mr-2"
-      >
-        <v-icon size="20" icon="mdi-arrange-bring-forward" />
-      </v-btn>
-      <v-btn
-        @click="emit('send-backward')"
-        v-tooltip="'Send backwards'"
-        icon
-        size="40"
-        :disabled="!activeObject"
-      >
-        <v-icon size="20" icon="mdi-arrange-send-backward" />
-      </v-btn>
-    </div>
-    <div class="mt-5 text-slate-400 select-none">Font settings</div>
-    <div class="flex items-center justify-center mt-5 w-full">
-      <div class="w-4/12">Font</div>
-      <v-select
-        hide-details
-        density="compact"
-        placeholder="Font"
-        variant="solo"
-        :items="fontOptions"
-      />
-    </div>
     <template v-if="activeObject">
+      <div class="my-3 text-slate-400 select-none">Vertical alignment</div>
+      <div class="flex justify-center items-center">
+        <v-btn
+          @click="emit('align', ALIGN_OPTIONS.TOP)"
+          v-tooltip="'Align top'"
+          icon
+          size="40"
+        >
+          <v-icon size="20" icon="mdi-format-vertical-align-top" />
+        </v-btn>
+        <v-btn
+          @click="emit('align', ALIGN_OPTIONS.CENTER_V)"
+          v-tooltip="'Align center'"
+          class="mx-2"
+          icon
+          size="40"
+        >
+          <v-icon size="20" icon="mdi-format-vertical-align-center" />
+        </v-btn>
+        <v-btn
+          @click="emit('align', ALIGN_OPTIONS.BOTTOM)"
+          v-tooltip="'Align bottom'"
+          icon
+          size="40"
+        >
+          <v-icon size="20" icon="mdi-format-vertical-align-bottom" />
+        </v-btn>
+      </div>
+      <div class="mt-3 text-slate-400 select-none">Horizontal alignment</div>
+      <div class="flex justify-center items-center mt-3">
+        <v-btn
+          @click="emit('align', ALIGN_OPTIONS.LEFT)"
+          v-tooltip="'Align left'"
+          icon
+          size="40"
+        >
+          <v-icon size="20" icon="mdi-format-horizontal-align-left" />
+        </v-btn>
+        <v-btn
+          @click="emit('align', ALIGN_OPTIONS.CENTER_H)"
+          v-tooltip="'Align center'"
+          class="mx-2"
+          icon
+          size="40"
+        >
+          <v-icon size="20" icon="mdi-format-horizontal-align-center" />
+        </v-btn>
+        <v-btn
+          @click="emit('align', ALIGN_OPTIONS.RIGHT)"
+          v-tooltip="'Align right'"
+          icon
+          size="40"
+        >
+          <v-icon size="20" icon="mdi-format-horizontal-align-right" />
+        </v-btn>
+      </div>
+      <div class="mt-3 text-slate-400 select-none">Arrangement</div>
+      <div class="flex justify-center items-center mt-3">
+        <v-btn
+          @click="emit('bring-forward')"
+          v-tooltip="'Bring forward'"
+          icon
+          size="40"
+          class="mr-2"
+        >
+          <v-icon size="20" icon="mdi-arrange-bring-forward" />
+        </v-btn>
+        <v-btn
+          @click="emit('send-backward')"
+          v-tooltip="'Send backwards'"
+          icon
+          size="40"
+        >
+          <v-icon size="20" icon="mdi-arrange-send-backward" />
+        </v-btn>
+      </div>
+      <div class="mt-5 text-slate-400 select-none">Font settings</div>
+      <div class="flex items-center justify-center mt-5 w-full">
+        <div class="w-4/12">Font</div>
+        <v-select
+          hide-details
+          density="compact"
+          placeholder="Font"
+          variant="solo"
+          :items="fontOptions"
+        />
+      </div>
       <div class="mt-5 text-slate-400 select-none">Active object settings</div>
       <div class="flex items-center my-3 w-full">
         <div class="w-4/12">Width</div>
@@ -163,26 +115,55 @@
           density="compact"
         />
       </div>
+      <div class="flex items-center w-full py-3">
+        <div class="w-4/12">Opacity</div>
+        <v-slider hide-details v-model.number="state.opacity" class="w-8/12" />
+      </div>
+      <div class="flex flex-col items-center w-full">
+        <degree-picker width="200" v-model="state.rotation" />
+      </div>
+    </template>
+    <template v-else>
+      <div class="text-slate-400 select-none">Canvas settings</div>
       <div class="flex items-center my-3 w-full">
-        <div class="w-4/12">Rotation</div>
+        <div class="w-4/12">Width</div>
         <v-text-field
-          v-model="activeObjectRotation"
-          readonly
-          dense
-          placeholder="Rotation"
+          suffix="px"
+          v-model.number="state.width"
           variant="solo"
+          placeholder="Width"
           hide-details
           density="compact"
         />
       </div>
       <div class="flex items-center w-full">
-        <div class="w-4/12">Opacity</div>
-        <v-slider
+        <div class="w-4/12">Height</div>
+        <v-text-field
+          suffix="px"
+          variant="solo"
           hide-details
-          v-model.number="state.activeObjectOpacity"
-          class="w-8/12"
+          density="compact"
+          v-model.number="state.height"
+          placeholder="Height"
         />
       </div>
+      <div class="flex items-center w-full my-3 pb-2">
+        <div class="w-4/12">Duration</div>
+        <v-text-field
+          variant="solo"
+          hide-details
+          density="compact"
+          suffix="s"
+          placeholder="Duration"
+          v-model="state.duration"
+        />
+      </div>
+      <v-color-picker
+        hide-sliders
+        v-model="state.color"
+        mode="hexa"
+        width="100%"
+      />
     </template>
   </div>
 </template>
@@ -204,7 +185,8 @@ interface State {
   duration: number;
   height: number;
   fonts: FontItem[];
-  activeObjectOpacity: number;
+  opacity: number;
+  rotation: number;
 }
 
 const dashboardStore = useDashboardStore();
@@ -233,7 +215,8 @@ const state: State = reactive({
   color: artboardColor.value,
   width: artboardWidth.value,
   height: artboardHeight.value,
-  activeObjectOpacity: 0,
+  opacity: 0,
+  rotation: 0,
   duration: 10,
   fonts: []
 });
@@ -256,7 +239,7 @@ watch(
 );
 
 watch(
-  () => state.activeObjectOpacity,
+  () => state.opacity,
   (val) => dashboardStore.setActiveObjectOpacity(val)
 );
 
