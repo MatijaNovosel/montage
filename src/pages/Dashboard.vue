@@ -60,30 +60,14 @@
       class="w-2/12"
     />
   </div>
-  <div
-    class="flex bg-slate-900 text-white border-y border-slate-700 layers-ctr-title"
-  >
-    <div
-      class="w-4/12 border-r border-slate-700 flex items-center pl-4 text-slate-500 select-none tracking-widest"
-    >
-      LAYERS
-    </div>
-    <div class="w-8/12 flex items-center py-3 relative">
-      <span
-        class="text-slate-400 text-right"
-        :key="i"
-        v-for="(n, i) in state.duration / 1000"
-        :style="{
-          width: '100px'
-        }"
-      >
-        {{ n }}s
-      </span>
-    </div>
-  </div>
-  <div class="flex bg-slate-900 text-white border-slate-700 layers-ctr">
-    <div class="w-4/12 border-r border-slate-700 h-full">
-      <div class="flex flex-col overflow-auto layers-ctr">
+  <div class="flex bg-slate-900 text-white border-slate-700 bottom-area-ctr">
+    <div class="w-3/12 h-full border-r border-slate-700">
+      <div class="flex flex-col overflow-auto">
+        <div
+          class="flex items-center border-slate-700 border-y pl-4 py-3 text-slate-500 select-none tracking-widest"
+        >
+          LAYERS
+        </div>
         <template v-if="state.layers.length">
           <div
             class="pl-4 cursor-pointer layer-item flex items-center border-b-2 border-slate-800"
@@ -110,7 +94,7 @@
       </div>
     </div>
     <div
-      class="w-8/12 h-full relative seek-area"
+      class="h-full w-9/12 relative seek-area overflow-auto"
       @mousemove="followCursor"
       @mouseleave="hideSeekbar"
       @click="seek"
@@ -128,8 +112,20 @@
           left: `${state.seekbarOffset}px`
         }"
       />
+      <div class="flex items-center py-3 relative border-y border-slate-700">
+        <span
+          class="text-slate-400 text-right"
+          :key="i"
+          v-for="(n, i) in Math.floor(state.duration / 1000)"
+          :style="{
+            width: '100px'
+          }"
+        >
+          {{ n }}s
+        </span>
+      </div>
       <div
-        class="flex flex-col layers-ctr overflow-auto"
+        class="flex flex-col overflow-auto h-full"
         v-if="state.layers.length"
       >
         <div
@@ -205,6 +201,7 @@ import { useDashboardStore } from "@/store/dashboard";
 import { useToastStore } from "@/store/toast";
 import {
   ALIGN_OPTIONS,
+  DEFAULT_DURATION,
   LAYER_TYPE,
   LAYER_TYPE_COLOR,
   LAYER_TYPE_ICON,
@@ -220,6 +217,7 @@ import {
 } from "@/utils/fabric";
 import {
   bytesToMB,
+  calculateLayerWidth,
   formatTime,
   getFileExtension,
   readFile
@@ -279,7 +277,7 @@ const state: State = reactive({
   // NOTE: Miliseconds
   currentTime: 0,
   // NOTE: Miliseconds
-  duration: 10_000,
+  duration: DEFAULT_DURATION,
   seeking: false,
   seekHoverOffset: 0,
   seekbarOffset: 0
@@ -662,6 +660,9 @@ const newVideo = (file: HTMLVideoElement, source: string, duration: number) => {
   if ((newVideo.get("width") as number) > artboardWidth.value) {
     newVideo.scaleToWidth(artboardWidth.value);
   }
+  if (duration * 1000 > state.duration) {
+    state.duration = duration * 1000;
+  }
   newVideo.scaleToWidth(150);
   fabricCanvas?.renderAll();
   fabricCanvas?.setActiveObject(newVideo);
@@ -800,10 +801,6 @@ const updateActiveObjectDimensions = () => {
   }
 };
 
-const calculateLayerWidth = (layer: Layer) => {
-  return `${layer.duration * 100}px`;
-};
-
 // Watchers
 watch([mainWidth, mainHeight], async ([width, height]) => {
   await nextTick(() => {
@@ -842,8 +839,16 @@ watch(
 // Listeners
 onKeyDown("Delete", () => {
   fabricCanvas?.getActiveObjects().forEach((obj) => {
-    //@ts-ignore
-    state.layers = state.layers.filter((l) => l.id !== obj.id);
+    // @ts-ignore
+    const id = obj.id;
+    const layer = state.layers.find((l) => l.id === id);
+    if (layer) {
+      if (layer.type === LAYER_TYPE.VIDEO) {
+        // TODO: Adjust total duration here
+        state.duration = DEFAULT_DURATION;
+      }
+      state.layers = state.layers.filter((l) => l.id !== id);
+    }
     fabricCanvas?.remove(obj);
   });
   fabricCanvas?.discardActiveObject().renderAll();
@@ -969,12 +974,8 @@ onBeforeUnmount(() => {
   z-index: 10;
 }
 
-.layers-ctr-title {
-  height: 45px;
-}
-
-.layers-ctr {
-  height: 195px;
+.bottom-area-ctr {
+  height: 240px;
 }
 
 .layer-item {

@@ -1,3 +1,4 @@
+import { Layer } from "@/models/common";
 import { MIME_TYPES, MIME_TYPE_ICONS, SIZES } from "@/utils/constants";
 
 export const getFileExtension = (fileName: string) => {
@@ -36,4 +37,6 @@ export const readFile = (file: File): Promise<string> => {
 export const formatTime = (miliseconds: number) =>
   new Date(miliseconds).toISOString().substring(14).replace("Z", "");
 
-export const roundToNearestHundred = (n: number) => Math.round(n / 100) * 100;
+export const calculateLayerWidth = (layer: Layer) => {
+  return `${layer.duration * 100}px`;
+};
