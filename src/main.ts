@@ -1,4 +1,3 @@
-import degreePicker from "degree-picker";
 import FloatingVue from "floating-vue";
 import { createPinia } from "pinia";
 import { createApp } from "vue";
@@ -9,7 +8,6 @@ import en from "./i18n/en";
 import hr from "./i18n/hr";
 import router from "./router";
 
-import "degree-picker/dist/degree-picker.css";
 import "floating-vue/dist/style.css";
 import "./index.css";
 
@@ -56,7 +54,6 @@ const vuetify = createVuetify({
 app.use(router);
 app.use(i18n);
 app.use(pinia);
-app.use(degreePicker);
 app.use(vuetify);
 app.use(FloatingVue, {
   themes: {

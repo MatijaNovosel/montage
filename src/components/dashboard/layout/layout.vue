@@ -120,7 +120,12 @@
         <v-slider hide-details v-model.number="state.opacity" class="w-8/12" />
       </div>
       <div class="flex flex-col items-center w-full">
-        <degree-picker width="200" v-model="state.rotation" />
+        <degree-picker
+          active-color="#4979f3"
+          body-color="#2c354c"
+          width="200"
+          v-model="state.rotation"
+        />
       </div>
     </template>
     <template v-else>
@@ -175,6 +180,8 @@ import { useDashboardStore } from "@/store/dashboard";
 import { useToastStore } from "@/store/toast";
 import { ALIGN_OPTIONS } from "@/utils/constants";
 import axios from "axios";
+import { DegreePicker } from "degree-picker";
+import "degree-picker/dist/style.css";
 import { storeToRefs } from "pinia";
 import { computed, onMounted, reactive, watch } from "vue";
 import WebFont from "webfontloader";

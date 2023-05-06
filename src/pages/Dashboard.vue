@@ -125,7 +125,7 @@
         </span>
       </div>
       <div
-        class="flex flex-col overflow-auto h-full"
+        class="flex flex-col overflow-auto timeline-body"
         v-if="state.layers.length"
       >
         <div
@@ -769,7 +769,6 @@ const seekToEnd = () => {};
 const seek = (e: MouseEvent) => {
   // @ts-ignore
   const offset: number = e.layerX;
-  console.log(offset);
   if (offset > 1 && !!state.layers.length) {
     // 100px = 1s
     state.currentTime = offset * 10;
@@ -831,7 +830,6 @@ watch([artboardHeight, artboardWidth], ([heightA, widthA]) => {
 watch(
   () => state.currentTime,
   (val) => {
-    console.log(state.currentTime);
     state.seekbarOffset = val / 10;
   }
 );
@@ -987,6 +985,10 @@ onBeforeUnmount(() => {
   position: absolute;
 }
 
+.timeline-body {
+  height: 190px;
+}
+
 #seek-hover {
   height: 100%;
   background-color: #fff;
@@ -1006,7 +1008,7 @@ onBeforeUnmount(() => {
   position: absolute;
   z-index: 99999999;
   pointer-events: all;
-  top: 0px;
+  top: 36px;
 }
 
 #seekbar:hover {
@@ -1022,7 +1024,6 @@ onBeforeUnmount(() => {
   width: 13px;
   height: 18px;
   margin-left: -6px;
-  margin-top: -10px;
   z-index: 9;
   box-sizing: border-box;
 }
