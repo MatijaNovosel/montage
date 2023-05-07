@@ -129,17 +129,23 @@
         v-if="state.layers.length"
       >
         <div
+          class="main-row w-full relative"
           v-for="layer of state.layers"
           :key="layer.id"
-          class="layer-item pl-4 flex items-center text-xs font-bold border-b-2 border-slate-800"
-          :class="{
-            [`bg-${LAYER_TYPE_COLOR[layer.type]}`]: true
-          }"
           :style="{
             // @ts-ignore
             width: calculateLayerWidth(layer)
           }"
-        />
+        >
+          <div
+            class="row-element"
+            :class="{
+              [`bg-${LAYER_TYPE_COLOR[layer.type]}`]: true
+            }"
+          >
+            <div class="trim-row border-b-2 border-slate-800" />
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -977,7 +983,58 @@ onBeforeUnmount(() => {
 }
 
 .layer-item {
-  min-height: 40px;
+  height: 40px;
+}
+
+.main-row {
+  height: 40px;
+}
+
+.trim-row {
+  height: 100%;
+  width: 100%;
+}
+
+.trim-row:before {
+  width: 5px;
+  position: absolute;
+  display: block;
+  content: "";
+  height: 100%;
+  z-index: 9999 !important;
+}
+
+.trim-row:hover:before {
+  cursor: ew-resize;
+}
+
+.trim-row:after {
+  width: 7px;
+  position: absolute;
+  right: 0px;
+  height: 100%;
+  content: "";
+  z-index: 9999 !important;
+}
+
+.trim-row:hover:after {
+  cursor: ew-resize;
+}
+
+.row-element {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+
+.row-element::before {
+  background-color: black;
+  opacity: 0.4;
+  display: block;
+  content: "";
+  position: absolute;
+  height: 100%;
+  width: 100%;
 }
 
 .bottom {
@@ -1026,9 +1083,5 @@ onBeforeUnmount(() => {
   margin-left: -6px;
   z-index: 9;
   box-sizing: border-box;
-}
-
-.seek-area {
-  cursor: pointer;
 }
 </style>
