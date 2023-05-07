@@ -129,7 +129,8 @@
         v-if="state.layers.length"
       >
         <div
-          class="main-row w-full relative"
+          @mousedown="(e) => dragObjectProps(e, layer)"
+          class="main-row relative border-b-2 border-slate-800"
           v-for="layer of state.layers"
           :key="layer.id"
           :style="{
@@ -137,13 +138,13 @@
             width: calculateLayerWidth(layer)
           }"
         >
-          <div
-            class="row-element"
-            :class="{
-              [`bg-${LAYER_TYPE_COLOR[layer.type]}`]: true
-            }"
-          >
-            <div class="trim-row border-b-2 border-slate-800" />
+          <div class="row-element">
+            <div
+              class="trim-row absolute"
+              :class="{
+                [`bg-${LAYER_TYPE_COLOR[layer.type]}`]: true
+              }"
+            />
           </div>
         </div>
       </div>
@@ -782,6 +783,10 @@ const seek = (e: MouseEvent) => {
       v.currentTime = offset / 100;
     });
   }
+};
+
+const dragObjectProps = (e: MouseEvent, layer: Layer) => {
+  //
 };
 
 const followCursor = (e: MouseEvent) => {
