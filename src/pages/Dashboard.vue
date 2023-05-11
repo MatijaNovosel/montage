@@ -93,12 +93,7 @@
         <div class="p-5" v-else>No layers added.</div>
       </div>
     </div>
-    <div
-      class="h-full w-9/12 relative seek-area overflow-auto"
-      @mousemove="followCursor"
-      @mouseleave="hideSeekbar"
-      @click="seek"
-    >
+    <div class="h-full w-9/12 relative seek-area overflow-auto">
       <div
         id="seek-hover"
         :style="{
@@ -114,7 +109,7 @@
       />
       <div class="flex items-center py-3 relative border-y border-slate-700">
         <span
-          class="text-slate-400 text-right"
+          class="text-slate-400 text-right select-none"
           :key="i"
           v-for="(n, i) in Math.floor(state.duration / 1000)"
           :style="{
@@ -125,6 +120,9 @@
         </span>
       </div>
       <div
+        @mousemove="followCursor"
+        @mouseleave="hideSeekbar"
+        @click="seek"
         class="flex flex-col overflow-auto timeline-body"
         v-if="state.layers.length"
       >
@@ -134,8 +132,8 @@
           v-for="layer of state.layers"
           :key="layer.id"
           :style="{
-            // @ts-ignore
-            width: calculateLayerWidth(layer)
+            width: calculateLayerWidth(layer),
+            left: `${layer.offset}px`
           }"
         >
           <div class="row-element">
@@ -257,6 +255,7 @@ interface State {
   layers: Layer[];
   playbackSpeed: SelectItem<number>;
   paused: boolean;
+  dragging: boolean;
   // NOTE: Miliseconds
   currentTime: number;
   // NOTE: Miliseconds
@@ -281,6 +280,7 @@ const state: State = reactive({
   layers: [],
   playbackSpeed: TIME_OPTIONS[1],
   paused: true,
+  dragging: false,
   // NOTE: Miliseconds
   currentTime: 0,
   // NOTE: Miliseconds
@@ -773,28 +773,45 @@ const seekToStart = () => {
 
 const seekToEnd = () => {};
 
-const seek = (e: MouseEvent) => {
-  // @ts-ignore
-  const offset: number = e.layerX;
-  if (offset > 1 && !!state.layers.length) {
-    // 100px = 1s
-    state.currentTime = offset * 10;
+const seek = ({ offsetX }: MouseEvent) => {
+  if (offsetX > 1 && !!state.layers.length) {
+    state.currentTime = offsetX * 10;
     videoObjects.value.forEach((v) => {
-      v.currentTime = offset / 100;
+      v.currentTime = offsetX / 100;
     });
   }
 };
 
 const dragObjectProps = (e: MouseEvent, layer: Layer) => {
-  //
+  console.log("start - mousedown");
+  const action = "dragging";
+  const dragging = ({ offsetX }: MouseEvent) => {
+    if (action === "dragging") {
+      console.log(offsetX);
+      state.dragging = true;
+      state.seeking = false;
+      layer.offset = offsetX;
+    } else if (action === "trimLeft") {
+      //
+    } else if (action === "trimRight") {
+      //
+    }
+  };
+  const released = () => {
+    state.dragging = false;
+    state.seeking = true;
+    document.removeEventListener("mouseup", released);
+    document.removeEventListener("mousemove", dragging);
+  };
+  document.addEventListener("mouseup", released);
+  document.addEventListener("mousemove", dragging);
 };
 
-const followCursor = (e: MouseEvent) => {
+const followCursor = ({ offsetX }: MouseEvent) => {
+  if (state.dragging) return;
   state.seeking = true;
-  // @ts-ignore
-  const offset: number = e.layerX;
-  if (offset > 1) {
-    state.seekHoverOffset = offset;
+  if (offsetX > 1) {
+    state.seekHoverOffset = offsetX;
   }
 };
 
