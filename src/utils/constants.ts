@@ -236,3 +236,6 @@ export const LAYER_TYPE_COLOR: Record<string, string> = {
 export const FILE_SIZE_LIMIT = 10_485_760; // 10 MB
 
 export const DEFAULT_DURATION = 10_000; // 10 seconds
+
+export const DRAWER_WIDTH = 480;
+export const LAYOUT_WIDTH = 380;

@@ -61,7 +61,10 @@
     />
   </div>
   <div class="flex bg-slate-900 text-white border-slate-700 bottom-area-ctr">
-    <div class="w-3/12 h-full border-r border-slate-700">
+    <div
+      class="h-full border-r border-slate-700"
+      :style="{ width: `${DRAWER_WIDTH}px` }"
+    >
       <div class="flex flex-col overflow-auto">
         <div
           class="flex items-center border-slate-700 border-y pl-4 py-3 text-slate-500 select-none tracking-widest"
@@ -93,7 +96,7 @@
         <div class="p-5" v-else>No layers added.</div>
       </div>
     </div>
-    <div class="h-full w-9/12 relative seek-area overflow-auto">
+    <div class="h-full flex-grow relative overflow-auto">
       <div
         id="seek-hover"
         :style="{
@@ -110,8 +113,8 @@
       <div class="flex items-center py-3 relative border-y border-slate-700">
         <span
           class="text-slate-400 text-right select-none"
-          :key="i"
-          v-for="(n, i) in Math.floor(state.duration / 1000)"
+          :key="n"
+          v-for="n in Math.floor(state.duration / 1000)"
           :style="{
             width: '100px'
           }"
@@ -122,8 +125,8 @@
       <div
         @mousemove="followCursor"
         @mouseleave="hideSeekbar"
-        @click="seek"
-        class="flex flex-col overflow-auto timeline-body"
+        @dblclick="seek"
+        class="flex flex-col timeline-body"
         v-if="state.layers.length"
       >
         <div
@@ -207,6 +210,7 @@ import { useToastStore } from "@/store/toast";
 import {
   ALIGN_OPTIONS,
   DEFAULT_DURATION,
+  DRAWER_WIDTH,
   LAYER_TYPE,
   LAYER_TYPE_COLOR,
   LAYER_TYPE_ICON,
@@ -268,7 +272,7 @@ interface State {
 
 const dashboardStore = useDashboardStore();
 const { createToast } = useToastStore();
-const bus = useEventBus<AssetEvent>("asset");
+const addAssetBus = useEventBus<AssetEvent>("asset");
 
 const { artboardColor, artboardHeight, artboardWidth, activeObjectId } =
   storeToRefs(dashboardStore);
@@ -758,7 +762,7 @@ const addAsset = async (event: AssetEvent) => {
   }
 };
 
-const unsubscribe = bus.on(addAsset);
+const unsubscribeAddAssetBus = addAssetBus.on(addAsset);
 
 const hideSeekbar = () => {
   state.seeking = false;
@@ -773,11 +777,12 @@ const seekToStart = () => {
 
 const seekToEnd = () => {};
 
-const seek = ({ offsetX }: MouseEvent) => {
-  if (offsetX > 1 && !!state.layers.length) {
-    state.currentTime = offsetX * 10;
+const seek = ({ offsetX, pageX }: MouseEvent) => {
+  const res = pageX - DRAWER_WIDTH;
+  if (res > 1 && !!state.layers.length) {
+    state.currentTime = res * 10;
     videoObjects.value.forEach((v) => {
-      v.currentTime = offsetX / 100;
+      v.currentTime = res / 100;
     });
   }
 };
@@ -785,12 +790,14 @@ const seek = ({ offsetX }: MouseEvent) => {
 const dragObjectProps = (e: MouseEvent, layer: Layer) => {
   console.log("start - mousedown");
   const action = "dragging";
-  const dragging = ({ offsetX }: MouseEvent) => {
+  const dragging = ({ offsetX, pageX }: MouseEvent) => {
     if (action === "dragging") {
-      console.log(offsetX);
+      // TODO: Promjeni poslije na dinamičnu vrijednost
+      console.log({ pageX: pageX - DRAWER_WIDTH });
+      console.log({ offsetX });
       state.dragging = true;
       state.seeking = false;
-      layer.offset = offsetX;
+      layer.offset = pageX - DRAWER_WIDTH;
     } else if (action === "trimLeft") {
       //
     } else if (action === "trimRight") {
@@ -807,11 +814,12 @@ const dragObjectProps = (e: MouseEvent, layer: Layer) => {
   document.addEventListener("mousemove", dragging);
 };
 
-const followCursor = ({ offsetX }: MouseEvent) => {
+const followCursor = ({ offsetX, pageX }: MouseEvent) => {
   if (state.dragging) return;
   state.seeking = true;
-  if (offsetX > 1) {
-    state.seekHoverOffset = offsetX;
+  const res = pageX - DRAWER_WIDTH;
+  if (res > 1) {
+    state.seekHoverOffset = res;
   }
 };
 
@@ -981,7 +989,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   wheelScrollEvent();
-  unsubscribe();
+  unsubscribeAddAssetBus();
 });
 </script>
 
@@ -1009,7 +1017,7 @@ onBeforeUnmount(() => {
 }
 
 .main-row {
-  height: 40px;
+  min-height: 40px;
 }
 
 .trim-row {
@@ -1081,7 +1089,7 @@ onBeforeUnmount(() => {
 }
 
 #seekbar {
-  height: 100%;
+  height: calc(100% - 36px);
   width: 2px;
   background-color: #fff;
   position: absolute;
