@@ -1,0 +1,120 @@
+.top-left {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  z-index: 10;
+}
+
+.top-right {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 10;
+}
+
+.bottom-area-ctr {
+  height: 240px;
+}
+
+.layer-item {
+  height: 40px;
+}
+
+.main-row {
+  min-height: 40px;
+}
+
+.trim-row {
+  height: 100%;
+  width: 100%;
+}
+
+.trim-row:before {
+  width: 5px;
+  position: absolute;
+  display: block;
+  content: "";
+  height: 100%;
+  z-index: 9999 !important;
+}
+
+.trim-row:hover:before {
+  cursor: ew-resize;
+}
+
+.trim-row:after {
+  width: 7px;
+  position: absolute;
+  right: 0px;
+  height: 100%;
+  content: "";
+  z-index: 9999 !important;
+}
+
+.trim-row:hover:after {
+  cursor: ew-resize;
+}
+
+.row-element {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+
+.row-element::before {
+  background-color: black;
+  opacity: 0.4;
+  display: block;
+  content: "";
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+
+.bottom {
+  bottom: 15px;
+  position: absolute;
+}
+
+.timeline-body {
+  height: 190px;
+}
+
+#seek-hover {
+  height: 100%;
+  background-color: #fff;
+  width: 3px;
+  opacity: 0.3;
+  pointer-events: none;
+  top: 0px;
+  z-index: 99999999;
+  position: absolute;
+  border-radius: 5px;
+}
+
+#seekbar {
+  height: calc(100% - 36px);
+  width: 2px;
+  background-color: #fff;
+  position: absolute;
+  z-index: 99999999;
+  pointer-events: all;
+  top: 36px;
+}
+
+#seekbar:hover {
+  outline: 3px solid rgba(255, 255, 255, 0.1);
+  box-sizing: border-box;
+}
+
+#seekbar:after {
+  background: url(/seeker.svg);
+  display: block;
+  content: "";
+  position: absolute;
+  width: 13px;
+  height: 18px;
+  margin-left: -6px;
+  z-index: 9;
+  box-sizing: border-box;
+}

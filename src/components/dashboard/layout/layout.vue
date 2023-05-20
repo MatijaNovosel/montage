@@ -124,7 +124,7 @@
           active-color="#4979f3"
           body-color="#2c354c"
           width="200"
-          v-model="state.rotation"
+          v-model="activeObjectRotation"
         />
       </div>
     </template>

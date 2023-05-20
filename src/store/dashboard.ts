@@ -11,7 +11,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
 
   const activeObjectWidth = ref("0");
   const activeObjectHeight = ref("0");
-  const activeObjectRotation = ref("0");
+  const activeObjectRotation = ref(0);
   const activeObjectOpacity = ref(0);
 
   // Video specific
@@ -89,7 +89,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
   };
 
   const setActiveObjectRotation = (rotation: number) => {
-    activeObjectRotation.value = rotation.toString();
+    activeObjectRotation.value = rotation;
   };
 
   const setActiveObjectOpacity = (opacity: number) => {

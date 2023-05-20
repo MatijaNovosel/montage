@@ -125,12 +125,12 @@
       <div
         @mousemove="followCursor"
         @mouseleave="hideSeekbar"
-        @dblclick="seek"
+        @click="seek"
         class="flex flex-col timeline-body"
         v-if="state.layers.length"
       >
         <div
-          @mousedown="(e) => dragObjectProps(e, layer)"
+          @mousedown.prevent="(e) => dragObjectProps(e, layer)"
           class="main-row relative border-b-2 border-slate-800"
           v-for="layer of state.layers"
           :key="layer.id"
@@ -363,7 +363,9 @@ const togglePlay = () => {
       }, 10);
       playVideos();
     } else {
-      if (state.playInterval) clearInterval(state.playInterval);
+      if (state.playInterval) {
+        clearInterval(state.playInterval);
+      }
       pauseVideos();
     }
     state.paused = !state.paused;
@@ -601,7 +603,9 @@ const newSvg = (path: string) => {
 
 const newImage = async (source: File | string) => {
   const id = randInt(1, 9999).toString();
-  if (typeof source !== "string") source = await readFile(source);
+  if (typeof source !== "string") {
+    source = await readFile(source);
+  }
   fabric.Image.fromURL(source, (image) => {
     if (
       (image.get("width") as number) > artboardWidth.value ||
@@ -777,8 +781,8 @@ const seekToStart = () => {
 
 const seekToEnd = () => {};
 
-const seek = ({ offsetX, pageX }: MouseEvent) => {
-  const res = pageX - DRAWER_WIDTH;
+const seek = (e: MouseEvent) => {
+  const res = e.pageX - DRAWER_WIDTH;
   if (res > 1 && !!state.layers.length) {
     state.currentTime = res * 10;
     videoObjects.value.forEach((v) => {
@@ -788,13 +792,9 @@ const seek = ({ offsetX, pageX }: MouseEvent) => {
 };
 
 const dragObjectProps = (e: MouseEvent, layer: Layer) => {
-  console.log("start - mousedown");
   const action = "dragging";
   const dragging = ({ offsetX, pageX }: MouseEvent) => {
     if (action === "dragging") {
-      // TODO: Promjeni poslije na dinamičnu vrijednost
-      console.log({ pageX: pageX - DRAWER_WIDTH });
-      console.log({ offsetX });
       state.dragging = true;
       state.seeking = false;
       layer.offset = pageX - DRAWER_WIDTH;
@@ -814,7 +814,7 @@ const dragObjectProps = (e: MouseEvent, layer: Layer) => {
   document.addEventListener("mousemove", dragging);
 };
 
-const followCursor = ({ offsetX, pageX }: MouseEvent) => {
+const followCursor = ({ pageX }: MouseEvent) => {
   if (state.dragging) return;
   state.seeking = true;
   const res = pageX - DRAWER_WIDTH;
@@ -942,7 +942,7 @@ onMounted(() => {
 
   fabricCanvas.on("object:moving", (e) => {
     e.target!.hasControls = false;
-    if (e.e.shiftKey)
+    if (e.e.shiftKey) {
       centerLines(
         e,
         lineH,
@@ -953,6 +953,7 @@ onMounted(() => {
         artboardWidth.value,
         artboardHeight.value
       );
+    }
   });
 
   fabricCanvas.on("mouse:up", () => {
@@ -974,8 +975,11 @@ onMounted(() => {
   });
 
   fabricCanvas.on("object:rotating", (e) => {
-    if (e.e.shiftKey) fabricCanvas!.getActiveObject()!.snapAngle = 15;
-    else fabricCanvas!.getActiveObject()!.snapAngle = 0;
+    if (e.e.shiftKey) {
+      fabricCanvas!.getActiveObject()!.snapAngle = 15;
+    } else {
+      fabricCanvas!.getActiveObject()!.snapAngle = 0;
+    }
     e.target!.hasControls = false;
     dashboardStore.setActiveObjectRotation(
       parseFloat(fabricCanvas!.getActiveObject()?.angle?.toFixed() || "")
@@ -993,125 +997,6 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<style scoped>
-.top-left {
-  position: absolute;
-  top: 15px;
-  left: 15px;
-  z-index: 10;
-}
-
-.top-right {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  z-index: 10;
-}
-
-.bottom-area-ctr {
-  height: 240px;
-}
-
-.layer-item {
-  height: 40px;
-}
-
-.main-row {
-  min-height: 40px;
-}
-
-.trim-row {
-  height: 100%;
-  width: 100%;
-}
-
-.trim-row:before {
-  width: 5px;
-  position: absolute;
-  display: block;
-  content: "";
-  height: 100%;
-  z-index: 9999 !important;
-}
-
-.trim-row:hover:before {
-  cursor: ew-resize;
-}
-
-.trim-row:after {
-  width: 7px;
-  position: absolute;
-  right: 0px;
-  height: 100%;
-  content: "";
-  z-index: 9999 !important;
-}
-
-.trim-row:hover:after {
-  cursor: ew-resize;
-}
-
-.row-element {
-  position: absolute;
-  height: 100%;
-  width: 100%;
-}
-
-.row-element::before {
-  background-color: black;
-  opacity: 0.4;
-  display: block;
-  content: "";
-  position: absolute;
-  height: 100%;
-  width: 100%;
-}
-
-.bottom {
-  bottom: 15px;
-  position: absolute;
-}
-
-.timeline-body {
-  height: 190px;
-}
-
-#seek-hover {
-  height: 100%;
-  background-color: #fff;
-  width: 3px;
-  opacity: 0.3;
-  pointer-events: none;
-  top: 0px;
-  z-index: 99999999;
-  position: absolute;
-  border-radius: 5px;
-}
-
-#seekbar {
-  height: calc(100% - 36px);
-  width: 2px;
-  background-color: #fff;
-  position: absolute;
-  z-index: 99999999;
-  pointer-events: all;
-  top: 36px;
-}
-
-#seekbar:hover {
-  outline: 3px solid rgba(255, 255, 255, 0.1);
-  box-sizing: border-box;
-}
-
-#seekbar:after {
-  background: url(/seeker.svg);
-  display: block;
-  content: "";
-  position: absolute;
-  width: 13px;
-  height: 18px;
-  margin-left: -6px;
-  z-index: 9;
-  box-sizing: border-box;
-}
+<style scoped lang="scss">
+@import "dashboard.scss";
 </style>
