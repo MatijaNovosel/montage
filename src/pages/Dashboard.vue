@@ -204,7 +204,12 @@
 <script setup lang="ts">
 import Layout from "@/components/dashboard/layout/layout.vue";
 import Sidebar from "@/components/dashboard/sidebar/sidebar.vue";
-import { AssetEvent, Layer, SelectItem } from "@/models/common";
+import {
+  ActiveObjectChangeEvent,
+  AssetEvent,
+  Layer,
+  SelectItem
+} from "@/models/common";
 import { useDashboardStore } from "@/store/dashboard";
 import { useToastStore } from "@/store/toast";
 import {
@@ -273,6 +278,8 @@ interface State {
 const dashboardStore = useDashboardStore();
 const { createToast } = useToastStore();
 const addAssetBus = useEventBus<AssetEvent>("asset");
+const activeObjectChangeBus =
+  useEventBus<ActiveObjectChangeEvent>("activeObjectChange");
 
 const { artboardColor, artboardHeight, artboardWidth, activeObjectId } =
   storeToRefs(dashboardStore);
@@ -423,7 +430,7 @@ const newTextbox = (
     endTrim: 0,
     offset: 0,
     startTrim: 0,
-    duration: 3
+    duration: 3_000
   });
 };
 
@@ -596,7 +603,7 @@ const newSvg = (path: string) => {
       endTrim: 0,
       offset: 0,
       startTrim: 0,
-      duration: 3
+      duration: 3_000
     });
   });
 };
@@ -642,7 +649,7 @@ const newImage = async (source: File | string) => {
       endTrim: 0,
       offset: 0,
       startTrim: 0,
-      duration: 3
+      duration: 3_000
     });
   });
 };
@@ -692,7 +699,7 @@ const newVideo = (file: HTMLVideoElement, source: string, duration: number) => {
     endTrim: 0,
     offset: 0,
     startTrim: 0,
-    duration: duration
+    duration
   });
 };
 
@@ -766,7 +773,40 @@ const addAsset = async (event: AssetEvent) => {
   }
 };
 
+const changeActiveObject = ({ type, value }: ActiveObjectChangeEvent) => {
+  const activeObject = fabricCanvas?.getActiveObject();
+  switch (type) {
+    case "rotation":
+      activeObject?.set("angle", value as number);
+      break;
+  }
+};
+
 const unsubscribeAddAssetBus = addAssetBus.on(addAsset);
+const unsubscribeActiveObjectChangeBus =
+  activeObjectChangeBus.on(changeActiveObject);
+
+const updateLayerVisibility = () => {
+  // @ts-ignore
+  const activeObjectId: string = fabricCanvas?.getActiveObject()?.get("id");
+  for (const layer of state.layers) {
+    // @ts-ignore
+    const objectId: string = layer.object?.get("id");
+    layer.object!.visible = false;
+    const layerOffsetMs = layer.offset * 10;
+    if (
+      state.currentTime >= layerOffsetMs &&
+      state.currentTime <= layerOffsetMs + layer.duration
+    ) {
+      layer.object!.visible = true;
+    } else {
+      layer.object!.visible = false;
+    }
+    if (objectId === activeObjectId) {
+      fabricCanvas?.discardActiveObject().renderAll();
+    }
+  }
+};
 
 const hideSeekbar = () => {
   state.seeking = false;
@@ -789,6 +829,7 @@ const seek = (e: MouseEvent) => {
       v.currentTime = res / 100;
     });
   }
+  updateLayerVisibility();
 };
 
 const dragObjectProps = (e: MouseEvent, layer: Layer) => {
@@ -807,8 +848,8 @@ const dragObjectProps = (e: MouseEvent, layer: Layer) => {
   const released = () => {
     state.dragging = false;
     state.seeking = true;
-    document.removeEventListener("mouseup", released);
     document.removeEventListener("mousemove", dragging);
+    document.removeEventListener("mouseup", released);
   };
   document.addEventListener("mouseup", released);
   document.addEventListener("mousemove", dragging);
@@ -994,6 +1035,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   wheelScrollEvent();
   unsubscribeAddAssetBus();
+  unsubscribeActiveObjectChangeBus();
 });
 </script>
 

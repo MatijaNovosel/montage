@@ -1,16 +1,21 @@
+import { ActiveObjectChangeEvent } from "@/models/common";
+import { useEventBus } from "@vueuse/core";
 import { defineStore } from "pinia";
 import { computed, defineAsyncComponent, ref } from "vue";
 import { TABS } from "../utils/constants";
 
 export const useDashboardStore = defineStore("dashboard", () => {
+  const { emit: emitActiveObjectChange } =
+    useEventBus<ActiveObjectChangeEvent>("activeObjectChange");
+
   const activeTab = ref(TABS.OBJECTS);
 
   const artboardColor = ref("#000000");
   const artboardHeight = ref(450);
   const artboardWidth = ref(800);
 
-  const activeObjectWidth = ref("0");
-  const activeObjectHeight = ref("0");
+  const activeObjectWidth = ref(0);
+  const activeObjectHeight = ref(0);
   const activeObjectRotation = ref(0);
   const activeObjectOpacity = ref(0);
 
@@ -81,15 +86,19 @@ export const useDashboardStore = defineStore("dashboard", () => {
   };
 
   const setActiveObjectWidth = (width: number) => {
-    activeObjectWidth.value = width.toFixed(2);
+    activeObjectWidth.value = parseFloat(width.toFixed(2));
   };
 
   const setActiveObjectHeight = (height: number) => {
-    activeObjectHeight.value = height.toFixed(2);
+    activeObjectHeight.value = parseFloat(height.toFixed(2));
   };
 
   const setActiveObjectRotation = (rotation: number) => {
     activeObjectRotation.value = rotation;
+    emitActiveObjectChange({
+      type: "rotation",
+      value: rotation.toString()
+    });
   };
 
   const setActiveObjectOpacity = (opacity: number) => {

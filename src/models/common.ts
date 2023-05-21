@@ -24,3 +24,8 @@ export interface AssetEvent {
   value: string;
   file?: File;
 }
+
+export interface ActiveObjectChangeEvent {
+  type: string;
+  value: string | number;
+}

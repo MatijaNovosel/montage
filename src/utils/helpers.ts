@@ -38,5 +38,5 @@ export const formatTime = (miliseconds: number) =>
   new Date(miliseconds).toISOString().substring(14).replace("Z", "");
 
 export const calculateLayerWidth = (layer: Layer) => {
-  return `${layer.duration * 100}px`;
+  return `${layer.duration / 10}px`;
 };

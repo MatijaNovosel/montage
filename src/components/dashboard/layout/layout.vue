@@ -124,7 +124,7 @@
           active-color="#4979f3"
           body-color="#2c354c"
           width="200"
-          v-model="activeObjectRotation"
+          v-model="state.rotation"
         />
       </div>
     </template>
@@ -229,9 +229,9 @@ const state: State = reactive({
 });
 
 const fontOptions = computed(() =>
-  state.fonts.map<SelectItem<string>>((f) => ({
-    title: f.family,
-    value: f.family
+  state.fonts.map<SelectItem<string>>(({ family }) => ({
+    title: family,
+    value: family
   }))
 );
 
@@ -240,15 +240,25 @@ watch(
   (val) => dashboardStore.setArtboardColor(val)
 );
 
+// Artboard width and height 2 way
 watch(
   () => [state.width, state.height],
   (val) => dashboardStore.setArtboardDimensions(val[0], val[1])
 );
 
+// Opacity 2 way
 watch(
   () => state.opacity,
   (val) => dashboardStore.setActiveObjectOpacity(val)
 );
+
+// Rotation 2 way
+watch(
+  () => state.rotation,
+  (val) => dashboardStore.setActiveObjectRotation(val)
+);
+
+watch(activeObjectRotation, (val) => (state.rotation = val));
 
 onMounted(async () => {
   const { data } = await axios.get<FontResponse>(

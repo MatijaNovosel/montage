@@ -1924,10 +1924,10 @@ define-properties@^1.1.3:
     has-property-descriptors "^1.0.0"
     object-keys "^1.1.1"
 
-degree-picker@^0.0.16:
-  version "0.0.16"
-  resolved "https://registry.yarnpkg.com/degree-picker/-/degree-picker-0.0.16.tgz#8316dda505d5c9483919f3850d37806e2e78ed62"
-  integrity sha512-cLsmrjsM1n5ozR2lOneLhFKgmxmty3l3nx2Kyd2kxY0NbFAEp4jHrcxujKmve1Ywz14bTcBUPWNEsb4eLby2/Q==
+degree-picker@^0.0.19:
+  version "0.0.19"
+  resolved "https://registry.yarnpkg.com/degree-picker/-/degree-picker-0.0.19.tgz#a254e595bf7f1d0622ce2be26736bd632852c89e"
+  integrity sha512-ZloJeSNVE7OKTKOVFKKTZ2Yov15kVLWY375Ermya4r7lrH8wazr8XSvlWGwdaUtGTZdAXY6Jhh7+4GzTEDuC/A==
   dependencies:
     vue "^3.2.47"
 
