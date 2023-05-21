@@ -111,6 +111,7 @@
         }"
       />
       <div class="flex items-center py-3 relative border-y border-slate-700">
+        <!-- Full seconds -->
         <span
           class="text-slate-400 text-right select-none"
           :key="n"
@@ -121,7 +122,20 @@
         >
           {{ n }}s
         </span>
+        <!-- Half seconds -->
+        <span
+          class="text-slate-400 select-none absolute"
+          :key="n"
+          v-for="n in Math.floor(state.duration / 1000) * 2"
+          :style="{
+            left: `${50 * n - 5}px`,
+            display: !(n % 2) ? 'none' : undefined
+          }"
+        >
+          •
+        </span>
       </div>
+      <!-- Timeline -->
       <div
         @mousemove="followCursor"
         @mouseleave="hideSeekbar"
@@ -312,21 +326,16 @@ let lineH: fabric.Line | null = null;
 let lineV: fabric.Line | null = null;
 let centerCircle: fabric.Circle | null = null;
 
-const artBoardLeft = computed(() => artBoard?.get("left") as number);
-const artBoardTop = computed(() => artBoard?.get("top") as number);
-
 const { width: mainWidth, height: mainHeight } = useElementSize(main);
 const { memory } = useMemory();
 
 // Computed properties
-const videoObjects = computed(() => {
-  return state.layers
-    .filter((l) => l.type === LAYER_TYPE.VIDEO)
-    .map((l) => {
-      // @ts-ignore
-      return l.object.getElement() as HTMLMediaElement;
-    });
-});
+const videoObjects = computed(() =>
+  state.layers.filter((l) => l.type === LAYER_TYPE.VIDEO)
+);
+
+const artBoardLeft = computed(() => artBoard?.get("left") as number);
+const artBoardTop = computed(() => artBoard?.get("top") as number);
 
 // Functions
 const undo = () => {
@@ -345,14 +354,16 @@ fabric.util.requestAnimFrame(function render() {
 
 const playVideos = async () => {
   videoObjects.value.forEach((v) => {
-    v.play();
+    // @ts-ignore
+    v.object.getElement().play();
     fabricCanvas?.renderAll();
   });
 };
 
 const pauseVideos = async () => {
   videoObjects.value.forEach((v) => {
-    v.pause();
+    // @ts-ignore
+    v.object.getElement().pause();
     fabricCanvas?.renderAll();
   });
 };
@@ -699,7 +710,7 @@ const newVideo = (file: HTMLVideoElement, source: string, duration: number) => {
     endTrim: 0,
     offset: 0,
     startTrim: 0,
-    duration
+    duration: duration * 1000
   });
 };
 
@@ -786,6 +797,14 @@ const unsubscribeAddAssetBus = addAssetBus.on(addAsset);
 const unsubscribeActiveObjectChangeBus =
   activeObjectChangeBus.on(changeActiveObject);
 
+const isLayerVisible = (layer: Layer) => {
+  const layerOffsetMs = layer.offset * 10;
+  return (
+    state.currentTime >= layerOffsetMs &&
+    state.currentTime <= layerOffsetMs + layer.duration
+  );
+};
+
 const updateLayerVisibility = () => {
   // @ts-ignore
   const activeObjectId: string = fabricCanvas?.getActiveObject()?.get("id");
@@ -793,17 +812,13 @@ const updateLayerVisibility = () => {
     // @ts-ignore
     const objectId: string = layer.object?.get("id");
     layer.object!.visible = false;
-    const layerOffsetMs = layer.offset * 10;
-    if (
-      state.currentTime >= layerOffsetMs &&
-      state.currentTime <= layerOffsetMs + layer.duration
-    ) {
+    if (isLayerVisible(layer)) {
       layer.object!.visible = true;
     } else {
       layer.object!.visible = false;
-    }
-    if (objectId === activeObjectId) {
-      fabricCanvas?.discardActiveObject().renderAll();
+      if (objectId === activeObjectId) {
+        fabricCanvas?.discardActiveObject().renderAll();
+      }
     }
   }
 };
@@ -815,7 +830,8 @@ const hideSeekbar = () => {
 const seekToStart = () => {
   state.currentTime = 0;
   videoObjects.value.forEach((v) => {
-    v.currentTime = 0;
+    // @ts-ignore
+    v.object.getElement().currentTime = 0;
   });
 };
 
@@ -825,8 +841,16 @@ const seek = (e: MouseEvent) => {
   const res = e.pageX - DRAWER_WIDTH;
   if (res > 1 && !!state.layers.length) {
     state.currentTime = res * 10;
+    // Set the current time of the videos according to the current time of the editor with regards to the offset
     videoObjects.value.forEach((v) => {
-      v.currentTime = res / 100;
+      // @ts-ignore
+      const element = v.object.getElement();
+      if (isLayerVisible(v)) {
+        const elementCurrTime = state.currentTime - v.offset * 10; // Miliseconds
+        element.currentTime = elementCurrTime / 1000; // Seconds
+      } else {
+        element.currentTime = 0;
+      }
     });
   }
   updateLayerVisibility();
