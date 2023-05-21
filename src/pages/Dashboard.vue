@@ -352,14 +352,6 @@ fabric.util.requestAnimFrame(function render() {
   fabric.util.requestAnimFrame(render);
 });
 
-const playVideos = async () => {
-  videoObjects.value.forEach((v) => {
-    // @ts-ignore
-    v.object.getElement().play();
-    fabricCanvas?.renderAll();
-  });
-};
-
 const pauseVideos = async () => {
   videoObjects.value.forEach((v) => {
     // @ts-ignore
