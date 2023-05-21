@@ -377,9 +377,17 @@ const togglePlay = () => {
           togglePlay();
           return;
         }
+        videoObjects.value.forEach((v) => {
+          // @ts-ignore
+          const element = v.object.getElement();
+          if (isLayerVisible(v)) {
+            element.play();
+          } else {
+            element.pause();
+          }
+        });
         state.currentTime += 10;
       }, 10);
-      playVideos();
     } else {
       if (state.playInterval) {
         clearInterval(state.playInterval);
@@ -853,7 +861,6 @@ const seek = (e: MouseEvent) => {
       }
     });
   }
-  updateLayerVisibility();
 };
 
 const dragObjectProps = (e: MouseEvent, layer: Layer) => {
@@ -874,6 +881,7 @@ const dragObjectProps = (e: MouseEvent, layer: Layer) => {
     state.seeking = true;
     document.removeEventListener("mousemove", dragging);
     document.removeEventListener("mouseup", released);
+    updateLayerVisibility();
   };
   document.addEventListener("mouseup", released);
   document.addEventListener("mousemove", dragging);
@@ -932,6 +940,7 @@ watch(
   () => state.currentTime,
   (val) => {
     state.seekbarOffset = val / 10;
+    updateLayerVisibility();
   }
 );
 
