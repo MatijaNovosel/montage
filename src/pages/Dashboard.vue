@@ -31,7 +31,7 @@
             </template>
             Undo
           </v-btn>
-          <v-btn>
+          <v-btn @click="redo">
             <template #prepend>
               <v-icon> mdi-refresh </v-icon>
             </template>
@@ -342,8 +342,25 @@ const undo = () => {
   createToast("🚨 Undo", colors.red.darken1);
 };
 
+const redo = () => {
+  createToast("🚨 Redo", colors.green.darken1);
+};
+
 const $export = () => {
-  createToast("💾 Exported!", colors.blue.darken1);
+  const stream = fabricCanvas?.getElement().captureStream(60);
+  const chunks = [];
+  var recorder = new MediaRecorder(stream!, {
+    bitsPerSecond: 3200000
+  });
+  recorder.ondataavailable = (e) => chunks.push(e.data);
+  recorder.onstop = () => {
+    fabricCanvas?.renderAll();
+  };
+  recorder.start();
+  setTimeout(function () {
+    recorder.stop();
+    createToast("💾 Exported!", colors.blue.darken1);
+  }, state.duration);
 };
 
 // NOTE: Videos will not animate properly if this is not used
