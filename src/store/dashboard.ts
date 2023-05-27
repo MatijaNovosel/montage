@@ -1,13 +1,8 @@
-import { ActiveObjectChangeEvent } from "@/models/common";
-import { useEventBus } from "@vueuse/core";
 import { defineStore } from "pinia";
-import { computed, defineAsyncComponent, ref } from "vue";
+import { computed, defineAsyncComponent, ref, watch } from "vue";
 import { TABS } from "../utils/constants";
 
 export const useDashboardStore = defineStore("dashboard", () => {
-  const { emit: emitActiveObjectChange } =
-    useEventBus<ActiveObjectChangeEvent>("activeObjectChange");
-
   const activeTab = ref(TABS.OBJECTS);
 
   const artboardColor = ref("#000000");
@@ -17,7 +12,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
   const activeObjectWidth = ref(0);
   const activeObjectHeight = ref(0);
   const activeObjectRotation = ref(0);
-  const activeObjectOpacity = ref(0);
+  const activeObjectOpacity = ref(1);
 
   // Video specific
   const videoDuration = ref(0);
@@ -95,10 +90,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
 
   const setActiveObjectRotation = (rotation: number) => {
     activeObjectRotation.value = rotation;
-    emitActiveObjectChange({
-      type: "rotation",
-      value: rotation.toString()
-    });
+    activeObject.value!.set("angle", rotation);
   };
 
   const setActiveObjectOpacity = (opacity: number) => {
@@ -109,6 +101,11 @@ export const useDashboardStore = defineStore("dashboard", () => {
   const setVideoDuration = (duration: number) => {
     videoDuration.value = duration;
   };
+
+  watch(activeObject, (val) => {
+    activeObjectOpacity.value = val!.opacity || 1;
+    activeObjectRotation.value = val!.angle || 0;
+  });
 
   return {
     activeTab,

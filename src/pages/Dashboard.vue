@@ -62,39 +62,37 @@
   </div>
   <div class="flex bg-slate-900 text-white border-slate-700 bottom-area-ctr">
     <div
-      class="h-full border-r border-slate-700"
+      class="flex flex-col h-full border-r border-slate-700 overflow-auto"
       :style="{ width: `${DRAWER_WIDTH}px` }"
     >
-      <div class="flex flex-col overflow-auto">
-        <div
-          class="flex items-center border-slate-700 border-y pl-4 py-3 text-slate-500 select-none tracking-widest"
-        >
-          LAYERS
-        </div>
-        <template v-if="state.layers.length">
-          <div
-            class="pl-4 cursor-pointer layer-item flex items-center border-b-2 border-slate-800"
-            v-for="(layer, i) of state.layers"
-            :class="{
-              'bg-indigo-500 hover:bg-indigo-400': activeObjectId === layer.id,
-              'bg-slate-800 hover:bg-slate-700':
-                i % 2 && activeObjectId !== layer.id,
-              'bg-slate-900 hover:bg-slate-800':
-                !(i % 2) && activeObjectId !== layer.id
-            }"
-            :key="layer.id"
-            @click="setActiveObject(layer.id)"
-          >
-            <span class="mr-3">
-              {{ LAYER_TYPE_ICON[layer.type] }}
-            </span>
-            <span class="bg-black px-2 py-1 rounded-md text-xs">
-              {{ layer.id }}
-            </span>
-          </div>
-        </template>
-        <div class="p-5" v-else>No layers added.</div>
+      <div
+        class="flex items-center border-slate-700 border-y pl-4 py-3 text-slate-500 select-none tracking-widest"
+      >
+        LAYERS
       </div>
+      <template v-if="state.layers.length">
+        <div
+          class="pl-4 cursor-pointer layer-item flex items-center border-b-2 border-slate-800"
+          v-for="(layer, i) of state.layers"
+          :class="{
+            'bg-indigo-500 hover:bg-indigo-400': activeObjectId === layer.id,
+            'bg-slate-800 hover:bg-slate-700':
+              i % 2 && activeObjectId !== layer.id,
+            'bg-slate-900 hover:bg-slate-800':
+              !(i % 2) && activeObjectId !== layer.id
+          }"
+          :key="layer.id"
+          @click="setActiveObject(layer.id)"
+        >
+          <span class="mr-3">
+            {{ LAYER_TYPE_ICON[layer.type] }}
+          </span>
+          <span class="bg-black px-2 py-1 rounded-md text-xs">
+            {{ layer.id }}
+          </span>
+        </div>
+      </template>
+      <div class="p-5" v-else>No layers added.</div>
     </div>
     <div class="h-full flex-grow relative overflow-auto">
       <div
@@ -146,7 +144,11 @@
         <div
           @mousedown.prevent="(e) => dragObjectProps(e, layer)"
           class="main-row relative border-b-2 border-slate-800"
-          v-for="layer of state.layers"
+          :class="{
+            'border-y-2': i === 0,
+            'border-b-2': i > 0
+          }"
+          v-for="(layer, i) of state.layers"
           :key="layer.id"
           :style="{
             width: calculateLayerWidth(layer),
@@ -292,8 +294,6 @@ interface State {
 const dashboardStore = useDashboardStore();
 const { createToast } = useToastStore();
 const addAssetBus = useEventBus<AssetEvent>("asset");
-const activeObjectChangeBus =
-  useEventBus<ActiveObjectChangeEvent>("activeObjectChange");
 
 const { artboardColor, artboardHeight, artboardWidth, activeObjectId } =
   storeToRefs(dashboardStore);
@@ -349,7 +349,7 @@ const redo = () => {
 const $export = () => {
   const stream = fabricCanvas?.getElement().captureStream(60);
   const chunks = [];
-  var recorder = new MediaRecorder(stream!, {
+  const recorder = new MediaRecorder(stream!, {
     bitsPerSecond: 3200000
   });
   recorder.ondataavailable = (e) => chunks.push(e.data);
@@ -811,8 +811,6 @@ const changeActiveObject = ({ type, value }: ActiveObjectChangeEvent) => {
 };
 
 const unsubscribeAddAssetBus = addAssetBus.on(addAsset);
-const unsubscribeActiveObjectChangeBus =
-  activeObjectChangeBus.on(changeActiveObject);
 
 const isLayerVisible = (layer: Layer) => {
   const layerOffsetMs = layer.offset * 10;
@@ -1061,7 +1059,7 @@ onMounted(() => {
     if (e.e.shiftKey) {
       fabricCanvas!.getActiveObject()!.snapAngle = 15;
     } else {
-      fabricCanvas!.getActiveObject()!.snapAngle = 0;
+      fabricCanvas!.getActiveObject()!.snapAngle = 5;
     }
     e.target!.hasControls = false;
     dashboardStore.setActiveObjectRotation(
@@ -1077,7 +1075,6 @@ onMounted(() => {
 onBeforeUnmount(() => {
   wheelScrollEvent();
   unsubscribeAddAssetBus();
-  unsubscribeActiveObjectChangeBus();
 });
 </script>
 

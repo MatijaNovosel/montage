@@ -79,17 +79,19 @@
           <v-icon size="20" icon="mdi-arrange-send-backward" />
         </v-btn>
       </div>
-      <div class="mt-5 text-slate-400 select-none">Font settings</div>
-      <div class="flex items-center justify-center mt-5 w-full">
-        <div class="w-4/12">Font</div>
-        <v-select
-          hide-details
-          density="compact"
-          placeholder="Font"
-          variant="solo"
-          :items="fontOptions"
-        />
-      </div>
+      <template v-if="activeObject.type === 'textbox'">
+        <div class="mt-5 text-slate-400 select-none">Font settings</div>
+        <div class="flex items-center justify-center mt-5 w-full">
+          <div class="w-4/12">Font</div>
+          <v-select
+            hide-details
+            density="compact"
+            placeholder="Font"
+            variant="solo"
+            :items="fontOptions"
+          />
+        </div>
+      </template>
       <div class="mt-5 text-slate-400 select-none">Active object settings</div>
       <div class="flex items-center my-3 w-full">
         <div class="w-4/12">Width</div>
@@ -117,7 +119,16 @@
       </div>
       <div class="flex items-center w-full py-3">
         <div class="w-4/12">Opacity</div>
-        <v-slider hide-details v-model.number="state.opacity" class="w-8/12" />
+        <v-slider
+          :min="0"
+          :max="1"
+          :step="0.1"
+          hide-details
+          v-model="state.opacity"
+          thumb-label
+          show-ticks="always"
+          class="w-8/12"
+        />
       </div>
       <div class="flex flex-col items-center w-full">
         <degree-picker
@@ -205,7 +216,8 @@ const {
   activeObject,
   activeObjectHeight,
   activeObjectWidth,
-  activeObjectRotation
+  activeObjectRotation,
+  activeObjectOpacity
 } = storeToRefs(dashboardStore);
 
 const { createToast } = useToastStore();
@@ -222,7 +234,7 @@ const state: State = reactive({
   color: artboardColor.value,
   width: artboardWidth.value,
   height: artboardHeight.value,
-  opacity: 0,
+  opacity: 1,
   rotation: 0,
   duration: 10,
   fonts: []
@@ -252,6 +264,8 @@ watch(
   (val) => dashboardStore.setActiveObjectOpacity(val)
 );
 
+watch(activeObjectOpacity, (val) => (state.opacity = val));
+
 // Rotation 2 way
 watch(
   () => state.rotation,
@@ -275,3 +289,9 @@ onMounted(async () => {
   createToast("✅ Fonts loaded!", "#3F7040");
 });
 </script>
+
+<style>
+.v-slider-thumb {
+  visibility: hidden;
+}
+</style>
