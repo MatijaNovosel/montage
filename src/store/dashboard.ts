@@ -103,8 +103,10 @@ export const useDashboardStore = defineStore("dashboard", () => {
   };
 
   watch(activeObject, (val) => {
-    activeObjectOpacity.value = val!.opacity || 1;
-    activeObjectRotation.value = val!.angle || 0;
+    if (val) {
+      activeObjectOpacity.value = val!.opacity || 1;
+      activeObjectRotation.value = val!.angle || 0;
+    }
   });
 
   return {
