@@ -192,20 +192,20 @@
     </div>
     <div class="flex justify-center items-center w-6/12">
       <v-btn
-        :disabled="!state.layers.length"
+        :disabled="!state.layers.length || loading"
         icon="mdi-skip-forward"
         class="scale-x-n1"
         variant="text"
         @click="seekToStart"
       />
       <v-btn
-        :disabled="!state.layers.length"
+        :disabled="!state.layers.length || loading"
         :icon="state.paused ? 'mdi-play' : 'mdi-pause'"
         variant="text"
         @click="togglePlay"
       />
       <v-btn
-        :disabled="!state.layers.length"
+        :disabled="!state.layers.length || loading"
         icon="mdi-skip-forward"
         variant="text"
         @click="seekToEnd"
@@ -213,7 +213,7 @@
     </div>
     <div class="flex justify-end items-center w-3/12">
       <v-btn
-        :disabled="!state.layers.length || state.rendering"
+        :disabled="!state.layers.length || loading"
         @click="$export"
         color="blue"
       >
@@ -263,7 +263,6 @@ import {
 import { fabric } from "fabric";
 import { randInt } from "matija-utils";
 import { storeToRefs } from "pinia";
-import RecordRTC from "recordrtc";
 import {
   computed,
   nextTick,
@@ -282,7 +281,6 @@ interface State {
   layers: Layer[];
   playbackSpeed: SelectItem<number>;
   paused: boolean;
-  rendering: boolean;
   dragging: boolean;
   // NOTE: Miliseconds
   currentTime: number;
@@ -298,8 +296,13 @@ const dashboardStore = useDashboardStore();
 const { createToast } = useToastStore();
 const addAssetBus = useEventBus<AssetEvent>("asset");
 
-const { artboardColor, artboardHeight, artboardWidth, activeObjectId } =
-  storeToRefs(dashboardStore);
+const {
+  artboardColor,
+  artboardHeight,
+  artboardWidth,
+  activeObjectId,
+  loading
+} = storeToRefs(dashboardStore);
 
 const state: State = reactive({
   timelineScale: 0,
@@ -308,7 +311,6 @@ const state: State = reactive({
   layers: [],
   playbackSpeed: TIME_OPTIONS[1],
   paused: true,
-  rendering: false,
   dragging: false,
   // NOTE: Miliseconds
   currentTime: 0,
@@ -329,6 +331,9 @@ let artBoard: fabric.Rect | null = null;
 let lineH: fabric.Line | null = null;
 let lineV: fabric.Line | null = null;
 let centerCircle: fabric.Circle | null = null;
+
+let recordCanvas: any = null;
+let recorder: MediaRecorder | null = null;
 
 const { width: mainWidth, height: mainHeight } = useElementSize(main);
 const { memory } = useMemory();
@@ -351,46 +356,48 @@ const redo = () => {
 };
 
 const $export = () => {
-  /*
-    const stream = fabricCanvas?.getElement().captureStream(60);
-    const chunks = [];
-    const recorder = new MediaRecorder(stream!, {
-      bitsPerSecond: 3200000
-    });
-    recorder.ondataavailable = (e) => {
-      chunks.push(e.data);
-    }
-    recorder.onstop = () => {
-      fabricCanvas?.renderAll();
-    };
-    recorder.start();
-    setTimeout(function () {
-      recorder.stop();
-      createToast("💾 Exported!", colors.blue.darken1);
-    }, state.duration);
-  */
   if (!state.paused) {
     togglePlay();
   }
   state.currentTime = 0;
   togglePlay();
-  const canvas = fabricCanvas?.getElement();
-  const recorder = new RecordRTC(canvas!, {
-    type: "canvas"
-  });
-  recorder.startRecording();
+  recordCanvas = fabricCanvas?.getElement().cloneNode() as Node;
+  // @ts-ignore
+  const recordingCtx = recordCanvas.getContext("2d");
+  recordingCtx.canvas.style.height = 0;
+  document.body.appendChild(recordingCtx.canvas);
+  const chunks: Blob[] = [];
+  recorder = new MediaRecorder(recordingCtx.canvas.captureStream(30));
+  recorder.ondataavailable = ({ data }) => {
+    if (data.size > 0) {
+      console.log({ data, date: new Date().toISOString() });
+      chunks.push(data);
+    }
+  };
+  recorder.onstop = () => {
+    const url = URL.createObjectURL(new Blob(chunks));
+    console.log(url);
+    fabricCanvas?.renderAll();
+  };
+  dashboardStore.setLoading(true);
+  recorder.start();
   createToast("🌟 Rendering started!", colors.blue.darken1);
-  state.rendering = true;
   setTimeout(() => {
-    recorder.stopRecording();
-    console.log({ blob: recorder.getBlob() });
-    state.rendering = false;
+    recorder?.stop();
+    console.log({ chunks });
+    dashboardStore.setLoading(false);
+    document.body.removeChild(recordingCtx.canvas);
     createToast("🛑 Rendering finished!", colors.red.darken1);
   }, state.duration);
 };
 
 // NOTE: Videos will not animate properly if this is not used
 const render = () => {
+  if (loading && recordCanvas) {
+    // Generate an image every frame and draw it over the recording canvas
+    const canvas = fabricCanvas?.getElement();
+    recordCanvas.getContext("2d").drawImage(canvas, 0, 0);
+  }
   fabricCanvas?.renderAll();
   fabric.util.requestAnimFrame(render);
 };
@@ -717,6 +724,7 @@ const newVideo = (file: HTMLVideoElement, source: string, duration: number) => {
     top: artBoardTop.value + artboardHeight.value / 2,
     width: file.width,
     height: file.height,
+    crossOrigin: "anonymous",
     originX: "center",
     originY: "center",
     backgroundColor: "rgba(255,255,255,0)",

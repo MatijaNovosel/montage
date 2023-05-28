@@ -4,6 +4,7 @@ import { TABS } from "../utils/constants";
 
 export const useDashboardStore = defineStore("dashboard", () => {
   const activeTab = ref(TABS.OBJECTS);
+  const loading = ref(false);
 
   const artboardColor = ref("#000000");
   const artboardHeight = ref(450);
@@ -102,6 +103,10 @@ export const useDashboardStore = defineStore("dashboard", () => {
     videoDuration.value = duration;
   };
 
+  const setLoading = (val: boolean) => {
+    loading.value = val;
+  };
+
   watch(activeObject, (val) => {
     if (val) {
       activeObjectOpacity.value = val!.opacity || 1;
@@ -129,6 +134,8 @@ export const useDashboardStore = defineStore("dashboard", () => {
     setActiveObjectRotation,
     activeObjectOpacity,
     setActiveObjectOpacity,
-    setVideoDuration
+    setVideoDuration,
+    loading,
+    setLoading
   };
 });
