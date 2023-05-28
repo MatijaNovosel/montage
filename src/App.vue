@@ -6,8 +6,10 @@
     z-index="2000"
     class="flex flex-col justify-center items-center text-center"
   >
-    <v-progress-circular indeterminate size="100" width="8" />
-    <h1 class="mt-4">🎥 Video is rendering, hold tight! 🎥</h1>
+    <div class="px-10 pt-10 pb-5 bg-slate-800 rounded-xl">
+      <v-progress-circular color="blue" indeterminate size="100" width="8" />
+      <h1 class="mt-4">Video is rendering, hold tight!</h1>
+    </div>
   </v-overlay>
   <div class="bg-slate-900 w-screen h-screen">
     <router-view />

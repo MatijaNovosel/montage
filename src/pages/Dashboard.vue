@@ -178,6 +178,7 @@
         class="mx-3 w-7/12"
         density="compact"
         v-model="state.timelineScale"
+        :disabled="disabled"
       />
       <span> ⬜ </span>
       <v-select
@@ -188,35 +189,32 @@
         variant="solo"
         :items="TIME_OPTIONS"
         v-model="playbackSpeed"
+        :disabled="disabled"
       />
     </div>
     <div class="flex justify-center items-center w-6/12">
       <v-btn
-        :disabled="!state.layers.length || loading"
+        :disabled="disabled"
         icon="mdi-skip-forward"
         class="scale-x-n1"
         variant="text"
         @click="seekToStart"
       />
       <v-btn
-        :disabled="!state.layers.length || loading"
+        :disabled="disabled"
         :icon="state.paused ? 'mdi-play' : 'mdi-pause'"
         variant="text"
         @click="togglePlay"
       />
       <v-btn
-        :disabled="!state.layers.length || loading"
+        :disabled="disabled"
         icon="mdi-skip-forward"
         variant="text"
         @click="seekToEnd"
       />
     </div>
     <div class="flex justify-end items-center w-3/12">
-      <v-btn
-        :disabled="!state.layers.length || loading"
-        @click="$export"
-        color="blue"
-      >
+      <v-btn :disabled="disabled" @click="$export" color="blue">
         💾 Export
       </v-btn>
     </div>
@@ -345,6 +343,7 @@ const videoObjects = computed(() =>
 
 const artBoardLeft = computed(() => artBoard?.get("left") as number);
 const artBoardTop = computed(() => artBoard?.get("top") as number);
+const disabled = computed(() => !state.layers.length || loading.value);
 
 // Functions
 const undo = () => {
@@ -359,6 +358,7 @@ const $export = () => {
   if (!state.paused) {
     togglePlay();
   }
+  fabricCanvas?.discardActiveObject().renderAll();
   state.currentTime = 0;
   togglePlay();
   recordCanvas = fabricCanvas?.getElement().cloneNode() as Node;
@@ -375,27 +375,31 @@ const $export = () => {
     }
   };
   recorder.onstop = () => {
-    const url = URL.createObjectURL(new Blob(chunks));
-    console.log(url);
+    if (!!chunks.length) {
+      const url = URL.createObjectURL(new Blob(chunks));
+      console.log(url);
+    } else {
+      createToast("🚨 Failed to capture any chunks!", colors.red.darken3);
+    }
     fabricCanvas?.renderAll();
-  };
-  dashboardStore.setLoading(true);
-  recorder.start();
-  createToast("🌟 Rendering started!", colors.blue.darken1);
-  setTimeout(() => {
-    recorder?.stop();
-    console.log({ chunks });
     dashboardStore.setLoading(false);
     document.body.removeChild(recordingCtx.canvas);
     createToast("🛑 Rendering finished!", colors.red.darken1);
+  };
+  dashboardStore.setLoading(true);
+  recorder.start(1);
+  createToast("🌟 Rendering started!", colors.blue.darken1);
+  setTimeout(() => {
+    recorder?.stop();
   }, state.duration);
 };
 
 // NOTE: Videos will not animate properly if this is not used
 const render = () => {
-  if (loading && recordCanvas) {
+  if (loading.value && recordCanvas) {
     // Generate an image every frame and draw it over the recording canvas
-    const canvas = fabricCanvas?.getElement();
+    const canvas = fabricCanvas?.getElement() as HTMLCanvasElement;
+    // console.log(canvas.toDataURL());
     recordCanvas.getContext("2d").drawImage(canvas, 0, 0);
   }
   fabricCanvas?.renderAll();
@@ -749,7 +753,7 @@ const newVideo = (file: HTMLVideoElement, source: string, duration: number) => {
   if (duration * 1000 > state.duration) {
     state.duration = duration * 1000;
   }
-  newVideo.scaleToWidth(150);
+  newVideo.scaleToWidth(artboardHeight.value);
   fabricCanvas?.renderAll();
   fabricCanvas?.setActiveObject(newVideo);
   fabricCanvas?.bringToFront(newVideo);
