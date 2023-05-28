@@ -14,7 +14,13 @@
         width="8"
         class="text-h4"
       >
-        🎥
+        <span
+          :style="{
+            animation: 'pulse 2s infinite'
+          }"
+        >
+          🎥
+        </span>
       </v-progress-circular>
       <h1 class="mt-4">Video is rendering, hold tight!</h1>
     </div>

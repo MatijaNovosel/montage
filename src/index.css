@@ -25,7 +25,6 @@ html {
 }
 
 /* Scrollbar */
-
 ::-webkit-scrollbar {
   width: 15px;
   height: 15px;
@@ -110,4 +109,16 @@ input[type="color"]::-webkit-color-swatch {
   height: 8px;
   background-color: rgba(255, 255, 255, 0.212);
   margin: 0 auto;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.8);
+  }
+  70% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(0.8);
+  }
 }
