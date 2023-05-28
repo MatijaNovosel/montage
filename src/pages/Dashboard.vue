@@ -355,20 +355,14 @@ const redo = () => {
 };
 
 const $export = () => {
-  if (!state.paused) {
-    togglePlay();
-  }
-  fabricCanvas?.discardActiveObject().renderAll();
-  state.currentTime = 0;
-  togglePlay();
   recordCanvas = fabricCanvas?.getElement().cloneNode() as Node;
-  // @ts-ignore
-  const recordingCtx = recordCanvas.getContext("2d");
-  document.body.appendChild(recordingCtx.canvas);
+  document.body.appendChild(recordCanvas);
   const chunks: Blob[] = [];
-  recorder = new MediaRecorder(recordingCtx.canvas.captureStream(30));
-  console.log({ recorder });
+  recorder = new MediaRecorder(recordCanvas.captureStream(30), {
+    mimeType: "video/webm"
+  });
   recorder.ondataavailable = ({ data }) => {
+    console.log(data);
     if (data.size > 0) {
       console.log({ data, date: new Date().toISOString() });
       chunks.push(data);
@@ -383,11 +377,17 @@ const $export = () => {
     }
     fabricCanvas?.renderAll();
     dashboardStore.setLoading(false);
-    document.body.removeChild(recordingCtx.canvas);
+    recordCanvas.parentNode.removeChild(recordCanvas);
     recorder = null;
-    createToast("🛑 Rendering finished!", colors.red.darken1);
+    createToast("🛑 Rendering finished!", colors.purple.darken1);
   };
   dashboardStore.setLoading(true);
+  if (!state.paused) {
+    togglePlay();
+  }
+  fabricCanvas?.discardActiveObject().renderAll();
+  state.currentTime = 0;
+  togglePlay();
   recorder.start(100);
   createToast("🌟 Rendering started!", colors.blue.darken1);
   setTimeout(() => {
@@ -405,13 +405,15 @@ const render = () => {
   ) {
     // Generate an image every frame and draw it over the recording canvas
     const canvas = fabricCanvas?.getElement() as HTMLCanvasElement;
-    recordCanvas.getContext("2d").drawImage(canvas, 0, 0);
+    const ctx = recordCanvas.getContext("2d");
+    ctx.fillStyle = "ivory";
+    ctx.drawImage(canvas, 0, 0);
   }
   fabricCanvas?.renderAll();
-  fabric.util.requestAnimFrame(render);
+  requestAnimationFrame(render);
 };
 
-fabric.util.requestAnimFrame(render);
+requestAnimationFrame(render);
 
 const pauseVideos = async () => {
   videoObjects.value.forEach((v) => {
