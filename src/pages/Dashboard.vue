@@ -364,10 +364,10 @@ const $export = () => {
   recordCanvas = fabricCanvas?.getElement().cloneNode() as Node;
   // @ts-ignore
   const recordingCtx = recordCanvas.getContext("2d");
-  recordingCtx.canvas.style.height = 0;
   document.body.appendChild(recordingCtx.canvas);
   const chunks: Blob[] = [];
   recorder = new MediaRecorder(recordingCtx.canvas.captureStream(30));
+  console.log({ recorder });
   recorder.ondataavailable = ({ data }) => {
     if (data.size > 0) {
       console.log({ data, date: new Date().toISOString() });
@@ -384,10 +384,11 @@ const $export = () => {
     fabricCanvas?.renderAll();
     dashboardStore.setLoading(false);
     document.body.removeChild(recordingCtx.canvas);
+    recorder = null;
     createToast("🛑 Rendering finished!", colors.red.darken1);
   };
   dashboardStore.setLoading(true);
-  recorder.start(1);
+  recorder.start(100);
   createToast("🌟 Rendering started!", colors.blue.darken1);
   setTimeout(() => {
     recorder?.stop();
@@ -396,10 +397,14 @@ const $export = () => {
 
 // NOTE: Videos will not animate properly if this is not used
 const render = () => {
-  if (loading.value && recordCanvas) {
+  if (
+    loading.value &&
+    recordCanvas &&
+    recorder &&
+    recorder.state === "recording"
+  ) {
     // Generate an image every frame and draw it over the recording canvas
     const canvas = fabricCanvas?.getElement() as HTMLCanvasElement;
-    // console.log(canvas.toDataURL());
     recordCanvas.getContext("2d").drawImage(canvas, 0, 0);
   }
   fabricCanvas?.renderAll();

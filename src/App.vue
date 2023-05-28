@@ -7,7 +7,15 @@
     class="flex flex-col justify-center items-center text-center"
   >
     <div class="px-10 pt-10 pb-5 bg-slate-800 rounded-xl">
-      <v-progress-circular color="blue" indeterminate size="100" width="8" />
+      <v-progress-circular
+        color="blue"
+        indeterminate
+        size="100"
+        width="8"
+        class="text-h4"
+      >
+        🎥
+      </v-progress-circular>
       <h1 class="mt-4">Video is rendering, hold tight!</h1>
     </div>
   </v-overlay>
