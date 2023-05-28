@@ -212,7 +212,13 @@
       />
     </div>
     <div class="flex justify-end items-center w-3/12">
-      <v-btn @click="$export" color="blue"> 💾 Export </v-btn>
+      <v-btn
+        :disabled="!state.layers.length || state.rendering"
+        @click="$export"
+        color="blue"
+      >
+        💾 Export
+      </v-btn>
     </div>
   </div>
 </template>
@@ -220,12 +226,7 @@
 <script setup lang="ts">
 import Layout from "@/components/dashboard/layout/layout.vue";
 import Sidebar from "@/components/dashboard/sidebar/sidebar.vue";
-import {
-  ActiveObjectChangeEvent,
-  AssetEvent,
-  Layer,
-  SelectItem
-} from "@/models/common";
+import { AssetEvent, Layer, SelectItem } from "@/models/common";
 import { useDashboardStore } from "@/store/dashboard";
 import { useToastStore } from "@/store/toast";
 import {
@@ -262,6 +263,7 @@ import {
 import { fabric } from "fabric";
 import { randInt } from "matija-utils";
 import { storeToRefs } from "pinia";
+import RecordRTC from "recordrtc";
 import {
   computed,
   nextTick,
@@ -280,6 +282,7 @@ interface State {
   layers: Layer[];
   playbackSpeed: SelectItem<number>;
   paused: boolean;
+  rendering: boolean;
   dragging: boolean;
   // NOTE: Miliseconds
   currentTime: number;
@@ -305,6 +308,7 @@ const state: State = reactive({
   layers: [],
   playbackSpeed: TIME_OPTIONS[1],
   paused: true,
+  rendering: false,
   dragging: false,
   // NOTE: Miliseconds
   currentTime: 0,
@@ -347,27 +351,51 @@ const redo = () => {
 };
 
 const $export = () => {
-  const stream = fabricCanvas?.getElement().captureStream(60);
-  const chunks = [];
-  const recorder = new MediaRecorder(stream!, {
-    bitsPerSecond: 3200000
+  /*
+    const stream = fabricCanvas?.getElement().captureStream(60);
+    const chunks = [];
+    const recorder = new MediaRecorder(stream!, {
+      bitsPerSecond: 3200000
+    });
+    recorder.ondataavailable = (e) => {
+      chunks.push(e.data);
+    }
+    recorder.onstop = () => {
+      fabricCanvas?.renderAll();
+    };
+    recorder.start();
+    setTimeout(function () {
+      recorder.stop();
+      createToast("💾 Exported!", colors.blue.darken1);
+    }, state.duration);
+  */
+  if (!state.paused) {
+    togglePlay();
+  }
+  state.currentTime = 0;
+  togglePlay();
+  const canvas = fabricCanvas?.getElement();
+  const recorder = new RecordRTC(canvas!, {
+    type: "canvas"
   });
-  recorder.ondataavailable = (e) => chunks.push(e.data);
-  recorder.onstop = () => {
-    fabricCanvas?.renderAll();
-  };
-  recorder.start();
-  setTimeout(function () {
-    recorder.stop();
-    createToast("💾 Exported!", colors.blue.darken1);
+  recorder.startRecording();
+  createToast("🌟 Rendering started!", colors.blue.darken1);
+  state.rendering = true;
+  setTimeout(() => {
+    recorder.stopRecording();
+    console.log({ blob: recorder.getBlob() });
+    state.rendering = false;
+    createToast("🛑 Rendering finished!", colors.red.darken1);
   }, state.duration);
 };
 
 // NOTE: Videos will not animate properly if this is not used
-fabric.util.requestAnimFrame(function render() {
+const render = () => {
   fabricCanvas?.renderAll();
   fabric.util.requestAnimFrame(render);
-});
+};
+
+fabric.util.requestAnimFrame(render);
 
 const pauseVideos = async () => {
   videoObjects.value.forEach((v) => {
@@ -797,15 +825,6 @@ const addAsset = async (event: AssetEvent) => {
           newTextbox(18, 400, "Text", event.value);
           break;
       }
-      break;
-  }
-};
-
-const changeActiveObject = ({ type, value }: ActiveObjectChangeEvent) => {
-  const activeObject = fabricCanvas?.getActiveObject();
-  switch (type) {
-    case "rotation":
-      activeObject?.set("angle", value as number);
       break;
   }
 };
