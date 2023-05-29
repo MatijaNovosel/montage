@@ -1,5 +1,10 @@
 <template>
-  <canvas class="absolute hidden" width="800" height="450" ref="recordCanvas" />
+  <canvas
+    class="absolute hidden"
+    :width="artboardWidth"
+    :height="artboardHeight"
+    ref="recordCanvas"
+  />
   <div
     class="w-full flex text-white"
     style="height: calc(100% - var(--timeline-height-full))"
@@ -218,6 +223,7 @@
       <v-btn :disabled="disabled" @click="$export" color="blue">
         💾 Export
       </v-btn>
+      <v-btn @click="drawImage" color="blue" class="ml-5"> Draw </v-btn>
     </div>
   </div>
 </template>
@@ -356,10 +362,21 @@ const redo = () => {
   createToast("🚨 Redo", colors.green.darken1);
 };
 
+const drawImage = () => {
+  const canvas = fabricCanvas?.getElement() as HTMLCanvasElement;
+  const ctx = recordCanvas.value!.getContext("2d");
+  ctx!.drawImage(
+    canvas,
+    -((mainWidth.value - artboardWidth.value) / 2),
+    -((mainHeight.value - artboardHeight.value) / 2)
+  );
+};
+
 const $export = () => {
   const chunks: Blob[] = [];
   recorder = new MediaRecorder(recordCanvas.value!.captureStream(30), {
-    mimeType: "video/webm"
+    mimeType: "video/webm;codecs=vp9",
+    bitsPerSecond: 3200000
   });
   recorder.ondataavailable = ({ data }) => {
     if (data.size > 0) {
@@ -368,8 +385,9 @@ const $export = () => {
   };
   recorder.onstop = () => {
     if (!!chunks.length) {
-      const blob = new Blob(chunks, { type: "video/mp4" });
-      saveBlob(blob, "output.mp4");
+      createToast("🌟 Video successfully rendered!", colors.green.darken1);
+      const blob = new Blob(chunks, { type: recorder?.mimeType });
+      saveBlob(blob, "output.webm");
     } else {
       createToast("🚨 Failed to capture any chunks!", colors.red.darken3);
     }
@@ -385,8 +403,7 @@ const $export = () => {
   fabricCanvas?.discardActiveObject().renderAll();
   state.currentTime = 0;
   togglePlay();
-  recorder.start(100);
-  createToast("🌟 Rendering started!", colors.blue.darken1);
+  recorder.start();
   setTimeout(() => {
     recorder?.stop();
   }, state.duration);
@@ -394,16 +411,8 @@ const $export = () => {
 
 // NOTE: Videos will not animate properly if this is not used
 const render = () => {
-  if (
-    loading.value &&
-    recordCanvas.value &&
-    recorder &&
-    recorder.state === "recording"
-  ) {
-    // Generate an image every frame and draw it over the recording canvas
-    const canvas = fabricCanvas?.getElement() as HTMLCanvasElement;
-    const ctx = recordCanvas.value!.getContext("2d");
-    ctx!.drawImage(canvas, 0, 0);
+  if (recorder && recorder.state === "recording") {
+    drawImage();
   }
   fabricCanvas?.renderAll();
   requestAnimationFrame(render);
@@ -890,7 +899,6 @@ const seek = (e: MouseEvent) => {
   const res = e.pageX - DRAWER_WIDTH;
   if (res > 1 && !!state.layers.length) {
     state.currentTime = res * 10;
-    // Set the current time of the videos according to the current time of the editor with regards to the offset
     videoObjects.value.forEach((v) => {
       // @ts-ignore
       const element = v.object.getElement();
@@ -906,7 +914,7 @@ const seek = (e: MouseEvent) => {
 
 const dragObjectProps = (e: MouseEvent, layer: Layer) => {
   const action = "dragging";
-  const dragging = ({ offsetX, pageX }: MouseEvent) => {
+  const dragging = ({ pageX }: MouseEvent) => {
     if (action === "dragging") {
       state.dragging = true;
       state.seeking = false;
@@ -1079,9 +1087,9 @@ onMounted(() => {
   fabricCanvas.on("selection:updated", updateActiveObjectDimensions);
   fabricCanvas.on("selection:created", updateActiveObjectDimensions);
 
-  fabricCanvas.on("selection:cleared", () => {
-    dashboardStore.setActiveObject(null);
-  });
+  fabricCanvas.on("selection:cleared", () =>
+    dashboardStore.setActiveObject(null)
+  );
 
   fabricCanvas.on("object:modified", (e) => {
     e.target!.hasControls = true;
