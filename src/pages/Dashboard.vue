@@ -223,7 +223,6 @@
       <v-btn :disabled="disabled" @click="$export" color="blue">
         💾 Export
       </v-btn>
-      <v-btn @click="drawImage" color="blue" class="ml-5"> Draw </v-btn>
     </div>
   </div>
 </template>
