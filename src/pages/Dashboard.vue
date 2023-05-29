@@ -1,4 +1,5 @@
 <template>
+  <canvas class="absolute hidden" width="800" height="450" ref="recordCanvas" />
   <div
     class="w-full flex text-white"
     style="height: calc(100% - var(--timeline-height-full))"
@@ -249,7 +250,8 @@ import {
   calculateLayerWidth,
   formatTime,
   getFileExtension,
-  readFile
+  readFile,
+  saveBlob
 } from "@/utils/helpers";
 import {
   onKeyDown,
@@ -323,6 +325,7 @@ const playbackSpeed = ref<SelectItem<number> | null>(TIME_OPTIONS[1]);
 
 const canvas = ref<HTMLCanvasElement | null>(null);
 const main = ref<HTMLElement | null>(null);
+const recordCanvas = ref<HTMLCanvasElement | null>(null);
 
 let fabricCanvas: fabric.Canvas | null = null;
 let artBoard: fabric.Rect | null = null;
@@ -330,7 +333,6 @@ let lineH: fabric.Line | null = null;
 let lineV: fabric.Line | null = null;
 let centerCircle: fabric.Circle | null = null;
 
-let recordCanvas: any = null;
 let recorder: MediaRecorder | null = null;
 
 const { width: mainWidth, height: mainHeight } = useElementSize(main);
@@ -355,29 +357,24 @@ const redo = () => {
 };
 
 const $export = () => {
-  recordCanvas = fabricCanvas?.getElement().cloneNode() as Node;
-  document.body.appendChild(recordCanvas);
   const chunks: Blob[] = [];
-  recorder = new MediaRecorder(recordCanvas.captureStream(30), {
+  recorder = new MediaRecorder(recordCanvas.value!.captureStream(30), {
     mimeType: "video/webm"
   });
   recorder.ondataavailable = ({ data }) => {
-    console.log(data);
     if (data.size > 0) {
-      console.log({ data, date: new Date().toISOString() });
       chunks.push(data);
     }
   };
   recorder.onstop = () => {
     if (!!chunks.length) {
-      const url = URL.createObjectURL(new Blob(chunks));
-      console.log(url);
+      const blob = new Blob(chunks, { type: "video/mp4" });
+      saveBlob(blob, "output.mp4");
     } else {
       createToast("🚨 Failed to capture any chunks!", colors.red.darken3);
     }
     fabricCanvas?.renderAll();
     dashboardStore.setLoading(false);
-    recordCanvas.parentNode.removeChild(recordCanvas);
     recorder = null;
     createToast("🛑 Rendering finished!", colors.purple.darken1);
   };
@@ -399,15 +396,14 @@ const $export = () => {
 const render = () => {
   if (
     loading.value &&
-    recordCanvas &&
+    recordCanvas.value &&
     recorder &&
     recorder.state === "recording"
   ) {
     // Generate an image every frame and draw it over the recording canvas
     const canvas = fabricCanvas?.getElement() as HTMLCanvasElement;
-    const ctx = recordCanvas.getContext("2d");
-    ctx.fillStyle = "ivory";
-    ctx.drawImage(canvas, 0, 0);
+    const ctx = recordCanvas.value!.getContext("2d");
+    ctx!.drawImage(canvas, 0, 0);
   }
   fabricCanvas?.renderAll();
   requestAnimationFrame(render);
