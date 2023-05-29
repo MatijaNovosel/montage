@@ -174,7 +174,7 @@ export const AUDIO = [
 
 export const IMAGES = ["drunkDriving", "redPill", "pizzaHat"];
 
-export const VIDEOS = ["cats", "oldMan"];
+export const VIDEOS = ["cats", "oldMan", "sigma"];
 
 export const SIZES = ["b", "kB", "MB", "GB", "TB"];
 

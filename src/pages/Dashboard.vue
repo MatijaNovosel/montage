@@ -374,10 +374,23 @@ const drawImage = () => {
 
 const $export = () => {
   const chunks: Blob[] = [];
-  recorder = new MediaRecorder(recordCanvas.value!.captureStream(30), {
+  const stream = recordCanvas.value!.captureStream(60);
+  recorder = new MediaRecorder(stream, {
     mimeType: "video/webm;codecs=vp9",
     bitsPerSecond: 3200000
   });
+  /*
+  TODO: Fix audio
+  videoObjects.value.forEach((video) => {
+    // @ts-ignore
+    const element = video.object.getElement();
+    const audioContext = new AudioContext();
+    const audioSource = audioContext.createMediaElementSource(element);
+    const audioDestination = audioContext.createMediaStreamDestination();
+    audioSource.connect(audioDestination);
+    stream.addTrack(audioDestination.stream.getAudioTracks()[0]);
+  });
+  */
   recorder.ondataavailable = ({ data }) => {
     if (data.size > 0) {
       chunks.push(data);
