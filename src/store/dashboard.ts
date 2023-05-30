@@ -1,3 +1,4 @@
+import { Layer } from "@/models/common";
 import { defineStore } from "pinia";
 import { computed, defineAsyncComponent, ref, watch } from "vue";
 import { TABS } from "../utils/constants";
@@ -19,6 +20,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
 
   // Video specific
   const videoDuration = ref(0);
+  const layers = ref<Layer[]>([]);
 
   const activeObject = ref<fabric.Object | null | undefined>(null);
 
@@ -113,10 +115,24 @@ export const useDashboardStore = defineStore("dashboard", () => {
     loading.value = val;
   };
 
+  const addLayer = (layer: Layer) => {
+    layers.value.unshift(layer);
+  };
+
+  const removeLayer = ({ id }: Layer) => {
+    layers.value = layers.value.filter((l) => l.id !== id);
+  };
+
   watch(activeObject, (val) => {
     if (val) {
+      //@ts-ignore
+      const id = val.get("id");
+      const layer = layers.value.find((l) => l.id === id);
       activeObjectOpacity.value = val!.opacity || 1;
       activeObjectRotation.value = val!.angle || 0;
+      if (layer) {
+        activeObjectDuration.value = layer.duration;
+      }
     }
   });
 
@@ -144,6 +160,9 @@ export const useDashboardStore = defineStore("dashboard", () => {
     loading,
     setLoading,
     activeObjectDuration,
-    setActiveObjectDuration
+    setActiveObjectDuration,
+    layers,
+    addLayer,
+    removeLayer
   };
 });

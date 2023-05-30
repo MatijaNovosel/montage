@@ -76,10 +76,10 @@
       >
         LAYERS
       </div>
-      <template v-if="state.layers.length">
+      <template v-if="layers.length">
         <div
           class="pl-4 cursor-pointer layer-item flex items-center border-b-2 border-slate-800"
-          v-for="(layer, i) of state.layers"
+          v-for="(layer, i) of layers"
           :class="{
             'bg-indigo-500 hover:bg-indigo-400': activeObjectId === layer.id,
             'bg-slate-800 hover:bg-slate-700':
@@ -145,7 +145,7 @@
         @mouseleave="hideSeekbar"
         @click="seek"
         class="flex flex-col timeline-body"
-        v-if="state.layers.length"
+        v-if="layers.length"
       >
         <div
           @mousedown.prevent="(e) => dragObjectProps(e, layer)"
@@ -154,7 +154,7 @@
             'border-y-2': i === 0,
             'border-b-2': i > 0
           }"
-          v-for="(layer, i) of state.layers"
+          v-for="(layer, i) of layers"
           :key="layer.id"
           :style="{
             width: calculateLayerWidth(layer),
@@ -283,7 +283,6 @@ import colors from "vuetify/lib/util/colors";
 interface State {
   timelineScale: number;
   zoomLevel: string;
-  layers: Layer[];
   playbackSpeed: SelectItem<number>;
   paused: boolean;
   dragging: boolean;
@@ -306,7 +305,8 @@ const {
   artboardHeight,
   artboardWidth,
   activeObjectId,
-  loading
+  loading,
+  layers
 } = storeToRefs(dashboardStore);
 
 const state: State = reactive({
@@ -343,12 +343,12 @@ const { memory } = useMemory();
 
 // Computed properties
 const videoObjects = computed(() =>
-  state.layers.filter((l) => l.type === LAYER_TYPE.VIDEO)
+  layers.value.filter((l) => l.type === LAYER_TYPE.VIDEO)
 );
 
 const artBoardLeft = computed(() => artBoard?.get("left") as number);
 const artBoardTop = computed(() => artBoard?.get("top") as number);
-const disabled = computed(() => !state.layers.length || loading.value);
+const disabled = computed(() => !layers.value.length || loading.value);
 
 // Functions
 const undo = () => {
@@ -439,7 +439,7 @@ const pauseVideos = async () => {
 };
 
 const togglePlay = () => {
-  if (!!state.layers.length) {
+  if (!!layers.value.length) {
     if (state.paused) {
       state.playInterval = setInterval(() => {
         if (state.currentTime + 1 > state.duration) {
@@ -472,10 +472,10 @@ const bringForward = (obj: fabric.Object | null | undefined) => {
   if (obj) {
     //@ts-ignore
     const id = obj.get("id");
-    const layerIdx = state.layers.findIndex((l) => l.id === id);
+    const layerIdx = layers.value.findIndex((l) => l.id === id);
     if (layerIdx !== -1) {
       if (layerIdx - 1 >= 0) {
-        move(state.layers, layerIdx, layerIdx - 1);
+        move(layers.value, layerIdx, layerIdx - 1);
         obj.bringForward();
       }
     }
@@ -486,10 +486,10 @@ const sendBackwards = (obj: fabric.Object | null | undefined) => {
   if (obj) {
     //@ts-ignore
     const id = obj.get("id");
-    const layerIdx = state.layers.findIndex((l) => l.id === id);
+    const layerIdx = layers.value.findIndex((l) => l.id === id);
     if (layerIdx !== -1) {
-      if (layerIdx + 1 < state.layers.length) {
-        move(state.layers, layerIdx, layerIdx + 1);
+      if (layerIdx + 1 < layers.value.length) {
+        move(layers.value, layerIdx, layerIdx + 1);
         obj.sendBackwards();
       }
     }
@@ -540,7 +540,7 @@ const newTextbox = (
   //@ts-ignore
   fabricCanvas!.getActiveObject()!.set("fontFamily", font);
   fabricCanvas?.renderAll();
-  state.layers.unshift({
+  dashboardStore.addLayer({
     id: `text_${id}`,
     object: newText,
     type: LAYER_TYPE.TEXT,
@@ -713,7 +713,7 @@ const newSvg = (path: string) => {
     svgData.id = `image_${id}`;
     fabricCanvas?.add(svgData);
     fabricCanvas?.setActiveObject(svgData);
-    state.layers.unshift({
+    dashboardStore.addLayer({
       id: `image_${id}`,
       object: svgData,
       type: LAYER_TYPE.IMAGE,
@@ -759,7 +759,7 @@ const newImage = async (source: File | string) => {
     fabricCanvas?.bringToFront(image);
     fabricCanvas?.setActiveObject(image);
     fabricCanvas?.renderAll();
-    state.layers.unshift({
+    dashboardStore.addLayer({
       id: `image_${id}`,
       object: image,
       type: LAYER_TYPE.IMAGE,
@@ -790,7 +790,7 @@ const newVideo = (file: HTMLVideoElement, source: string, duration: number) => {
     source,
     duration: duration * 1000,
     assetType: "video",
-    id: `video_${state.layers.length}`,
+    id: `video_${layers.value.length}`,
     objectCaching: false,
     inGroup: false
   });
@@ -810,7 +810,7 @@ const newVideo = (file: HTMLVideoElement, source: string, duration: number) => {
   fabricCanvas?.renderAll();
   //@ts-ignore
   newVideo.set("id", `video_${id}`);
-  state.layers.unshift({
+  dashboardStore.addLayer({
     id: `video_${id}`,
     object: newVideo,
     type: LAYER_TYPE.VIDEO,
@@ -904,7 +904,7 @@ const isLayerVisible = (layer: Layer) => {
 const updateLayerVisibility = () => {
   // @ts-ignore
   const activeObjectId: string = fabricCanvas?.getActiveObject()?.get("id");
-  for (const layer of state.layers) {
+  for (const layer of layers.value) {
     // @ts-ignore
     const objectId: string = layer.object?.get("id");
     layer.object!.visible = false;
@@ -935,7 +935,7 @@ const seekToEnd = () => {};
 
 const seek = (e: MouseEvent) => {
   const res = e.pageX - DRAWER_WIDTH;
-  if (res > 1 && !!state.layers.length) {
+  if (res > 1 && !!layers.value.length) {
     state.currentTime = res * 10;
     videoObjects.value.forEach((v) => {
       // @ts-ignore
@@ -1036,13 +1036,13 @@ onKeyDown("Delete", () => {
   fabricCanvas?.getActiveObjects().forEach((obj) => {
     // @ts-ignore
     const id = obj.id;
-    const layer = state.layers.find((l) => l.id === id);
+    const layer = layers.value.find((l) => l.id === id);
     if (layer) {
       if (layer.type === LAYER_TYPE.VIDEO) {
         // TODO: Adjust total duration here
         state.duration = DEFAULT_DURATION;
       }
-      state.layers = state.layers.filter((l) => l.id !== id);
+      dashboardStore.removeLayer(layer);
     }
     fabricCanvas?.remove(obj);
   });

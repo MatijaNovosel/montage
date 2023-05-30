@@ -1,6 +1,6 @@
 <template>
   <div
-    class="border-l border-slate-700 flex flex-col p-5 items-center overflow-auto gap-2"
+    class="border-l border-slate-700 flex flex-col p-5 items-center overflow-auto gap-3"
   >
     <template v-if="activeObject">
       <div class="text-slate-400 select-none">Vertical alignment</div>
@@ -120,9 +120,9 @@
       <div class="flex items-center w-full">
         <div class="w-4/12">Duration</div>
         <v-text-field
-          v-model="activeObjectHeight"
+          v-model="state.activeObjectDuration"
           readonly
-          suffix="s"
+          suffix="ms"
           placeholder="Width"
           variant="solo"
           hide-details
@@ -217,6 +217,7 @@ interface State {
   fonts: FontItem[];
   opacity: number;
   rotation: number;
+  activeObjectDuration: number;
 }
 
 const dashboardStore = useDashboardStore();
@@ -229,7 +230,8 @@ const {
   activeObjectHeight,
   activeObjectWidth,
   activeObjectRotation,
-  activeObjectOpacity
+  activeObjectOpacity,
+  activeObjectDuration
 } = storeToRefs(dashboardStore);
 
 const { createToast } = useToastStore();
@@ -249,6 +251,7 @@ const state: State = reactive({
   opacity: 1,
   rotation: 0,
   duration: 10,
+  activeObjectDuration: 0,
   fonts: []
 });
 
@@ -285,6 +288,14 @@ watch(
 );
 
 watch(activeObjectRotation, (val) => (state.rotation = val));
+
+// Duration 2 way
+watch(
+  () => state.duration,
+  (val) => dashboardStore.setActiveObjectDuration(val)
+);
+
+watch(activeObjectDuration, (val) => (state.activeObjectDuration = val));
 
 onMounted(async () => {
   const { data } = await axios.get<FontResponse>(
