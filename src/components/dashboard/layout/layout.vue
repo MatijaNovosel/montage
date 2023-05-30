@@ -121,6 +121,7 @@
         <div class="w-4/12">Duration</div>
         <v-text-field
           v-model="state.activeObjectDuration"
+          :disabled="isVideo"
           suffix="ms"
           placeholder="Width"
           variant="solo"
@@ -260,6 +261,9 @@ const fontOptions = computed(() =>
     value: family
   }))
 );
+
+//@ts-ignore
+const isVideo = computed(() => activeObject.value.get("assetType") === "video");
 
 watch(
   () => state.color,

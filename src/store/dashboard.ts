@@ -135,7 +135,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
       activeObjectOpacity.value = val!.opacity || 1;
       activeObjectRotation.value = val!.angle || 0;
       if (layer) {
-        activeObjectDuration.value = layer.duration;
+        activeObjectDuration.value = parseFloat(layer.duration.toFixed(2));
       }
     }
   });
