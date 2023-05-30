@@ -241,6 +241,7 @@ import {
   LAYER_TYPE,
   LAYER_TYPE_COLOR,
   LAYER_TYPE_ICON,
+  MAX_ALLOWED_VIDEO_DURATION,
   TIME_OPTIONS
 } from "@/utils/constants";
 import {
@@ -834,7 +835,14 @@ const loadVideo = (src: string) => {
     vidObj.muted = false;
     const waitLoad = () => {
       if (vidObj.readyState >= 3) {
-        newVideo(vidObj, src, vidObj.duration);
+        if (vidObj.duration * 1000 < MAX_ALLOWED_VIDEO_DURATION) {
+          newVideo(vidObj, src, vidObj.duration);
+        } else {
+          createToast(
+            "🚨 Video duration too long, <10s allowed!",
+            colors.red.darken1
+          );
+        }
       } else {
         setTimeout(waitLoad, 100);
       }
