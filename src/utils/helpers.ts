@@ -53,3 +53,14 @@ export function saveBlob(blob: Blob, filename: string) {
     document.body.removeChild(a);
   }, 0);
 }
+
+export const move = (array: any[], from: number, to: number) => {
+  if (to === from) return array;
+  const target = array[from];
+  const increment = to < from ? -1 : 1;
+  for (let k = from; k != to; k += increment) {
+    array[k] = array[k + increment];
+  }
+  array[to] = target;
+  return array;
+};

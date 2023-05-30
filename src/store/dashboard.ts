@@ -10,10 +10,12 @@ export const useDashboardStore = defineStore("dashboard", () => {
   const artboardHeight = ref(450);
   const artboardWidth = ref(800);
 
+  // Active object
   const activeObjectWidth = ref(0);
   const activeObjectHeight = ref(0);
   const activeObjectRotation = ref(0);
   const activeObjectOpacity = ref(1);
+  const activeObjectDuration = ref(0);
 
   // Video specific
   const videoDuration = ref(0);
@@ -99,6 +101,10 @@ export const useDashboardStore = defineStore("dashboard", () => {
     activeObject.value?.set("opacity", opacity);
   };
 
+  const setActiveObjectDuration = (duration: number) => {
+    activeObjectDuration.value = duration;
+  };
+
   const setVideoDuration = (duration: number) => {
     videoDuration.value = duration;
   };
@@ -136,6 +142,8 @@ export const useDashboardStore = defineStore("dashboard", () => {
     setActiveObjectOpacity,
     setVideoDuration,
     loading,
-    setLoading
+    setLoading,
+    activeObjectDuration,
+    setActiveObjectDuration
   };
 });

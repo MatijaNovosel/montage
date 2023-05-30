@@ -194,7 +194,7 @@
         hide-details
         variant="solo"
         :items="TIME_OPTIONS"
-        v-model="playbackSpeed"
+        v-model="state.playbackSpeed"
         :disabled="disabled"
       />
     </div>
@@ -235,6 +235,7 @@ import { useDashboardStore } from "@/store/dashboard";
 import { useToastStore } from "@/store/toast";
 import {
   ALIGN_OPTIONS,
+  DEFAULT_ASSET_DURATION,
   DEFAULT_DURATION,
   DRAWER_WIDTH,
   LAYER_TYPE,
@@ -243,18 +244,17 @@ import {
   TIME_OPTIONS
 } from "@/utils/constants";
 import {
-  bringForward,
   calculateTextWidth,
   centerLines,
   getObjectById,
-  initializeFabric,
-  sendBackwards
+  initializeFabric
 } from "@/utils/fabric";
 import {
   bytesToMB,
   calculateLayerWidth,
   formatTime,
   getFileExtension,
+  move,
   readFile,
   saveBlob
 } from "@/utils/helpers";
@@ -325,8 +325,6 @@ const state: State = reactive({
   seekHoverOffset: 0,
   seekbarOffset: 0
 });
-
-const playbackSpeed = ref<SelectItem<number> | null>(TIME_OPTIONS[1]);
 
 const canvas = ref<HTMLCanvasElement | null>(null);
 const main = ref<HTMLElement | null>(null);
@@ -470,6 +468,34 @@ const togglePlay = () => {
   }
 };
 
+const bringForward = (obj: fabric.Object | null | undefined) => {
+  if (obj) {
+    //@ts-ignore
+    const id = obj.get("id");
+    const layerIdx = state.layers.findIndex((l) => l.id === id);
+    if (layerIdx !== -1) {
+      if (layerIdx - 1 >= 0) {
+        move(state.layers, layerIdx, layerIdx - 1);
+        obj.bringForward();
+      }
+    }
+  }
+};
+
+const sendBackwards = (obj: fabric.Object | null | undefined) => {
+  if (obj) {
+    //@ts-ignore
+    const id = obj.get("id");
+    const layerIdx = state.layers.findIndex((l) => l.id === id);
+    if (layerIdx !== -1) {
+      if (layerIdx + 1 < state.layers.length) {
+        move(state.layers, layerIdx, layerIdx + 1);
+        obj.sendBackwards();
+      }
+    }
+  }
+};
+
 const newTextbox = (
   fontSize: number,
   fontWeight: string | number | undefined,
@@ -514,14 +540,14 @@ const newTextbox = (
   //@ts-ignore
   fabricCanvas!.getActiveObject()!.set("fontFamily", font);
   fabricCanvas?.renderAll();
-  state.layers.push({
+  state.layers.unshift({
     id: `text_${id}`,
     object: newText,
     type: LAYER_TYPE.TEXT,
     endTrim: 0,
     offset: 0,
     startTrim: 0,
-    duration: 3_000
+    duration: DEFAULT_ASSET_DURATION
   });
 };
 
@@ -687,14 +713,14 @@ const newSvg = (path: string) => {
     svgData.id = `image_${id}`;
     fabricCanvas?.add(svgData);
     fabricCanvas?.setActiveObject(svgData);
-    state.layers.push({
+    state.layers.unshift({
       id: `image_${id}`,
       object: svgData,
       type: LAYER_TYPE.IMAGE,
       endTrim: 0,
       offset: 0,
       startTrim: 0,
-      duration: 3_000
+      duration: DEFAULT_ASSET_DURATION
     });
   });
 };
@@ -733,14 +759,14 @@ const newImage = async (source: File | string) => {
     fabricCanvas?.bringToFront(image);
     fabricCanvas?.setActiveObject(image);
     fabricCanvas?.renderAll();
-    state.layers.push({
+    state.layers.unshift({
       id: `image_${id}`,
       object: image,
       type: LAYER_TYPE.IMAGE,
       endTrim: 0,
       offset: 0,
       startTrim: 0,
-      duration: 3_000
+      duration: DEFAULT_ASSET_DURATION
     });
   });
 };
@@ -784,7 +810,7 @@ const newVideo = (file: HTMLVideoElement, source: string, duration: number) => {
   fabricCanvas?.renderAll();
   //@ts-ignore
   newVideo.set("id", `video_${id}`);
-  state.layers.push({
+  state.layers.unshift({
     id: `video_${id}`,
     object: newVideo,
     type: LAYER_TYPE.VIDEO,

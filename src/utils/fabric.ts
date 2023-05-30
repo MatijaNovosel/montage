@@ -263,14 +263,6 @@ export const centerLines = (
   });
 };
 
-export const bringForward = (obj: fabric.Object | null | undefined) => {
-  if (obj) obj.bringForward();
-};
-
-export const sendBackwards = (obj: fabric.Object | null | undefined) => {
-  if (obj) obj.sendBackwards();
-};
-
 export const initializeFabric = (
   canvas: HTMLCanvasElement | null,
   width: number,

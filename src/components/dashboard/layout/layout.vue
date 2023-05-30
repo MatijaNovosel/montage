@@ -1,9 +1,9 @@
 <template>
   <div
-    class="border-l border-slate-700 flex flex-col p-5 items-center overflow-auto"
+    class="border-l border-slate-700 flex flex-col p-5 items-center overflow-auto gap-2"
   >
     <template v-if="activeObject">
-      <div class="my-3 text-slate-400 select-none">Vertical alignment</div>
+      <div class="text-slate-400 select-none">Vertical alignment</div>
       <div class="flex justify-center items-center">
         <v-btn
           @click="emit('align', ALIGN_OPTIONS.TOP)"
@@ -31,8 +31,8 @@
           <v-icon size="20" icon="mdi-format-vertical-align-bottom" />
         </v-btn>
       </div>
-      <div class="mt-3 text-slate-400 select-none">Horizontal alignment</div>
-      <div class="flex justify-center items-center mt-3">
+      <div class="text-slate-400 select-none">Horizontal alignment</div>
+      <div class="flex justify-center items-center">
         <v-btn
           @click="emit('align', ALIGN_OPTIONS.LEFT)"
           v-tooltip="'Align left'"
@@ -59,8 +59,8 @@
           <v-icon size="20" icon="mdi-format-horizontal-align-right" />
         </v-btn>
       </div>
-      <div class="mt-3 text-slate-400 select-none">Arrangement</div>
-      <div class="flex justify-center items-center mt-3">
+      <div class="text-slate-400 select-none">Arrangement</div>
+      <div class="flex justify-center items-center">
         <v-btn
           @click="emit('bring-forward')"
           v-tooltip="'Bring forward'"
@@ -80,8 +80,8 @@
         </v-btn>
       </div>
       <template v-if="activeObject.type === 'textbox'">
-        <div class="mt-5 text-slate-400 select-none">Font settings</div>
-        <div class="flex items-center justify-center mt-5 w-full">
+        <div class="text-slate-400 select-none">Font settings</div>
+        <div class="flex items-center justify-center w-full">
           <div class="w-4/12">Font</div>
           <v-select
             hide-details
@@ -92,8 +92,8 @@
           />
         </div>
       </template>
-      <div class="mt-5 text-slate-400 select-none">Active object settings</div>
-      <div class="flex items-center my-3 w-full">
+      <div class="text-slate-400 select-none">Active object settings</div>
+      <div class="flex items-center w-full">
         <div class="w-4/12">Width</div>
         <v-text-field
           v-model="activeObjectWidth"
@@ -117,7 +117,19 @@
           density="compact"
         />
       </div>
-      <div class="flex items-center w-full py-3">
+      <div class="flex items-center w-full">
+        <div class="w-4/12">Duration</div>
+        <v-text-field
+          v-model="activeObjectHeight"
+          readonly
+          suffix="s"
+          placeholder="Width"
+          variant="solo"
+          hide-details
+          density="compact"
+        />
+      </div>
+      <div class="flex items-center w-full">
         <div class="w-4/12">Opacity</div>
         <v-slider
           :min="0"
@@ -141,7 +153,7 @@
     </template>
     <template v-else>
       <div class="text-slate-400 select-none">Canvas settings</div>
-      <div class="flex items-center my-3 w-full">
+      <div class="flex items-center w-full">
         <div class="w-4/12">Width</div>
         <v-text-field
           suffix="px"
@@ -163,7 +175,7 @@
           placeholder="Height"
         />
       </div>
-      <div class="flex items-center w-full my-3 pb-2">
+      <div class="flex items-center w-full">
         <div class="w-4/12">Duration</div>
         <v-text-field
           variant="solo"
