@@ -105,6 +105,10 @@ export const useDashboardStore = defineStore("dashboard", () => {
 
   const setActiveObjectDuration = (duration: number) => {
     activeObjectDuration.value = duration;
+    const layer = layers.value.find((l) => l.id === activeObjectId.value);
+    if (layer) {
+      layer.duration = duration;
+    }
   };
 
   const setVideoDuration = (duration: number) => {

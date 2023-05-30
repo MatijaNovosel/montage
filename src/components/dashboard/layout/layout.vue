@@ -97,7 +97,7 @@
         <div class="w-4/12">Width</div>
         <v-text-field
           v-model="activeObjectWidth"
-          readonly
+          disabled
           suffix="px"
           placeholder="Width"
           variant="solo"
@@ -109,7 +109,7 @@
         <div class="w-4/12">Height</div>
         <v-text-field
           v-model="activeObjectHeight"
-          readonly
+          disabled
           suffix="px"
           placeholder="Width"
           variant="solo"
@@ -121,7 +121,6 @@
         <div class="w-4/12">Duration</div>
         <v-text-field
           v-model="state.activeObjectDuration"
-          readonly
           suffix="ms"
           placeholder="Width"
           variant="solo"
@@ -291,7 +290,7 @@ watch(activeObjectRotation, (val) => (state.rotation = val));
 
 // Duration 2 way
 watch(
-  () => state.duration,
+  () => state.activeObjectDuration,
   (val) => dashboardStore.setActiveObjectDuration(val)
 );
 
