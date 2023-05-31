@@ -202,6 +202,7 @@ import { FontItem, FontResponse } from "@/models/font";
 import { useDashboardStore } from "@/store/dashboard";
 import { useToastStore } from "@/store/toast";
 import { ALIGN_OPTIONS } from "@/utils/constants";
+import { onKeyDown } from "@vueuse/core";
 import axios from "axios";
 import { DegreePicker } from "degree-picker";
 import "degree-picker/dist/style.css";
@@ -299,6 +300,17 @@ watch(
 );
 
 watch(activeObjectDuration, (val) => (state.activeObjectDuration = val));
+
+// Listeners
+onKeyDown(["ArrowDown", "ArrowUp"], ({ code }: KeyboardEvent) => {
+  if (activeObject.value && !isVideo.value) {
+    if (code === "ArrowDown") {
+      state.activeObjectDuration -= 500;
+    } else {
+      state.activeObjectDuration += 500;
+    }
+  }
+});
 
 onMounted(async () => {
   const { data } = await axios.get<FontResponse>(
