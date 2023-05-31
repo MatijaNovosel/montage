@@ -324,7 +324,6 @@ onMounted(async () => {
       families: state.fonts.map((f) => f.family)
     }
   });
-  createToast("✅ Fonts loaded!", "#3F7040");
 });
 </script>
 

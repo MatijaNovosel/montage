@@ -397,8 +397,7 @@ const $export = () => {
   recorder.onstop = () => {
     if (!!chunks.length) {
       createToast("🌟 Video successfully rendered!", colors.green.darken1);
-      const blob = new Blob(chunks, { type: recorder?.mimeType });
-      saveBlob(blob, "output.webm");
+      saveBlob(new Blob(chunks, { type: recorder?.mimeType }), "output.webm");
     } else {
       createToast("🚨 Failed to capture any chunks!", colors.red.darken3);
     }
@@ -1156,8 +1155,6 @@ onMounted(() => {
   });
 
   fabricCanvas.renderAll();
-
-  createToast("✅ App successfully started!", colors.green.darken1);
 });
 
 onBeforeUnmount(() => {
