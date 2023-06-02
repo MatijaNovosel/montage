@@ -12,7 +12,26 @@
   },
   "tauri": {
     "allowlist": {
-      "all": true
+      "fs": {
+        "all": true,
+        "scope": ["**"]
+      },
+      "path": {
+        "all": true
+      },
+      "dialog": {
+        "all": true
+      },
+      "shell": {
+        "all": true,
+        "scope": [
+          {
+            "name": "ffmpeg",
+            "cmd": "ffmpeg",
+            "args": ["-i", "-c", "fflags", "genpts"]
+          }
+        ]
+      }
     },
     "bundle": {
       "active": true,

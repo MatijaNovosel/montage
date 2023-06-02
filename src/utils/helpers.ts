@@ -64,3 +64,8 @@ export const move = (array: any[], from: number, to: number) => {
   array[to] = target;
   return array;
 };
+
+export const blobToBinary = async (blob: Blob) => {
+  const buffer = await blob.arrayBuffer();
+  return new Uint8Array(buffer);
+};

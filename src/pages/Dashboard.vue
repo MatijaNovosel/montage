@@ -234,12 +234,7 @@
         :disabled="disabled"
         class="w-9/12"
       />
-      <v-btn
-        class="ml-3 w-3/12"
-        :disabled="disabled"
-        @click="$export"
-        color="blue"
-      >
+      <v-btn class="ml-3" :disabled="disabled" @click="$export" color="blue">
         Export
       </v-btn>
     </div>
@@ -271,14 +266,17 @@ import {
   initializeFabric
 } from "@/utils/fabric";
 import {
+  blobToBinary,
   bytesToMB,
   calculateLayerWidth,
   formatTime,
   getFileExtension,
   move,
-  readFile,
-  saveBlob
+  readFile
 } from "@/utils/helpers";
+import { invoke } from "@tauri-apps/api";
+import { save } from "@tauri-apps/api/dialog";
+import { BaseDirectory, removeFile, writeBinaryFile } from "@tauri-apps/api/fs";
 import {
   onKeyDown,
   useElementSize,
@@ -337,7 +335,7 @@ const state: State = reactive({
   zoomLevel: "100%",
   layers: [],
   playbackSpeed: TIME_OPTIONS[1],
-  outputFormat: OUTPUT_FORMAT_OPTIONS[0],
+  outputFormat: OUTPUT_FORMAT_OPTIONS[1],
   paused: true,
   dragging: false,
   // NOTE: Miliseconds
@@ -392,6 +390,35 @@ const drawImage = () => {
   );
 };
 
+const convertFile = async (content?: Uint8Array) => {
+  try {
+    await writeBinaryFile("output.webm", content as Uint8Array, {
+      dir: BaseDirectory.Temp
+    });
+    // @ts-ignore
+    const [originPath, convertedPath] = await invoke("convert", {
+      fileName: "output.webm"
+    });
+    const savePath = await save({
+      title: "Save video",
+      filters: [
+        {
+          name: "Video",
+          extensions: ["mp4"]
+        }
+      ]
+    });
+    await invoke("save", {
+      convertedPath,
+      savePath
+    });
+    await removeFile(originPath);
+    createToast("File saved!", colors.green.lighten1);
+  } catch (e: any) {
+    createToast(e, colors.red.darken1);
+  }
+};
+
 const $export = () => {
   const chunks: Blob[] = [];
   const stream = recordCanvas.value!.captureStream(60);
@@ -416,10 +443,13 @@ const $export = () => {
       chunks.push(data);
     }
   };
-  recorder.onstop = () => {
+  recorder.onstop = async () => {
     if (!!chunks.length) {
       createToast("🌟 Video successfully rendered!", colors.green.darken1);
-      saveBlob(new Blob(chunks, { type: recorder?.mimeType }), "output.webm");
+      const output = new Blob(chunks, { type: recorder?.mimeType });
+      const res = await blobToBinary(output);
+      convertFile(res);
+      // saveBlob(output, `${new Date().toISOString().replaceAll(":", "-")}.webm`);
     } else {
       createToast("🚨 Failed to capture any chunks!", colors.red.darken3);
     }
