@@ -27,48 +27,43 @@
 .trim-row {
   height: 100%;
   width: 100%;
-}
-
-.trim-row:before {
-  width: 5px;
-  position: absolute;
-  display: block;
-  content: "";
-  height: 100%;
-  z-index: 9999 !important;
-}
-
-.trim-row:hover:before {
-  cursor: ew-resize;
-}
-
-.trim-row:after {
-  width: 7px;
-  position: absolute;
-  right: 0px;
-  height: 100%;
-  content: "";
-  z-index: 9999 !important;
-}
-
-.trim-row:hover:after {
-  cursor: ew-resize;
+  &:before {
+    width: 5px;
+    position: absolute;
+    display: block;
+    content: "";
+    height: 100%;
+    z-index: 9999 !important;
+  }
+  &:after {
+    width: 7px;
+    position: absolute;
+    right: 0px;
+    height: 100%;
+    content: "";
+    z-index: 9999 !important;
+  }
+  &:hover:before {
+    cursor: ew-resize;
+  }
+  &:hover:after {
+    cursor: ew-resize;
+  }
 }
 
 .row-element {
   position: absolute;
   height: 100%;
   width: 100%;
-}
-
-.row-element::before {
-  background-color: black;
-  opacity: 0.4;
-  display: block;
-  content: "";
-  position: absolute;
-  height: 100%;
-  width: 100%;
+  &::before {
+    background-color: black;
+    opacity: 0.4;
+    display: block;
+    content: "";
+    position: absolute;
+    height: 100%;
+    width: 100%;
+  }
 }
 
 .bottom {
@@ -92,6 +87,18 @@
   border-radius: 5px;
 }
 
+#video-duration-end-bar {
+  height: calc(100% - 50px);
+  background-color: #5623a9;
+  width: 3px;
+  opacity: 0.7;
+  pointer-events: none;
+  top: 50px;
+  z-index: 5;
+  position: absolute;
+  border-radius: 5px;
+}
+
 #seekbar {
   height: calc(100% - 36px);
   width: 2px;
@@ -100,21 +107,19 @@
   z-index: 99999999;
   pointer-events: all;
   top: 36px;
-}
-
-#seekbar:hover {
-  outline: 3px solid rgba(255, 255, 255, 0.1);
-  box-sizing: border-box;
-}
-
-#seekbar:after {
-  background: url(/seeker.svg);
-  display: block;
-  content: "";
-  position: absolute;
-  width: 13px;
-  height: 18px;
-  margin-left: -6px;
-  z-index: 9;
-  box-sizing: border-box;
+  &:hover {
+    outline: 3px solid rgba(255, 255, 255, 0.1);
+    box-sizing: border-box;
+  }
+  &:after {
+    background: url(/seeker.svg);
+    display: block;
+    content: "";
+    position: absolute;
+    width: 13px;
+    height: 18px;
+    margin-left: -6px;
+    z-index: 9;
+    box-sizing: border-box;
+  }
 }

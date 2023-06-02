@@ -204,6 +204,25 @@ export const TIME_OPTIONS: SelectItem<number>[] = [
   }
 ];
 
+export const OUTPUT_FORMAT_OPTIONS: SelectItem<string>[] = [
+  {
+    title: "webm",
+    value: "webm"
+  },
+  {
+    title: "mp4",
+    value: "mp4"
+  },
+  {
+    title: "avi",
+    value: "avi"
+  },
+  {
+    title: "mkv",
+    value: "mkv"
+  }
+];
+
 export const SNAP_CHECK_DIRECTION: Record<string, number> = {
   MIDDLE: 1,
   BOTTOM: 2,

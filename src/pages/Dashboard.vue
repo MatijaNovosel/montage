@@ -109,6 +109,12 @@
         }"
       />
       <div
+        id="video-duration-end-bar"
+        :style="{
+          left: `${state.duration / 10 - 15}px`
+        }"
+      />
+      <div
         id="seekbar"
         :style="{
           left: `${state.seekbarOffset}px`
@@ -189,7 +195,6 @@
       <span> ⬜ </span>
       <v-select
         class="ml-3 w-5/12"
-        placeholder="Speed"
         density="compact"
         hide-details
         variant="solo"
@@ -220,8 +225,22 @@
       />
     </div>
     <div class="flex justify-end items-center w-3/12">
-      <v-btn :disabled="disabled" @click="$export" color="blue">
-        💾 Export
+      <v-select
+        density="compact"
+        hide-details
+        variant="solo"
+        :items="OUTPUT_FORMAT_OPTIONS"
+        v-model="state.outputFormat"
+        :disabled="disabled"
+        class="w-9/12"
+      />
+      <v-btn
+        class="ml-3 w-3/12"
+        :disabled="disabled"
+        @click="$export"
+        color="blue"
+      >
+        Export
       </v-btn>
     </div>
   </div>
@@ -242,6 +261,7 @@ import {
   LAYER_TYPE_COLOR,
   LAYER_TYPE_ICON,
   MAX_ALLOWED_VIDEO_DURATION,
+  OUTPUT_FORMAT_OPTIONS,
   TIME_OPTIONS
 } from "@/utils/constants";
 import {
@@ -285,6 +305,7 @@ interface State {
   timelineScale: number;
   zoomLevel: string;
   playbackSpeed: SelectItem<number>;
+  outputFormat: SelectItem<string>;
   paused: boolean;
   dragging: boolean;
   // NOTE: Miliseconds
@@ -316,6 +337,7 @@ const state: State = reactive({
   zoomLevel: "100%",
   layers: [],
   playbackSpeed: TIME_OPTIONS[1],
+  outputFormat: OUTPUT_FORMAT_OPTIONS[0],
   paused: true,
   dragging: false,
   // NOTE: Miliseconds
@@ -848,7 +870,6 @@ const loadVideo = (src: string) => {
     };
     setTimeout(waitLoad, 100);
   });
-  vidObj.currentTime = 0;
 };
 
 const addAsset = async (event: AssetEvent) => {
@@ -1155,6 +1176,7 @@ onMounted(() => {
   });
 
   fabricCanvas.renderAll();
+  createToast("🎉 Welcome to Montage!", colors.purple.darken1);
 });
 
 onBeforeUnmount(() => {
