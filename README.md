@@ -6,7 +6,7 @@
 <p align=center>A clip editor made with Tauri.</p>
 <p align=center>⚠ Currently a work in progress ⚠</p>
 
-![image](https://user-images.githubusercontent.com/36193643/235520785-b33d54b7-9f4e-4d5b-97ef-b0eff096ef2c.png)
+![image](https://github.com/MatijaNovosel/montage/assets/36193643/8421f842-d1b4-4c50-b63d-5c758caef760)
 
 ## 🔨 Built With
 
