@@ -154,6 +154,16 @@
     <template v-else>
       <div class="text-slate-400 select-none">Canvas settings</div>
       <div class="flex items-center w-full">
+        <div class="w-4/12">Preset</div>
+        <v-select
+          density="compact"
+          hide-details
+          variant="solo"
+          :items="CANVAS_PRESET_OPTIONS"
+          v-model="state.canvasPreset"
+        />
+      </div>
+      <div class="flex items-center w-full">
         <div class="w-4/12">Width</div>
         <v-text-field
           suffix="px"
@@ -200,8 +210,11 @@
 import { SelectItem } from "@/models/common";
 import { FontItem, FontResponse } from "@/models/font";
 import { useDashboardStore } from "@/store/dashboard";
-import { useToastStore } from "@/store/toast";
-import { ALIGN_OPTIONS } from "@/utils/constants";
+import {
+  ALIGN_OPTIONS,
+  CANVAS_PRESET_OPTIONS,
+  CANVAS_PRESET_OPTIONS_DIMENSIONS
+} from "@/utils/constants";
 import { onKeyDown } from "@vueuse/core";
 import axios from "axios";
 import { DegreePicker } from "degree-picker";
@@ -219,6 +232,7 @@ interface State {
   opacity: number;
   rotation: number;
   activeObjectDuration: number;
+  canvasPreset: string;
 }
 
 const dashboardStore = useDashboardStore();
@@ -234,8 +248,6 @@ const {
   activeObjectOpacity,
   activeObjectDuration
 } = storeToRefs(dashboardStore);
-
-const { createToast } = useToastStore();
 
 const emit = defineEmits([
   "align",
@@ -253,6 +265,7 @@ const state: State = reactive({
   rotation: 0,
   duration: 10,
   activeObjectDuration: 0,
+  canvasPreset: CANVAS_PRESET_OPTIONS[0].value,
   fonts: []
 });
 
@@ -275,6 +288,15 @@ watch(
 watch(
   () => [state.width, state.height],
   (val) => dashboardStore.setArtboardDimensions(val[0], val[1])
+);
+
+watch(
+  () => state.canvasPreset,
+  (val) => {
+    const { width, height } = CANVAS_PRESET_OPTIONS_DIMENSIONS[val];
+    state.width = width;
+    state.height = height;
+  }
 );
 
 // Opacity 2 way

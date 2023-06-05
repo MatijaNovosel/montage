@@ -223,6 +223,55 @@ export const OUTPUT_FORMAT_OPTIONS: SelectItem<string>[] = [
   }
 ];
 
+export const CANVAS_PRESET_OPTIONS: SelectItem<string>[] = [
+  {
+    title: "Custom",
+    value: "custom"
+  },
+  {
+    title: "Youtube video",
+    value: "ytVideo"
+  },
+  {
+    title: "Facebook post",
+    value: "fbPost"
+  },
+  {
+    title: "Instagram video",
+    value: "igVideo"
+  },
+  {
+    title: "Twitter video",
+    value: "twVideo"
+  }
+];
+
+export const CANVAS_PRESET_OPTIONS_DIMENSIONS: Record<
+  string,
+  { width: number; height: number }
+> = {
+  [CANVAS_PRESET_OPTIONS[0].value]: {
+    width: 800,
+    height: 450
+  },
+  [CANVAS_PRESET_OPTIONS[1].value]: {
+    width: 1920,
+    height: 1080
+  },
+  [CANVAS_PRESET_OPTIONS[2].value]: {
+    width: 1280,
+    height: 720
+  },
+  [CANVAS_PRESET_OPTIONS[3].value]: {
+    width: 1080,
+    height: 1920
+  },
+  [CANVAS_PRESET_OPTIONS[4].value]: {
+    width: 1280,
+    height: 720
+  }
+};
+
 export const SNAP_CHECK_DIRECTION: Record<string, number> = {
   MIDDLE: 1,
   BOTTOM: 2,
