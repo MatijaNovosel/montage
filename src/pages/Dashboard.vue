@@ -1014,7 +1014,7 @@ const dragObjectProps = (e: MouseEvent, layer: Layer) => {
     if (action === "dragging") {
       state.dragging = true;
       state.seeking = false;
-      layer.offset = pageX - DRAWER_WIDTH;
+      layer.offset = pageX - DRAWER_WIDTH - 50;
     } else if (action === "trimLeft") {
       //
     } else if (action === "trimRight") {
