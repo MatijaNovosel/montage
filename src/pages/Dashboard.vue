@@ -510,6 +510,10 @@ const togglePlay = () => {
           // @ts-ignore
           const element = v.object.getElement();
           if (isLayerVisible(v)) {
+            element.muted = false;
+            element.play();
+          } else if (isLayerVisibleNoTrim(v) && v.startTrim > 0) {
+            element.muted = true;
             element.play();
           } else {
             element.pause();
@@ -960,6 +964,15 @@ const unsubscribeAddAssetBus = addAssetBus.on(addAsset);
 
 const isLayerVisible = (layer: Layer) => {
   const layerOffsetMs = layer.offset * 10 + layer.startTrim * 10;
+  const duration = layer.duration - layer.startTrim * 10 - layer.endTrim * 10;
+  return (
+    state.currentTime >= layerOffsetMs &&
+    state.currentTime <= layerOffsetMs + duration
+  );
+};
+
+const isLayerVisibleNoTrim = (layer: Layer) => {
+  const layerOffsetMs = layer.offset * 10;
   return (
     state.currentTime >= layerOffsetMs &&
     state.currentTime <= layerOffsetMs + layer.duration
