@@ -34,7 +34,7 @@ fn convert(fileName: &str) -> Vec<String> {
 
 #[tauri::command]
 fn save(convertedPath: &str, savePath: &str) -> () {
-  fs::rename(convertedPath, savePath);
+  fs::rename(convertedPath, savePath).expect("Could not rename");
 }
 
 fn main() {

@@ -169,6 +169,12 @@
         >
           <div class="row-element">
             <div
+              :style="{
+                width: `${
+                  layer.duration / 10 - layer.startTrim - layer.endTrim
+                }px`,
+                left: `${layer.startTrim}px`
+              }"
               class="trim-row absolute"
               :class="{
                 [`bg-${LAYER_TYPE_COLOR[layer.type]}`]: true
@@ -306,6 +312,7 @@ interface State {
   outputFormat: SelectItem<string>;
   paused: boolean;
   dragging: boolean;
+  trimming: boolean;
   // NOTE: Miliseconds
   currentTime: number;
   // NOTE: Miliseconds
@@ -338,6 +345,7 @@ const state: State = reactive({
   outputFormat: OUTPUT_FORMAT_OPTIONS[1],
   paused: true,
   dragging: false,
+  trimming: false,
   // NOTE: Miliseconds
   currentTime: 0,
   // NOTE: Miliseconds
@@ -395,8 +403,7 @@ const convertFile = async (content?: Uint8Array) => {
     await writeBinaryFile("output.webm", content as Uint8Array, {
       dir: BaseDirectory.Temp
     });
-    // @ts-ignore
-    const [originPath, convertedPath] = await invoke("convert", {
+    const [originPath, convertedPath] = await invoke<string[]>("convert", {
       fileName: "output.webm"
     });
     const savePath = await save({
@@ -1008,17 +1015,36 @@ const seek = (e: MouseEvent) => {
   }
 };
 
-const dragObjectProps = (e: MouseEvent, layer: Layer) => {
-  const action = "dragging";
+const dragObjectProps = ({ pageX, offsetX }: MouseEvent, layer: Layer) => {
+  let action = "dragging";
+  const layerWidth = layer.duration / 10 - layer.endTrim - layer.startTrim;
+  if (offsetX <= 7) {
+    action = "trimLeft";
+  } else if (offsetX >= layerWidth - 7) {
+    action = "trimRight";
+  }
   const dragging = ({ pageX }: MouseEvent) => {
+    const offset = pageX - DRAWER_WIDTH;
     if (action === "dragging") {
       state.dragging = true;
       state.seeking = false;
-      layer.offset = pageX - DRAWER_WIDTH - 50;
+      layer.offset = offset - 50;
     } else if (action === "trimLeft") {
-      //
+      const res = offset - layer.offset;
+      if (res >= 0 && res < layerWidth) {
+        layer.startTrim = res;
+      }
     } else if (action === "trimRight") {
-      //
+      console.log({
+        offset: layer.offset,
+        w: layerWidth,
+        pageXMinusWidth: offset
+      });
+      const res = offset - layerWidth;
+      if (res <= layerWidth && res < 0) {
+        console.log({ res });
+        layer.endTrim = Math.abs(res);
+      }
     }
   };
   const released = () => {
