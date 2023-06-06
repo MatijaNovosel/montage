@@ -108,6 +108,8 @@ export const useDashboardStore = defineStore("dashboard", () => {
     const layer = layers.value.find((l) => l.id === activeObjectId.value);
     if (layer) {
       layer.duration = duration;
+      layer.startTrim = 0;
+      layer.endTrim = 0;
     }
   };
 

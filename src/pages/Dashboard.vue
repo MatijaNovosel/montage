@@ -959,7 +959,7 @@ const addAsset = async (event: AssetEvent) => {
 const unsubscribeAddAssetBus = addAssetBus.on(addAsset);
 
 const isLayerVisible = (layer: Layer) => {
-  const layerOffsetMs = layer.offset * 10;
+  const layerOffsetMs = layer.offset * 10 + layer.startTrim * 10;
   return (
     state.currentTime >= layerOffsetMs &&
     state.currentTime <= layerOffsetMs + layer.duration
@@ -1015,7 +1015,7 @@ const seek = (e: MouseEvent) => {
   }
 };
 
-const dragObjectProps = ({ pageX, offsetX }: MouseEvent, layer: Layer) => {
+const dragObjectProps = ({ offsetX }: MouseEvent, layer: Layer) => {
   let action = "dragging";
   const layerWidth = layer.duration / 10 - layer.endTrim - layer.startTrim;
   if (offsetX <= 7) {
@@ -1035,14 +1035,9 @@ const dragObjectProps = ({ pageX, offsetX }: MouseEvent, layer: Layer) => {
         layer.startTrim = res;
       }
     } else if (action === "trimRight") {
-      console.log({
-        offset: layer.offset,
-        w: layerWidth,
-        pageXMinusWidth: offset
-      });
-      const res = offset - layerWidth;
-      if (res <= layerWidth && res < 0) {
-        console.log({ res });
+      // TODO: Fix this at some point
+      const res = Math.abs(offset - layer.offset - layerWidth);
+      if (res <= layerWidth) {
         layer.endTrim = Math.abs(res);
       }
     }
