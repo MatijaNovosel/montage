@@ -94,7 +94,7 @@
             {{ LAYER_TYPE_ICON[layer.type] }}
           </span>
           <span class="bg-black px-2 py-1 rounded-md text-xs">
-            {{ layer.id }}
+            {{ `${layer.type} ${layer.id}` }}
           </span>
         </div>
       </template>
@@ -310,6 +310,7 @@ interface State {
   zoomLevel: string;
   playbackSpeed: SelectItem<number>;
   outputFormat: SelectItem<string>;
+  newLayer: Layer | null;
   paused: boolean;
   dragging: boolean;
   trimming: boolean;
@@ -343,6 +344,7 @@ const state: State = reactive({
   layers: [],
   playbackSpeed: TIME_OPTIONS[1],
   outputFormat: OUTPUT_FORMAT_OPTIONS[1],
+  newLayer: null,
   paused: true,
   dragging: false,
   trimming: false,
@@ -592,7 +594,7 @@ const newTextbox = (
       text,
       `${fontWeight} ${fontSize}px Roboto`
     ),
-    id: `text_${id}`
+    id
   });
   fabricCanvas?.add(newText);
   fabricCanvas?.setActiveObject(newText);
@@ -604,7 +606,7 @@ const newTextbox = (
   fabricCanvas!.getActiveObject()!.set("fontFamily", font);
   fabricCanvas?.renderAll();
   dashboardStore.addLayer({
-    id: `text_${id}`,
+    id,
     object: newText,
     type: LAYER_TYPE.TEXT,
     endTrim: 0,
@@ -777,7 +779,7 @@ const newSvg = (path: string) => {
     fabricCanvas?.add(svgData);
     fabricCanvas?.setActiveObject(svgData);
     dashboardStore.addLayer({
-      id: `image_${id}`,
+      id,
       object: svgData,
       type: LAYER_TYPE.IMAGE,
       endTrim: 0,
@@ -817,13 +819,13 @@ const newImage = async (source: File | string) => {
       image.set("left", artboardWidth.value / 2 - (image.width as number) / 2);
     }
     //@ts-ignore
-    image.set("id", `image_${id}`);
+    image.set("id", id);
     fabricCanvas?.add(image);
     fabricCanvas?.bringToFront(image);
     fabricCanvas?.setActiveObject(image);
     fabricCanvas?.renderAll();
     dashboardStore.addLayer({
-      id: `image_${id}`,
+      id,
       object: image,
       type: LAYER_TYPE.IMAGE,
       endTrim: 0,
@@ -853,7 +855,7 @@ const newVideo = (file: HTMLVideoElement, source: string, duration: number) => {
     source,
     duration: duration * 1000,
     assetType: "video",
-    id: `video_${layers.value.length}`,
+    id,
     objectCaching: false,
     inGroup: false
   });
@@ -872,9 +874,9 @@ const newVideo = (file: HTMLVideoElement, source: string, duration: number) => {
   fabricCanvas?.bringToFront(newVideo);
   fabricCanvas?.renderAll();
   //@ts-ignore
-  newVideo.set("id", `video_${id}`);
+  newVideo.set("id", id);
   dashboardStore.addLayer({
-    id: `video_${id}`,
+    id,
     object: newVideo,
     type: LAYER_TYPE.VIDEO,
     endTrim: 0,
@@ -1090,6 +1092,39 @@ const updateActiveObjectDimensions = () => {
   }
 };
 
+const handleKeyDown = (e: KeyboardEvent) => {
+  const activeObject = fabricCanvas?.getActiveObject();
+  if (activeObject) {
+    // @ts-ignore
+    const id = activeObject.id;
+    const layer = layers.value.find((l) => l.id === id);
+    if (layer) {
+      // Delete
+      if (e.key === "Delete") {
+        if (layer.type === LAYER_TYPE.VIDEO) {
+          // TODO: Adjust total duration here
+          state.duration = DEFAULT_DURATION;
+          dashboardStore.removeLayer(layer);
+        }
+        fabricCanvas?.remove(activeObject);
+        fabricCanvas?.discardActiveObject().renderAll();
+      }
+      // Copy
+      if (e.ctrlKey && e.key === "c") {
+        const newLayer = structuredClone(layer);
+        const id = randInt(1, 9999).toString();
+        newLayer.id = id;
+        state.newLayer = newLayer;
+      }
+      // Paste
+      if (e.ctrlKey && e.key === "v" && state.newLayer) {
+        dashboardStore.addLayer(state.newLayer);
+        state.newLayer = null;
+      }
+    }
+  }
+};
+
 // Watchers
 watch([mainWidth, mainHeight], async ([width, height]) => {
   await nextTick(() => {
@@ -1142,6 +1177,8 @@ onKeyDown("Delete", () => {
   });
   fabricCanvas?.discardActiveObject().renderAll();
 });
+
+document.addEventListener("keydown", handleKeyDown);
 
 const wheelScrollEvent = useEventListener(main, "wheel", (e: WheelEvent) => {
   const scrollingUp = Math.sign(e.deltaY) < 0; // Down = 1, Up = -1
@@ -1248,6 +1285,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   wheelScrollEvent();
   unsubscribeAddAssetBus();
+  document.removeEventListener("keydown", handleKeyDown);
 });
 </script>
 
