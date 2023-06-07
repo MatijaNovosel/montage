@@ -775,7 +775,7 @@ const newSvg = (path: string) => {
     svgData.left = mainWidth.value / 2 - (svgData.width as number) / 2;
     const id = randInt(1, 9999).toString();
     //@ts-ignore
-    svgData.id = `image_${id}`;
+    svgData.id = id;
     fabricCanvas?.add(svgData);
     fabricCanvas?.setActiveObject(svgData);
     dashboardStore.addLayer({
@@ -1104,8 +1104,8 @@ const handleKeyDown = (e: KeyboardEvent) => {
         if (layer.type === LAYER_TYPE.VIDEO) {
           // TODO: Adjust total duration here
           state.duration = DEFAULT_DURATION;
-          dashboardStore.removeLayer(layer);
         }
+        dashboardStore.removeLayer(layer);
         fabricCanvas?.remove(activeObject);
         fabricCanvas?.discardActiveObject().renderAll();
       }
