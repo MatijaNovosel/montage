@@ -173,7 +173,7 @@ export const AUDIO = [
 ];
 
 export const IMAGES = ["drunkDriving", "redPill", "pizzaHat"];
-export const VIDEOS = ["cats", "oldMan", "sigma"];
+export const VIDEOS = ["cats", "oldMan", "sigma", "risitas"];
 export const SIZES = ["b", "kB", "MB", "GB", "TB"];
 
 export const ALIGN_OPTIONS: Record<string, number> = {
@@ -301,7 +301,7 @@ export const LAYER_TYPE_COLOR: Record<string, string> = {
 
 // Validation
 export const FILE_SIZE_LIMIT = 10_485_760; // 10 MB
-export const MAX_ALLOWED_VIDEO_DURATION = 10_000; // 10 seconds
+export const MAX_ALLOWED_VIDEO_DURATION = 12_000; // 10 seconds
 
 export const DEFAULT_DURATION = 10_000;
 export const DEFAULT_ASSET_DURATION = 3_000;

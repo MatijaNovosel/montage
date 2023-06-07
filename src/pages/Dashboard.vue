@@ -1041,7 +1041,9 @@ const dragObjectProps = ({ offsetX }: MouseEvent, layer: Layer) => {
     if (action === "dragging") {
       state.dragging = true;
       state.seeking = false;
-      layer.offset = offset - 50;
+      if (offset - 50 >= 0) {
+        layer.offset = offset - 50;
+      }
     } else if (action === "trimLeft") {
       const res = offset - layer.offset;
       if (res >= 0 && res < layerWidth) {
