@@ -13,22 +13,7 @@
     <div
       class="main w-7/12 h-full flex flex-col justify-center items-center relative"
     >
-      <div
-        class="top-left flex flex-col select-none bg-black bg-opacity-50 p-2 rounded-lg"
-      >
-        <div>
-          <span class="text-slate-500 font-bold">🗑️ Used </span>
-          {{ bytesToMB(memory?.usedJSHeapSize) }}
-        </div>
-        <div class="py-1">
-          <span class="text-slate-500 font-bold">📦 Allocated </span>
-          {{ bytesToMB(memory?.totalJSHeapSize) }}
-        </div>
-        <div>
-          <span class="text-slate-500 font-bold">💾 Limit </span>
-          {{ bytesToMB(memory?.jsHeapSizeLimit) }}
-        </div>
-      </div>
+      <memory-display />
       <div class="top-right flex flex-col">
         <div class="flex">
           <v-btn class="mr-2" @click="undo">
@@ -47,7 +32,7 @@
         <div
           class="mt-3 flex justify-center bg-slate-800 py-1 rounded-md select-none"
         >
-          🔎 {{ state.zoomLevel }}
+          🔎 {{ `${state.zoomLevel.toFixed(0)}%` }}
         </div>
       </div>
       <div
@@ -67,39 +52,11 @@
     />
   </div>
   <div class="flex bg-slate-900 text-white border-slate-700 bottom-area-ctr">
-    <div
-      class="flex flex-col h-full border-r border-slate-700 overflow-auto"
-      :style="{ width: `${DRAWER_WIDTH}px` }"
-    >
-      <div
-        class="flex items-center border-slate-700 border-y pl-4 py-3 text-slate-500 select-none tracking-widest"
-      >
-        LAYERS
-      </div>
-      <template v-if="layers.length">
-        <div
-          class="pl-4 cursor-pointer layer-item flex items-center border-b-2 border-slate-800"
-          v-for="(layer, i) of layers"
-          :class="{
-            'bg-indigo-500 hover:bg-indigo-400': activeObjectId === layer.id,
-            'bg-slate-800 hover:bg-slate-700':
-              i % 2 && activeObjectId !== layer.id,
-            'bg-slate-900 hover:bg-slate-800':
-              !(i % 2) && activeObjectId !== layer.id
-          }"
-          :key="layer.id"
-          @click="setActiveObject(layer.id)"
-        >
-          <span class="mr-3">
-            {{ LAYER_TYPE_ICON[layer.type] }}
-          </span>
-          <span class="bg-black px-2 py-1 rounded-md text-xs">
-            {{ `${layer.type} ${layer.id}` }}
-          </span>
-        </div>
-      </template>
-      <div class="p-5" v-else>No layers added.</div>
-    </div>
+    <layer-list
+      :layers="layers"
+      :active-object-id="activeObjectId"
+      @set-active-obj="setActiveObject"
+    />
     <div class="h-full flex-grow relative overflow-auto">
       <div
         id="seek-hover"
@@ -154,7 +111,7 @@
         v-if="layers.length"
       >
         <div
-          @mousedown.prevent="(e) => dragObjectProps(e, layer)"
+          @mousedown.prevent="(e: MouseEvent) => dragObjectProps(e, layer)"
           class="main-row relative border-b-2 border-slate-800"
           :class="{
             'border-y-2': i === 0,
@@ -248,6 +205,8 @@
 </template>
 
 <script setup lang="ts">
+import LayerList from "@/components/dashboard/LayerList.vue";
+import MemoryDisplay from "@/components/dashboard/MemoryDisplay.vue";
 import Layout from "@/components/dashboard/layout/layout.vue";
 import Sidebar from "@/components/dashboard/sidebar/sidebar.vue";
 import { AssetEvent, Layer, SelectItem } from "@/models/common";
@@ -260,7 +219,6 @@ import {
   DRAWER_WIDTH,
   LAYER_TYPE,
   LAYER_TYPE_COLOR,
-  LAYER_TYPE_ICON,
   MAX_ALLOWED_VIDEO_DURATION,
   OUTPUT_FORMAT_OPTIONS,
   TIME_OPTIONS
@@ -273,7 +231,6 @@ import {
 } from "@/utils/fabric";
 import {
   blobToBinary,
-  bytesToMB,
   calculateLayerWidth,
   formatTime,
   getFileExtension,
@@ -287,8 +244,7 @@ import {
   onKeyDown,
   useElementSize,
   useEventBus,
-  useEventListener,
-  useMemory
+  useEventListener
 } from "@vueuse/core";
 import { fabric } from "fabric";
 import { randInt } from "matija-utils";
@@ -307,7 +263,7 @@ import colors from "vuetify/lib/util/colors";
 
 interface State {
   timelineScale: number;
-  zoomLevel: string;
+  zoomLevel: number;
   playbackSpeed: SelectItem<number>;
   outputFormat: SelectItem<string>;
   newLayer: Layer | null;
@@ -340,7 +296,7 @@ const {
 const state: State = reactive({
   timelineScale: 0,
   playInterval: null,
-  zoomLevel: "100%",
+  zoomLevel: 100,
   layers: [],
   playbackSpeed: TIME_OPTIONS[1],
   outputFormat: OUTPUT_FORMAT_OPTIONS[1],
@@ -370,7 +326,6 @@ let centerCircle: fabric.Circle | null = null;
 let recorder: MediaRecorder | null = null;
 
 const { width: mainWidth, height: mainHeight } = useElementSize(main);
-const { memory } = useMemory();
 
 // Computed properties
 const videoObjects = computed(() =>
@@ -458,7 +413,6 @@ const $export = () => {
       const output = new Blob(chunks, { type: recorder?.mimeType });
       const res = await blobToBinary(output);
       convertFile(res);
-      // saveBlob(output, `${new Date().toISOString().replaceAll(":", "-")}.webm`);
     } else {
       createToast("🚨 Failed to capture any chunks!", colors.red.darken3);
     }
@@ -1183,7 +1137,9 @@ document.addEventListener("keydown", handleKeyDown);
 const wheelScrollEvent = useEventListener(main, "wheel", (e: WheelEvent) => {
   const scrollingUp = Math.sign(e.deltaY) < 0; // Down = 1, Up = -1
   let zoom = fabricCanvas!.getZoom() + (scrollingUp ? 0.1 : -0.1);
-  if (zoom < 0.1) zoom = 0.1;
+  if (zoom < 0.1) {
+    zoom = 0.1;
+  }
   fabricCanvas?.setZoom(1);
   fabricCanvas?.renderAll();
   fabricCanvas?.absolutePan({
@@ -1194,7 +1150,7 @@ const wheelScrollEvent = useEventListener(main, "wheel", (e: WheelEvent) => {
   });
   fabricCanvas?.setZoom(zoom);
   fabricCanvas?.renderAll();
-  state.zoomLevel = `${(fabricCanvas!.getZoom() * 100).toFixed(0)}%`;
+  state.zoomLevel = fabricCanvas!.getZoom() * 100;
 });
 
 // Hooks
