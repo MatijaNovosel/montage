@@ -1,23 +1,30 @@
 <template>
   <div class="text-sm text-slate-500 my-5">Memes</div>
-  <div class="flex gap-4 justify-center items-center flex-wrap">
-    <div
+  <v-list density="compact" nav class="rounded-lg">
+    <v-list-item
       v-for="(video, i) of VIDEOS"
       :key="i"
-      v-tooltip="video"
-      class="cursor-pointer grid-item rounded-md"
       @click="
         emit({
           type: LAYER_TYPE.VIDEO,
           value: video
         })
       "
-      :style="{
-        backgroundImage: `url(/thumbnails/${video}.jpg)`,
-        backgroundSize: 'cover'
-      }"
-    />
-  </div>
+    >
+      <template #prepend>
+        <div
+          class="grid-item rounded-md my-1"
+          :style="{
+            backgroundImage: `url(/thumbnails/${video}.jpg)`,
+            backgroundSize: 'cover'
+          }"
+        />
+      </template>
+      <v-list-item-title>
+        {{ video }}
+      </v-list-item-title>
+    </v-list-item>
+  </v-list>
 </template>
 
 <script lang="ts" setup>
@@ -30,7 +37,7 @@ const { emit } = useEventBus<AssetEvent>("asset");
 
 <style scoped>
 .grid-item {
-  height: 75px;
-  width: 75px;
+  height: 45px;
+  width: 45px;
 }
 </style>

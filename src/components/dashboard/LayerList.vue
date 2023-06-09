@@ -44,7 +44,7 @@ const emit = defineEmits<{
 
 defineProps<{
   layers: Layer[];
-  activeObjectId: string;
+  activeObjectId?: string | null;
 }>();
 </script>
 

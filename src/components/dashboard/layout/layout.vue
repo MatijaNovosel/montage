@@ -249,13 +249,11 @@ const {
   activeObjectDuration
 } = storeToRefs(dashboardStore);
 
-const emit = defineEmits([
-  "align",
-  "send-forward",
-  "bring-backward",
-  "bring-forward",
-  "send-backward"
-]);
+const emit = defineEmits<{
+  (e: "align", alignment: number): void;
+  (e: "bring-forward"): void;
+  (e: "send-backward"): void;
+}>();
 
 const state: State = reactive({
   color: artboardColor.value,
