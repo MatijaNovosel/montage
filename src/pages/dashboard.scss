@@ -52,7 +52,7 @@
   height: 100%;
   width: 100%;
   &::before {
-    background-color: black;
+    background-color: #826868;
     opacity: 0.4;
     display: block;
     content: "";
@@ -85,7 +85,7 @@
 
 #video-duration-end-bar {
   height: calc(100% - 50px);
-  background-color: #5623a9;
+  background-color: #7c6d94;
   width: 3px;
   opacity: 0.7;
   pointer-events: none;
