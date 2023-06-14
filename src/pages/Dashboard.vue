@@ -77,31 +77,7 @@
           left: `${state.seekbarOffset}px`
         }"
       />
-      <div class="flex items-center py-3 relative border-y border-slate-700">
-        <!-- Full seconds -->
-        <span
-          class="text-slate-400 text-right select-none"
-          :key="n"
-          v-for="n in Math.floor(state.duration / 1000)"
-          :style="{
-            width: '100px'
-          }"
-        >
-          {{ n }}s
-        </span>
-        <!-- Half seconds -->
-        <span
-          class="text-slate-400 select-none absolute"
-          :key="n"
-          v-for="n in Math.floor(state.duration / 1000) * 2"
-          :style="{
-            left: `${50 * n - 5}px`,
-            display: !(n % 2) ? 'none' : undefined
-          }"
-        >
-          •
-        </span>
-      </div>
+      <time-ticks :duration="Math.floor(state.duration / 1000)" />
       <!-- Timeline -->
       <div
         @mousemove="followCursor"
@@ -207,6 +183,7 @@
 <script setup lang="ts">
 import LayerList from "@/components/dashboard/LayerList.vue";
 import MemoryDisplay from "@/components/dashboard/MemoryDisplay.vue";
+import TimeTicks from "@/components/dashboard/TimeTicks.vue";
 import Layout from "@/components/dashboard/layout/layout.vue";
 import Sidebar from "@/components/dashboard/sidebar/sidebar.vue";
 import { AssetEvent, Layer, SelectItem } from "@/models/common";
