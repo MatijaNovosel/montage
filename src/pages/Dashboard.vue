@@ -118,69 +118,21 @@
       </div>
     </div>
   </div>
-  <div
-    class="flex justify-between items-center bg-zinc-800 text-white px-5"
-    style="height: var(--timeline-controls-height)"
-  >
-    <div class="flex justify-center items-center w-3/12">
-      <span> ◻️ </span>
-      <v-slider
-        hide-details
-        class="mx-3 w-7/12"
-        density="compact"
-        v-model="state.timelineScale"
-        :disabled="disabled"
-      />
-      <span> ⬜ </span>
-      <v-select
-        class="ml-3 w-5/12"
-        density="compact"
-        hide-details
-        variant="solo"
-        :items="TIME_OPTIONS"
-        v-model="state.playbackSpeed"
-        :disabled="disabled"
-      />
-    </div>
-    <div class="flex justify-center items-center w-6/12">
-      <v-btn
-        :disabled="disabled"
-        icon="mdi-skip-forward"
-        class="scale-x-n1"
-        variant="text"
-        @click="seekToStart"
-      />
-      <v-btn
-        :disabled="disabled"
-        :icon="state.paused ? 'mdi-play' : 'mdi-pause'"
-        variant="text"
-        @click="togglePlay"
-      />
-      <v-btn
-        :disabled="disabled"
-        icon="mdi-skip-forward"
-        variant="text"
-        @click="seekToEnd"
-      />
-    </div>
-    <div class="flex justify-end items-center w-3/12">
-      <v-select
-        density="compact"
-        hide-details
-        variant="solo"
-        :items="OUTPUT_FORMAT_OPTIONS"
-        v-model="state.outputFormat"
-        :disabled="disabled"
-        class="w-9/12"
-      />
-      <v-btn class="ml-3" :disabled="disabled" @click="$export" color="blue">
-        Export
-      </v-btn>
-    </div>
-  </div>
+  <controls
+    :disabled="disabled"
+    :paused="paused"
+    :timeline-scale="state.timelineScale"
+    :playback-speed="state.playbackSpeed"
+    :output-format="state.outputFormat"
+    @seek-to-start="seekToStart"
+    @seek-to-end="seekToEnd"
+    @toggle-play="togglePlay"
+    @export="$export"
+  />
 </template>
 
 <script setup lang="ts">
+import Controls from "@/components/dashboard/Controls.vue";
 import LayerList from "@/components/dashboard/LayerList.vue";
 import MemoryDisplay from "@/components/dashboard/MemoryDisplay.vue";
 import TimeTicks from "@/components/dashboard/TimeTicks.vue";
@@ -244,7 +196,6 @@ interface State {
   playbackSpeed: SelectItem<number>;
   outputFormat: SelectItem<string>;
   newLayer: Layer | null;
-  paused: boolean;
   dragging: boolean;
   trimming: boolean;
   // NOTE: Miliseconds
@@ -267,7 +218,8 @@ const {
   artboardWidth,
   activeObjectId,
   loading,
-  layers
+  layers,
+  paused
 } = storeToRefs(dashboardStore);
 
 const state: State = reactive({
@@ -278,7 +230,6 @@ const state: State = reactive({
   playbackSpeed: TIME_OPTIONS[1],
   outputFormat: OUTPUT_FORMAT_OPTIONS[1],
   newLayer: null,
-  paused: true,
   dragging: false,
   trimming: false,
   // NOTE: Miliseconds
@@ -399,7 +350,7 @@ const $export = () => {
     createToast("🛑 Rendering finished!", colors.purple.darken1);
   };
   dashboardStore.setLoading(true);
-  if (!state.paused) {
+  if (!paused.value) {
     togglePlay();
   }
   fabricCanvas?.discardActiveObject().renderAll();
@@ -432,7 +383,7 @@ const pauseVideos = async () => {
 
 const togglePlay = () => {
   if (!!layers.value.length) {
-    if (state.paused) {
+    if (paused.value) {
       state.playInterval = setInterval(() => {
         if (state.currentTime + 1 > state.duration) {
           seekToStart();
@@ -460,7 +411,7 @@ const togglePlay = () => {
       }
       pauseVideos();
     }
-    state.paused = !state.paused;
+    dashboardStore.setPaused(!paused.value);
   }
 };
 
@@ -962,6 +913,9 @@ const seek = (e: MouseEvent) => {
 };
 
 const dragObjectProps = ({ offsetX }: MouseEvent, layer: Layer) => {
+  if (!paused.value) {
+    return;
+  }
   let action = "dragging";
   const layerWidth = layer.duration / 10 - layer.endTrim - layer.startTrim;
   if (offsetX <= 7) {

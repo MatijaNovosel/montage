@@ -6,6 +6,7 @@ import { TABS } from "../utils/constants";
 export const useDashboardStore = defineStore("dashboard", () => {
   const activeTab = ref(TABS.OBJECTS);
   const loading = ref(false);
+  const paused = ref(true);
 
   const artboardColor = ref("#000000");
   const artboardHeight = ref(450);
@@ -129,6 +130,10 @@ export const useDashboardStore = defineStore("dashboard", () => {
     layers.value = layers.value.filter((l) => l.id !== id);
   };
 
+  const setPaused = (val: boolean) => {
+    paused.value = val;
+  };
+
   watch(activeObject, (val) => {
     if (val) {
       //@ts-ignore
@@ -169,6 +174,8 @@ export const useDashboardStore = defineStore("dashboard", () => {
     setActiveObjectDuration,
     layers,
     addLayer,
-    removeLayer
+    removeLayer,
+    setPaused,
+    paused
   };
 });
