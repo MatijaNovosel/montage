@@ -1,5 +1,5 @@
 <template>
-  <div class="text-sm text-slate-500 my-5">Memes</div>
+  <div class="text-sm text-zinc-500 my-5">Memes</div>
   <v-list density="compact" nav class="rounded-lg">
     <v-list-item
       v-for="(video, i) of VIDEOS"

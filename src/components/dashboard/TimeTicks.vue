@@ -1,8 +1,8 @@
 <template>
-  <div class="flex items-center py-3 relative border-y border-slate-700">
+  <div class="flex items-center py-3 relative border-y border-zinc-700">
     <!-- Full seconds -->
     <span
-      class="text-slate-400 text-right select-none"
+      class="text-white text-right select-none"
       :key="n"
       v-for="n in duration"
       :style="{
@@ -13,7 +13,7 @@
     </span>
     <!-- Half seconds -->
     <span
-      class="text-slate-400 select-none absolute"
+      class="text-white-400 select-none absolute"
       :key="n"
       v-for="n in duration * 2"
       :style="{

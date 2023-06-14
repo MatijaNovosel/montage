@@ -1,5 +1,5 @@
 <template>
-  <div class="text-sm text-slate-500 my-5">Stock photos</div>
+  <div class="text-sm text-zinc-500 my-5">Stock photos</div>
   <div class="flex gap-4 justify-center items-center flex-wrap">
     <div
       v-for="(image, i) of IMAGES"

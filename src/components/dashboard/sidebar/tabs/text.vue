@@ -1,6 +1,6 @@
 <template>
   <div class="flex text-left flex-col gap-y-3 py-5">
-    <div class="text-slate-500">Basic text</div>
+    <div class="text-zinc-500">Basic text</div>
     <v-btn
       id="heading-text"
       @click="
@@ -34,7 +34,7 @@
     >
       Add body text
     </v-btn>
-    <div class="text-slate-500">Sans Serif</div>
+    <div class="text-zinc-500">Sans Serif</div>
     <v-btn
       v-for="f in TEXT_ITEMS.sansSerif"
       :key="f"
@@ -51,7 +51,7 @@
     >
       {{ f }}
     </v-btn>
-    <div class="text-slate-500">Serif</div>
+    <div class="text-zinc-500">Serif</div>
     <v-btn
       v-for="f in TEXT_ITEMS.serif"
       :key="f"
@@ -68,7 +68,7 @@
     >
       {{ f }}
     </v-btn>
-    <div class="text-slate-500">Monospace</div>
+    <div class="text-zinc-500">Monospace</div>
     <v-btn
       v-for="f in TEXT_ITEMS.monospace"
       :key="f"
@@ -85,7 +85,7 @@
     >
       {{ f }}
     </v-btn>
-    <div class="text-slate-500">Handwriting</div>
+    <div class="text-zinc-500">Handwriting</div>
     <v-btn
       v-for="f in TEXT_ITEMS.handwriting"
       :key="f"
@@ -102,7 +102,7 @@
     >
       {{ f }}
     </v-btn>
-    <div class="text-slate-500">Display</div>
+    <div class="text-zinc-500">Display</div>
     <v-btn
       v-for="f in TEXT_ITEMS.display"
       :key="f"

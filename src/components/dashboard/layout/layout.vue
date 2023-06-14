@@ -1,9 +1,9 @@
 <template>
   <div
-    class="border-l border-slate-700 flex flex-col p-5 items-center overflow-auto gap-3"
+    class="border-l border-zinc-700 flex flex-col p-5 items-center overflow-auto gap-3"
   >
     <template v-if="activeObject">
-      <div class="text-slate-400 select-none">Vertical alignment</div>
+      <div class="text-zinc-400 select-none">Vertical alignment</div>
       <div class="flex justify-center items-center">
         <v-btn
           @click="emit('align', ALIGN_OPTIONS.TOP)"
@@ -31,7 +31,7 @@
           <v-icon size="20" icon="mdi-format-vertical-align-bottom" />
         </v-btn>
       </div>
-      <div class="text-slate-400 select-none">Horizontal alignment</div>
+      <div class="text-zinc-400 select-none">Horizontal alignment</div>
       <div class="flex justify-center items-center">
         <v-btn
           @click="emit('align', ALIGN_OPTIONS.LEFT)"
@@ -59,7 +59,7 @@
           <v-icon size="20" icon="mdi-format-horizontal-align-right" />
         </v-btn>
       </div>
-      <div class="text-slate-400 select-none">Arrangement</div>
+      <div class="text-zinc-400 select-none">Arrangement</div>
       <div class="flex justify-center items-center">
         <v-btn
           @click="emit('bring-forward')"
@@ -80,7 +80,7 @@
         </v-btn>
       </div>
       <template v-if="activeObject.type === 'textbox'">
-        <div class="text-slate-400 select-none">Font settings</div>
+        <div class="text-zinc-400 select-none">Font settings</div>
         <div class="flex items-center justify-center w-full">
           <div class="w-4/12">Font</div>
           <v-select
@@ -92,7 +92,7 @@
           />
         </div>
       </template>
-      <div class="text-slate-400 select-none">Active object settings</div>
+      <div class="text-zinc-400 select-none">Active object settings</div>
       <div class="flex items-center w-full">
         <div class="w-4/12">Width</div>
         <v-text-field
@@ -152,7 +152,7 @@
       </div>
     </template>
     <template v-else>
-      <div class="text-slate-400 select-none">Canvas settings</div>
+      <div class="text-zinc-400 select-none">Canvas settings</div>
       <div class="flex items-center w-full">
         <div class="w-4/12">Preset</div>
         <v-select

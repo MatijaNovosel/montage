@@ -6,7 +6,7 @@
     z-index="2000"
     class="flex flex-col justify-center items-center text-center"
   >
-    <div class="px-10 pt-10 pb-5 bg-slate-800 rounded-xl">
+    <div class="px-10 pt-10 pb-5 bg-zinc-800 rounded-xl">
       <v-progress-circular
         color="blue"
         indeterminate
@@ -25,7 +25,7 @@
       <h1 class="mt-4">Video is rendering, hold tight!</h1>
     </div>
   </v-overlay>
-  <div class="bg-slate-900 w-screen h-screen">
+  <div class="bg-zinc-900 w-screen h-screen">
     <router-view />
   </div>
   <toasts />

@@ -30,7 +30,7 @@
           </v-btn>
         </div>
         <div
-          class="mt-3 flex justify-center bg-slate-800 py-1 rounded-md select-none"
+          class="mt-3 flex justify-center bg-zinc-800 py-1 rounded-md select-none"
         >
           🔎 {{ `${state.zoomLevel.toFixed(0)}%` }}
         </div>
@@ -51,7 +51,7 @@
       class="w-2/12"
     />
   </div>
-  <div class="flex bg-slate-900 text-white border-slate-700 bottom-area-ctr">
+  <div class="flex bg-zinc-900 text-white border-zinc-700 bottom-area-ctr">
     <layer-list
       :layers="layers"
       :active-object-id="activeObjectId"
@@ -88,7 +88,7 @@
       >
         <div
           @mousedown.prevent="(e: MouseEvent) => dragObjectProps(e, layer)"
-          class="main-row relative border-b-2 border-slate-800"
+          class="main-row relative border-b-2 border-zinc-800"
           :class="{
             'border-y-2': i === 0,
             'border-b-2': i > 0
@@ -119,7 +119,7 @@
     </div>
   </div>
   <div
-    class="flex justify-between items-center bg-slate-800 text-white px-5"
+    class="flex justify-between items-center bg-zinc-800 text-white px-5"
     style="height: var(--timeline-controls-height)"
   >
     <div class="flex justify-center items-center w-3/12">

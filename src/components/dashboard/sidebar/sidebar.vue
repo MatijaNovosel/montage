@@ -1,7 +1,7 @@
 <template>
-  <div class="border-r border-slate-700 flex">
+  <div class="border-r border-zinc-700 flex">
     <div
-      class="w-3/12 border-r border-slate-700 text-center h-full items-center justify-center flex flex-col gap-4"
+      class="w-3/12 border-r border-zinc-700 text-center h-full items-center justify-center flex flex-col gap-4"
     >
       <v-btn
         v-for="({ name, icon, value }, i) in TAB_ITEMS"
@@ -10,13 +10,13 @@
         v-tooltip="name"
         :icon="`mdi-${icon}`"
         variant="text"
-        :color="activeTab === value ? 'primary' : 'white'"
+        :color="activeTab === value ? 'orange' : 'white'"
         size="x-large"
       />
     </div>
-    <div class="w-9/12 text-center flex flex-col asset-ctr">
-      <div class="shadow-xl py-5 flex flex-col bg-slate-900">
-        <div class="text-slate-500 tracking-widest">
+    <div class="w-9/12 text-center flex flex-col bg-zinc-950">
+      <div class="shadow-xl py-5 flex flex-col bg-zinc-900">
+        <div class="text-zinc-500 tracking-widest">
           {{ TAB_ITEMS[activeTab].name.toUpperCase() }}
         </div>
         <div class="mt-3 px-4">
@@ -47,9 +47,3 @@ import { storeToRefs } from "pinia";
 const dashboardStore = useDashboardStore();
 const { activeTab, activeTabComponent } = storeToRefs(dashboardStore);
 </script>
-
-<style scoped>
-.asset-ctr {
-  background-color: #0b111f;
-}
-</style>
