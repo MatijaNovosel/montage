@@ -8,11 +8,6 @@ const routes: RouteRecordRaw[] = [
     component: () => import("../pages/Dashboard.vue")
   },
   {
-    path: "/editor",
-    name: ROUTE_NAMES.EDITOR,
-    component: () => import("../pages/Editor.vue")
-  },
-  {
     path: "/auth",
     name: ROUTE_NAMES.AUTH,
     component: () => import("../pages/Auth.vue")

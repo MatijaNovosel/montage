@@ -993,6 +993,7 @@ const handleKeyDown = (e: KeyboardEvent) => {
         dashboardStore.removeLayer(layer);
         fabricCanvas?.remove(activeObject);
         fabricCanvas?.discardActiveObject().renderAll();
+        createToast("Layer removed", colors.purple.darken1);
       }
       // Copy
       if (e.ctrlKey && e.key === "c") {
@@ -1000,11 +1001,13 @@ const handleKeyDown = (e: KeyboardEvent) => {
         const id = randInt(1, 9999).toString();
         newLayer.id = id;
         state.newLayer = newLayer;
+        createToast("Layer copied", colors.purple.darken1);
       }
       // Paste
       if (e.ctrlKey && e.key === "v" && state.newLayer) {
         dashboardStore.addLayer(state.newLayer);
         state.newLayer = null;
+        createToast("New layer created", colors.purple.darken1);
       }
     }
   }
