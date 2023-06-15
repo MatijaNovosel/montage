@@ -45,8 +45,8 @@
       </main>
     </div>
     <layout
-      @bring-forward="shiftLayer(fabricCanvas?.getActiveObject(), true)"
-      @send-backward="shiftLayer(fabricCanvas?.getActiveObject(), false)"
+      @bring-forward="shiftLayer(true)"
+      @send-backward="shiftLayer(false)"
       @align="alignActiveObject"
       class="w-2/12"
     />
@@ -415,10 +415,8 @@ const togglePlay = () => {
   }
 };
 
-const shiftLayer = (
-  obj: fabric.Object | null | undefined,
-  forward: boolean
-) => {
+const shiftLayer = (forward: boolean) => {
+  const obj = fabricCanvas?.getActiveObject();
   if (obj) {
     //@ts-ignore
     const id = obj.get("id");
