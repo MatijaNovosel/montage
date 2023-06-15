@@ -45,8 +45,8 @@
       </main>
     </div>
     <layout
-      @bring-forward="bringForward(fabricCanvas?.getActiveObject())"
-      @send-backward="sendBackwards(fabricCanvas?.getActiveObject())"
+      @bring-forward="shiftLayer(fabricCanvas?.getActiveObject(), true)"
+      @send-backward="shiftLayer(fabricCanvas?.getActiveObject(), false)"
       @align="alignActiveObject"
       class="w-2/12"
     />
@@ -415,27 +415,19 @@ const togglePlay = () => {
   }
 };
 
-const bringForward = (obj: fabric.Object | null | undefined) => {
+const shiftLayer = (
+  obj: fabric.Object | null | undefined,
+  forward: boolean
+) => {
   if (obj) {
     //@ts-ignore
     const id = obj.get("id");
     const layerIdx = layers.value.findIndex((l) => l.id === id);
     if (layerIdx !== -1) {
-      if (layerIdx - 1 >= 0) {
+      if (forward && layerIdx - 1 >= 0) {
         move(layers.value, layerIdx, layerIdx - 1);
         obj.bringForward();
-      }
-    }
-  }
-};
-
-const sendBackwards = (obj: fabric.Object | null | undefined) => {
-  if (obj) {
-    //@ts-ignore
-    const id = obj.get("id");
-    const layerIdx = layers.value.findIndex((l) => l.id === id);
-    if (layerIdx !== -1) {
-      if (layerIdx + 1 < layers.value.length) {
+      } else if (!forward && layerIdx + 1 < layers.value.length) {
         move(layers.value, layerIdx, layerIdx + 1);
         obj.sendBackwards();
       }
