@@ -75,7 +75,7 @@ const props = defineProps<{
   paused: boolean;
   timelineScale: number;
   playbackSpeed: number;
-  outputFormat: number;
+  outputFormat: string;
 }>();
 
 const state = reactive({

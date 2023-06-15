@@ -138,7 +138,7 @@ import MemoryDisplay from "@/components/dashboard/MemoryDisplay.vue";
 import TimeTicks from "@/components/dashboard/TimeTicks.vue";
 import Layout from "@/components/dashboard/layout/layout.vue";
 import Sidebar from "@/components/dashboard/sidebar/sidebar.vue";
-import { AssetEvent, Layer, SelectItem } from "@/models/common";
+import { AssetEvent, Layer } from "@/models/common";
 import { useDashboardStore } from "@/store/dashboard";
 import { useToastStore } from "@/store/toast";
 import {
@@ -193,8 +193,8 @@ import colors from "vuetify/lib/util/colors";
 interface State {
   timelineScale: number;
   zoomLevel: number;
-  playbackSpeed: SelectItem<number>;
-  outputFormat: SelectItem<string>;
+  playbackSpeed: number;
+  outputFormat: string;
   newLayer: Layer | null;
   dragging: boolean;
   trimming: boolean;
@@ -227,8 +227,8 @@ const state: State = reactive({
   playInterval: null,
   zoomLevel: 100,
   layers: [],
-  playbackSpeed: TIME_OPTIONS[1],
-  outputFormat: OUTPUT_FORMAT_OPTIONS[1],
+  playbackSpeed: TIME_OPTIONS[1].value,
+  outputFormat: OUTPUT_FORMAT_OPTIONS[1].value,
   newLayer: null,
   dragging: false,
   trimming: false,
