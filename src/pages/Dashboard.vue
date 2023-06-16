@@ -458,14 +458,13 @@ const newTextbox = (
     objectCaching: false,
     absolutePositioned: true,
     strokeUniform: true,
-    //@ts-ignore
-    inGroup: false,
     cursorDelay: 250,
     width: calculateTextWidth(
       fabricCanvas!.getContext(),
       text,
       `${fontWeight} ${fontSize}px Roboto`
     ),
+    // @ts-ignore
     id
   });
   fabricCanvas?.add(newText);
