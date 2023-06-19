@@ -78,44 +78,12 @@
         }"
       />
       <time-ticks :duration="Math.floor(state.duration / 1000)" />
-      <!-- Timeline -->
-      <div
-        @mousemove="followCursor"
-        @mouseleave="hideSeekbar"
-        @click="seek"
-        class="flex flex-col timeline-body"
-        v-if="layers.length"
-      >
-        <div
-          @mousedown.prevent="(e: MouseEvent) => dragObjectProps(e, layer)"
-          class="main-row relative border-b-2 border-zinc-800"
-          :class="{
-            'border-y-2': i === 0,
-            'border-b-2': i > 0
-          }"
-          v-for="(layer, i) of layers"
-          :key="layer.id"
-          :style="{
-            width: calculateLayerWidth(layer),
-            left: `${layer.offset}px`
-          }"
-        >
-          <div class="row-element">
-            <div
-              :style="{
-                width: `${
-                  layer.duration / 10 - layer.startTrim - layer.endTrim
-                }px`,
-                left: `${layer.startTrim}px`
-              }"
-              class="trim-row absolute"
-              :class="{
-                [`bg-${LAYER_TYPE_COLOR[layer.type]}`]: true
-              }"
-            />
-          </div>
-        </div>
-      </div>
+      <timeline
+        @drag="dragObjectProps"
+        @follow-cursor="followCursor"
+        @hide-seekbar="hideSeekbar"
+        @seek="seek"
+      />
     </div>
   </div>
   <controls
@@ -136,6 +104,7 @@ import Controls from "@/components/dashboard/Controls.vue";
 import LayerList from "@/components/dashboard/LayerList.vue";
 import MemoryDisplay from "@/components/dashboard/MemoryDisplay.vue";
 import TimeTicks from "@/components/dashboard/TimeTicks.vue";
+import Timeline from "@/components/dashboard/Timeline.vue";
 import Layout from "@/components/dashboard/layout/layout.vue";
 import Sidebar from "@/components/dashboard/sidebar/sidebar.vue";
 import { AssetEvent, Layer } from "@/models/common";
@@ -147,7 +116,6 @@ import {
   DEFAULT_DURATION,
   DRAWER_WIDTH,
   LAYER_TYPE,
-  LAYER_TYPE_COLOR,
   MAX_ALLOWED_VIDEO_DURATION,
   OUTPUT_FORMAT_OPTIONS,
   TIME_OPTIONS
@@ -160,7 +128,6 @@ import {
 } from "@/utils/fabric";
 import {
   blobToBinary,
-  calculateLayerWidth,
   formatTime,
   getFileExtension,
   move,
@@ -393,10 +360,10 @@ const togglePlay = () => {
         videoObjects.value.forEach((v) => {
           // @ts-ignore
           const element = v.object.getElement();
-          if (isLayerVisible(v)) {
+          if (isLayerVisible(v, false)) {
             element.muted = false;
             element.play();
-          } else if (isLayerVisibleNoTrim(v) && v.startTrim > 0) {
+          } else if (isLayerVisible(v, true) && v.startTrim > 0) {
             element.muted = true;
             element.play();
           } else {
@@ -835,21 +802,21 @@ const addAsset = async (event: AssetEvent) => {
 
 const unsubscribeAddAssetBus = addAssetBus.on(addAsset);
 
-const isLayerVisible = (layer: Layer) => {
-  const layerOffsetMs = layer.offset * 10 + layer.startTrim * 10;
-  const duration = layer.duration - layer.startTrim * 10 - layer.endTrim * 10;
-  return (
-    state.currentTime >= layerOffsetMs &&
-    state.currentTime <= layerOffsetMs + duration
-  );
-};
-
-const isLayerVisibleNoTrim = (layer: Layer) => {
-  const layerOffsetMs = layer.offset * 10;
-  return (
-    state.currentTime >= layerOffsetMs &&
-    state.currentTime <= layerOffsetMs + layer.duration
-  );
+const isLayerVisible = (layer: Layer, noTrim: boolean) => {
+  let layerOffsetMs = layer.offset * 10 + layer.startTrim * 10;
+  if (noTrim) {
+    layerOffsetMs = layer.offset * 10;
+    return (
+      state.currentTime >= layerOffsetMs &&
+      state.currentTime <= layerOffsetMs + layer.duration
+    );
+  } else {
+    const duration = layer.duration - layer.startTrim * 10 - layer.endTrim * 10;
+    return (
+      state.currentTime >= layerOffsetMs &&
+      state.currentTime <= layerOffsetMs + duration
+    );
+  }
 };
 
 const updateLayerVisibility = () => {
@@ -859,7 +826,7 @@ const updateLayerVisibility = () => {
     // @ts-ignore
     const objectId: string = layer.object?.get("id");
     layer.object!.visible = false;
-    if (isLayerVisible(layer)) {
+    if (isLayerVisible(layer, false)) {
       layer.object!.visible = true;
     } else {
       layer.object!.visible = false;
@@ -891,7 +858,7 @@ const seek = (e: MouseEvent) => {
     videoObjects.value.forEach((v) => {
       // @ts-ignore
       const element = v.object.getElement();
-      if (isLayerVisible(v)) {
+      if (isLayerVisible(v, false)) {
         const elementCurrTime = state.currentTime - v.offset * 10; // Miliseconds
         element.currentTime = elementCurrTime / 1000; // Seconds
       } else {
