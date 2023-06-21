@@ -47,7 +47,7 @@
     <layout
       @bring-forward="shiftLayer(true)"
       @send-backward="shiftLayer(false)"
-      @align="alignActiveObject"
+      @align="(option)=> alignActiveObject(fabricCanvas!.getActiveObject(), option, artBoard, fabricCanvas)"
       class="w-2/12"
     />
   </div>
@@ -111,7 +111,6 @@ import { AssetEvent, Layer } from "@/models/common";
 import { useDashboardStore } from "@/store/dashboard";
 import { useToastStore } from "@/store/toast";
 import {
-  ALIGN_OPTIONS,
   DEFAULT_ASSET_DURATION,
   DEFAULT_DURATION,
   DRAWER_WIDTH,
@@ -121,6 +120,7 @@ import {
   TIME_OPTIONS
 } from "@/utils/constants";
 import {
+  alignActiveObject,
   calculateTextWidth,
   centerLines,
   getObjectById,
@@ -543,65 +543,6 @@ const setActiveObject = (id: string) => {
   const obj = getObjectById(fabricCanvas, id);
   if (obj && activeObjectId.value !== id) {
     fabricCanvas?.setActiveObject(obj);
-    fabricCanvas?.renderAll();
-  }
-};
-
-const alignActiveObject = (option: number) => {
-  const activeObject = fabricCanvas?.getActiveObject();
-  if (activeObject) {
-    const objectHeight = activeObject.get("height") as number;
-    const objectWidth = activeObject.get("width") as number;
-    const objectScaleY = activeObject.get("scaleY") as number;
-    const objectScaleX = activeObject.get("scaleX") as number;
-    const isTextBox = activeObject.type === "textbox";
-
-    switch (option) {
-      case ALIGN_OPTIONS.TOP:
-        activeObject.set(
-          "top",
-          artBoardTop.value + (objectHeight * objectScaleY) / 2
-        );
-        break;
-      case ALIGN_OPTIONS.CENTER_V:
-        activeObject.set(
-          "top",
-          artBoardTop.value +
-            artboardHeight.value / 2 -
-            (isTextBox ? 0 : (objectHeight * objectScaleY) / 2)
-        );
-        break;
-      case ALIGN_OPTIONS.BOTTOM:
-        activeObject.set(
-          "top",
-          artBoardTop.value +
-            artboardHeight.value -
-            (objectHeight * objectScaleY) / 2
-        );
-        break;
-      case ALIGN_OPTIONS.LEFT:
-        activeObject.set(
-          "left",
-          artBoardLeft.value + (objectWidth * objectScaleX) / 2
-        );
-        break;
-      case ALIGN_OPTIONS.CENTER_H:
-        activeObject.set(
-          "left",
-          artBoardLeft.value +
-            artboardWidth.value / 2 -
-            (isTextBox ? 0 : (objectWidth * objectScaleX) / 2)
-        );
-        break;
-      case ALIGN_OPTIONS.RIGHT:
-        activeObject.set(
-          "left",
-          artBoardLeft.value +
-            artboardWidth.value -
-            (objectWidth * objectScaleX) / 2
-        );
-        break;
-    }
     fabricCanvas?.renderAll();
   }
 };

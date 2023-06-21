@@ -1,4 +1,4 @@
-import { SNAP_CHECK_DIRECTION } from "@/utils/constants";
+import { ALIGN_OPTIONS, SNAP_CHECK_DIRECTION } from "@/utils/constants";
 import { fabric } from "fabric";
 
 export const checkVSnap = (
@@ -302,4 +302,67 @@ export const calculateTextWidth = (
 ) => {
   canvasContext.font = font;
   return canvasContext.measureText(text).width + 10;
+};
+
+export const alignActiveObject = (
+  activeObject: fabric.Object | null,
+  option: number,
+  artBoard: fabric.Rect | null,
+  canvas: fabric.Canvas | null
+) => {
+  if (activeObject && artBoard && canvas) {
+    const objectHeight = activeObject.get("height") as number;
+    const objectWidth = activeObject.get("width") as number;
+    const objectScaleY = activeObject.get("scaleY") as number;
+    const objectScaleX = activeObject.get("scaleX") as number;
+    const isTextBox = activeObject.type === "textbox";
+    const artBoardTop = artBoard.get("top") as number;
+    const artBoardLeft = artBoard.get("left") as number;
+    const artBoardHeight = artBoard.get("height") as number;
+    const artBoardWidth = artBoard.get("width") as number;
+
+    switch (option) {
+      case ALIGN_OPTIONS.TOP:
+        activeObject.set(
+          "top",
+          artBoardTop + (objectHeight * objectScaleY) / 2
+        );
+        break;
+      case ALIGN_OPTIONS.CENTER_V:
+        activeObject.set(
+          "top",
+          artBoardTop +
+            artBoardHeight / 2 -
+            (isTextBox ? 0 : (objectHeight * objectScaleY) / 2)
+        );
+        break;
+      case ALIGN_OPTIONS.BOTTOM:
+        activeObject.set(
+          "top",
+          artBoardTop + artBoardHeight - (objectHeight * objectScaleY) / 2
+        );
+        break;
+      case ALIGN_OPTIONS.LEFT:
+        activeObject.set(
+          "left",
+          artBoardLeft + (objectWidth * objectScaleX) / 2
+        );
+        break;
+      case ALIGN_OPTIONS.CENTER_H:
+        activeObject.set(
+          "left",
+          artBoardLeft +
+            artBoardWidth / 2 -
+            (isTextBox ? 0 : (objectWidth * objectScaleX) / 2)
+        );
+        break;
+      case ALIGN_OPTIONS.RIGHT:
+        activeObject.set(
+          "left",
+          artBoardLeft + artBoardWidth - (objectWidth * objectScaleX) / 2
+        );
+        break;
+    }
+    canvas.renderAll();
+  }
 };
