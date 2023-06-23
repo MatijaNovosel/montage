@@ -1,7 +1,7 @@
 {
   "name": "montage",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,7 +10,7 @@
     "tauri": "tauri"
   },
   "dependencies": {
-    "@tauri-apps/api": "^1.0.2",
+    "@tauri-apps/api": "^1.4.0",
     "@vueuse/core": "^9.10.0",
     "autoprefixer": "^10.4.11",
     "axios": "^1.2.2",
@@ -34,7 +34,7 @@
     "webfontloader": "^1.6.28"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^1.0.5",
+    "@tauri-apps/cli": "^1.4.0",
     "@tauri-apps/tauricon": "github:tauri-apps/tauricon",
     "@types/fabric": "^4.5.15",
     "@types/node": "^18.7.10",

@@ -279,7 +279,7 @@ const convertFile = async (content?: Uint8Array) => {
 };
 
 const $export = async () => {
-  const installed = await ffmpegInstalled();
+  const installed = await invoke<boolean>("ffmpegInstalled");
   if (!installed) {
     createToast("Cannot render, ffmpeg is not installed!", colors.red.darken1);
     return;
@@ -864,11 +864,6 @@ const followCursor = ({ pageX }: MouseEvent) => {
   if (res > 1) {
     state.seekHoverOffset = res;
   }
-};
-
-const ffmpegInstalled = async () => {
-  const installed = await invoke<boolean>("ffmpegInstalled");
-  return installed;
 };
 
 const updateActiveObjectDimensions = () => {
