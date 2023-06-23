@@ -278,7 +278,12 @@ const convertFile = async (content?: Uint8Array) => {
   }
 };
 
-const $export = () => {
+const $export = async () => {
+  const installed = await ffmpegInstalled();
+  if (!installed) {
+    createToast("Cannot render, ffmpeg is not installed!", colors.red.darken1);
+    return;
+  }
   const chunks: Blob[] = [];
   const stream = recordCanvas.value!.captureStream(60);
   recorder = new MediaRecorder(stream, {
@@ -859,6 +864,11 @@ const followCursor = ({ pageX }: MouseEvent) => {
   if (res > 1) {
     state.seekHoverOffset = res;
   }
+};
+
+const ffmpegInstalled = async () => {
+  const installed = await invoke<boolean>("ffmpegInstalled");
+  return installed;
 };
 
 const updateActiveObjectDimensions = () => {
