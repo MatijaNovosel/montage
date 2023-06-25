@@ -5,7 +5,7 @@
 <h1 align=center>Montage</h1>
 <p align=center>A clip editor made with Tauri.</p>
 
-![image](https://github.com/MatijaNovosel/montage/assets/36193643/8421f842-d1b4-4c50-b63d-5c758caef760)
+![image](https://github.com/MatijaNovosel/montage/assets/36193643/6b97064c-2c77-4589-8292-b65b1551e374)
 
 ## 🔨 Built With
 
