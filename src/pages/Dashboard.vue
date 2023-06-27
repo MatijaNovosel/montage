@@ -58,25 +58,12 @@
       @set-active-obj="setActiveObject"
     />
     <div class="h-full flex-grow relative overflow-auto">
-      <div
-        id="seek-hover"
-        :style="{
-          opacity: state.seeking ? 0.3 : 0,
-          left: `${state.seekHoverOffset}px`
-        }"
+      <hoverbar
+        :offset="state.seekHoverOffset"
+        :opacity="state.seeking ? 0.3 : 0"
       />
-      <div
-        id="video-duration-end-bar"
-        :style="{
-          left: `${state.duration / 10 - 15}px`
-        }"
-      />
-      <div
-        id="seekbar"
-        :style="{
-          left: `${state.seekbarOffset}px`
-        }"
-      />
+      <endbar :offset="state.duration / 10 - 15" />
+      <seekbar :offset="state.seekbarOffset" />
       <time-ticks :duration="Math.floor(state.duration / 1000)" />
       <timeline
         @drag="dragObjectProps"
@@ -101,8 +88,11 @@
 
 <script setup lang="ts">
 import Controls from "@/components/dashboard/Controls.vue";
+import Endbar from "@/components/dashboard/Endbar.vue";
+import Hoverbar from "@/components/dashboard/Hoverbar.vue";
 import LayerList from "@/components/dashboard/LayerList.vue";
 import MemoryDisplay from "@/components/dashboard/MemoryDisplay.vue";
+import Seekbar from "@/components/dashboard/Seekbar.vue";
 import TimeTicks from "@/components/dashboard/TimeTicks.vue";
 import Timeline from "@/components/dashboard/Timeline.vue";
 import Layout from "@/components/dashboard/layout/layout.vue";
