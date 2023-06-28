@@ -68,7 +68,7 @@
       <timeline
         @drag="dragObjectProps"
         @follow-cursor="followCursor"
-        @hide-seekbar="hideSeekbar"
+        @hide-seekbar="state.seeking = false"
         @seek="seek"
       />
     </div>
@@ -80,7 +80,7 @@
     :playback-speed="state.playbackSpeed"
     :output-format="state.outputFormat"
     @seek-to-start="seekToStart"
-    @seek-to-end="seekToEnd"
+    @seek-to-end="null"
     @toggle-play="togglePlay"
     @export="$export"
   />
@@ -773,10 +773,6 @@ const updateLayerVisibility = () => {
   }
 };
 
-const hideSeekbar = () => {
-  state.seeking = false;
-};
-
 const seekToStart = () => {
   state.currentTime = 0;
   videoObjects.value.forEach((v) => {
@@ -784,8 +780,6 @@ const seekToStart = () => {
     v.object.getElement().currentTime = 0;
   });
 };
-
-const seekToEnd = () => {};
 
 const seek = (e: MouseEvent) => {
   const res = e.pageX - DRAWER_WIDTH;
