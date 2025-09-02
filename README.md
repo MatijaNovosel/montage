@@ -4,6 +4,7 @@
 
 <h1 align=center>Montage</h1>
 <p align=center>A clip editor made with Tauri.</p>
+<p align=center>NOTE: You will need FFMPEG to properly parse videos.</p>
 
 ![image](https://github.com/MatijaNovosel/montage/assets/36193643/6b97064c-2c77-4589-8292-b65b1551e374)
 
