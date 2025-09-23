@@ -13,7 +13,6 @@
     <div
       class="main w-7/12 h-full flex flex-col justify-center items-center relative"
     >
-      <memory-display />
       <div class="top-right flex flex-col">
         <div class="flex">
           <v-btn class="mr-2" @click="undo">
@@ -91,7 +90,6 @@ import Controls from "@/components/dashboard/Controls.vue";
 import Endbar from "@/components/dashboard/Endbar.vue";
 import Hoverbar from "@/components/dashboard/Hoverbar.vue";
 import LayerList from "@/components/dashboard/LayerList.vue";
-import MemoryDisplay from "@/components/dashboard/MemoryDisplay.vue";
 import Seekbar from "@/components/dashboard/Seekbar.vue";
 import TimeTicks from "@/components/dashboard/TimeTicks.vue";
 import Timeline from "@/components/dashboard/Timeline.vue";
@@ -798,47 +796,72 @@ const seek = (e: MouseEvent) => {
   }
 };
 
-const dragObjectProps = ({ offsetX }: MouseEvent, layer: Layer) => {
-  if (!paused.value) {
-    return;
-  }
-  let action = "dragging";
-  const layerWidth = layer.duration / 10 - layer.endTrim - layer.startTrim;
-  if (offsetX <= 7) {
-    action = "trimLeft";
-  } else if (offsetX >= layerWidth - 7) {
-    action = "trimRight";
-  }
-  const dragging = ({ pageX }: MouseEvent) => {
-    const offset = pageX - DRAWER_WIDTH;
-    if (action === "dragging") {
-      state.dragging = true;
-      state.seeking = false;
-      if (offset - 50 >= 0) {
-        layer.offset = offset - 50;
-      }
-    } else if (action === "trimLeft") {
-      const res = offset - layer.offset;
-      if (res >= 0 && res < layerWidth) {
-        layer.startTrim = res;
-      }
-    } else if (action === "trimRight") {
-      // TODO: Fix this at some point
-      const res = Math.abs(offset - layer.offset - layerWidth);
-      if (res <= layerWidth) {
-        layer.endTrim = Math.abs(res);
-      }
-    }
+const dragObjectProps = (down: MouseEvent, layer: Layer) => {
+  if (!paused.value) return;
+
+  const baseWidth = layer.duration / 10; // full untrimmed width
+
+  // Snapshot starting values
+  const start = {
+    pageX: down.pageX,
+    offset: layer.offset,
+    startTrim: layer.startTrim,
+    endTrim: layer.endTrim
   };
-  const released = () => {
+  const visible = baseWidth - start.startTrim - start.endTrim;
+  const leftEdge = start.offset + start.startTrim;
+  const rightEdge = start.offset + visible;
+
+  let action: "dragging" | "trimLeft" | "trimRight" = "dragging";
+  if (down.offsetX <= 7) action = "trimLeft";
+  else if (down.offsetX >= visible - 7) action = "trimRight";
+
+  const minVisible = 0;
+  const minLeftEdge = start.offset;
+  const maxRightEdge = start.offset + (baseWidth - start.startTrim);
+
+  const onMove = (move: MouseEvent) => {
+    const dx = move.pageX - start.pageX;
+
+    state.dragging = true;
+    state.seeking = false;
+
+    if (action === "dragging") {
+      layer.offset = Math.max(0, start.offset + dx);
+      return;
+    }
+
+    if (action === "trimLeft") {
+      const maxLeftEdge =
+        start.offset + (baseWidth - start.endTrim - minVisible);
+      const newLeftEdge = Math.min(
+        Math.max(leftEdge + dx, minLeftEdge),
+        maxLeftEdge
+      );
+      layer.startTrim = newLeftEdge - start.offset;
+      return;
+    }
+
+    const minRightEdge = start.offset + minVisible;
+    const newRightEdge = Math.max(
+      Math.min(rightEdge + dx, maxRightEdge),
+      minRightEdge
+    );
+
+    const newVisible = newRightEdge - start.offset;
+    layer.endTrim = baseWidth - start.startTrim - newVisible;
+  };
+
+  const onUp = () => {
     state.dragging = false;
     state.seeking = true;
-    document.removeEventListener("mousemove", dragging);
-    document.removeEventListener("mouseup", released);
+    document.removeEventListener("mousemove", onMove);
+    document.removeEventListener("mouseup", onUp);
     updateLayerVisibility();
   };
-  document.addEventListener("mouseup", released);
-  document.addEventListener("mousemove", dragging);
+
+  document.addEventListener("mousemove", onMove);
+  document.addEventListener("mouseup", onUp);
 };
 
 const followCursor = ({ pageX }: MouseEvent) => {
