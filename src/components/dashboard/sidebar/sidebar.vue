@@ -1,7 +1,7 @@
 <template>
   <div class="border-r border-zinc-700 flex">
     <div
-      class="w-3/12 border-r border-zinc-700 text-center h-full items-center justify-center flex flex-col gap-4"
+      class="w-3/12 border-r border-zinc-700 text-center h-full items-center justify-center flex flex-col gap-4 overflow-auto"
     >
       <v-btn
         v-for="({ name, icon, value }, i) in TAB_ITEMS"
@@ -11,7 +11,6 @@
         :icon="`mdi-${icon}`"
         variant="text"
         :color="activeTab === value ? 'orange' : 'white'"
-        size="x-large"
       />
     </div>
     <div class="w-9/12 text-center flex flex-col bg-zinc-950">
