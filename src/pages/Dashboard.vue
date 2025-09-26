@@ -667,6 +667,8 @@ const loadVideo = (src: string) => {
 };
 
 const addAsset = async (event: AssetEvent) => {
+  if (!paused.value) return;
+
   switch (event.type) {
     case LAYER_TYPE.EMOJI:
       newSvg(`/emojis/${event.value}.svg`);
