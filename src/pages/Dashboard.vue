@@ -13,27 +13,6 @@
     <div
       class="main w-7/12 h-full flex flex-col justify-center items-center relative"
     >
-      <div class="top-right flex flex-col">
-        <div class="flex">
-          <v-btn class="mr-2" @click="undo">
-            <template #prepend>
-              <v-icon> mdi-undo </v-icon>
-            </template>
-            Undo
-          </v-btn>
-          <v-btn @click="redo">
-            <template #prepend>
-              <v-icon> mdi-refresh </v-icon>
-            </template>
-            Redo
-          </v-btn>
-        </div>
-        <div
-          class="mt-3 flex justify-center bg-zinc-800 py-1 rounded-md select-none"
-        >
-          🔎 {{ `${state.zoomLevel.toFixed(0)}%` }}
-        </div>
-      </div>
       <div
         class="bottom bg-black bg-opacity-50 px-4 py-2 rounded-lg z-10 text-2xl"
       >
